@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
 import About from './pages/About';
 import Create from './pages/Create';
+import Edit from './pages/Edit';
 import Home from './pages/Home';
 import route from './route';
 import './index.css';
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
       {
         path: route.create,
         element: <Create />
+      },
+      {
+        path: route.edit,
+        element: <Edit />
       },
       {
         path: route.about,

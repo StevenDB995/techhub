@@ -21,11 +21,12 @@ function App() {
     }
   ];
 
+  const editorPages = [route.create, route.edit];
   const location = useLocation();
 
   return (
     <Layout className="app">
-      {location.pathname !== route.create && (<Header className="app-header">
+      {!editorPages.includes(location.pathname) && (<Header className="app-header">
         <Menu
           theme="dark"
           mode="horizontal"
@@ -36,7 +37,7 @@ function App() {
       </Header>)}
       <Content className="app-content">
         <Row justify="center">
-          <Col span={24} md={location.pathname !== route.create ? 18 : 24}>
+          <Col span={24} md={!editorPages.includes(location.pathname) ? 18 : 24}>
             <Outlet />
           </Col>
         </Row>
