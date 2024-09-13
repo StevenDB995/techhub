@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { Button, Flex } from 'antd';
 import Cherry from 'cherry-markdown';
 import 'cherry-markdown/dist/cherry-markdown.css';
+import { useEffect, useRef } from 'react';
 import './Create.css';
 
 const cherryConfig = {
@@ -50,7 +51,13 @@ function Create() {
     }
   }, []);
 
-  return <div id={cherryConfig.id}></div>;
+  return <div id={cherryConfig.id}>
+    <Flex gap="small" wrap className="button-group">
+      <Button type="primary" size="large" danger>Delete</Button>
+      <Button type="default" size="large">Save as Draft</Button>
+      <Button type="primary" size="large">Post</Button>
+    </Flex>
+  </div>;
 }
 
 export default Create;

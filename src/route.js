@@ -1,7 +1,7 @@
-const routes = {
+const route = {
   home: '/',
   create: '/create',
   about: '/about'
 };
 
-export default routes;
+export default route;

@@ -1,14 +1,14 @@
+import { geekblue } from '@ant-design/colors';
+import { ConfigProvider } from 'antd';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
-import Home from './pages/Home';
-import Create from './pages/Create';
 import About from './pages/About';
-import routes from './routes';
-import { geekblue } from '@ant-design/colors';
+import Create from './pages/Create';
+import Home from './pages/Home';
+import route from './route';
 import './index.css';
-import { ConfigProvider } from 'antd';
 
 const router = createBrowserRouter([
   {
@@ -16,18 +16,18 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: routes.home,
+        path: route.home,
         element: <Home />
       },
       {
-        path: routes.about,
+        path: route.create,
+        element: <Create />
+      },
+      {
+        path: route.about,
         element: <About />
       }
     ]
-  },
-  {
-    path: routes.create,
-    element: <Create />
   }
 ]);
 

@@ -1,6 +1,6 @@
 import { Col, Layout, Menu, Row } from 'antd';
-import { Link, Outlet } from 'react-router-dom';
-import routes from './routes';
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import route from './route';
 import './App.css';
 
 const { Header, Content, Footer } = Layout;
@@ -8,22 +8,24 @@ const { Header, Content, Footer } = Layout;
 function App() {
   const navItems = [
     {
-      label: <Link to={routes.home}>Home</Link>,
-      key: routes.home
+      label: <Link to={route.home}>Home</Link>,
+      key: route.home
     },
     {
-      label: <Link to={routes.create}>Create</Link>,
-      key: routes.create
+      label: <Link to={route.create}>Create</Link>,
+      key: route.create
     },
     {
-      label: <Link to={routes.about}>About</Link>,
-      key: routes.about
+      label: <Link to={route.about}>About</Link>,
+      key: route.about
     }
   ];
 
+  const location = useLocation();
+
   return (
     <Layout className="app">
-      <Header className="app-header">
+      {location.pathname !== route.create && (<Header className="app-header">
         <Menu
           theme="dark"
           mode="horizontal"
@@ -31,10 +33,10 @@ function App() {
           items={navItems}
           className="menu"
         />
-      </Header>
+      </Header>)}
       <Content className="app-content">
-        <Row justify="center" gutter={24}>
-          <Col className="gutter-row" span={24} md={18}>
+        <Row justify="center">
+          <Col span={24} md={location.pathname !== route.create ? 18 : 24}>
             <Outlet />
           </Col>
         </Row>
