@@ -1,7 +1,6 @@
 import { Flex } from 'antd';
 import Cherry from 'cherry-markdown';
-import PropTypes from 'prop-types';
-import { Fragment, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import 'cherry-markdown/dist/cherry-markdown.css';
 import './CherryEditor.css';
 
@@ -43,13 +42,6 @@ const cherryConfig = {
   }
 };
 
-CherryEditor.propTypes = {
-  value: PropTypes.string,
-  onChange: PropTypes.func,
-  buttons: PropTypes.arrayOf(PropTypes.node),
-  buttonGap: PropTypes.string,
-}
-
 function CherryEditor({ value, onChange, buttons, buttonGap }) {
   const cherryInstance = useRef(null);
 
@@ -61,14 +53,13 @@ function CherryEditor({ value, onChange, buttons, buttonGap }) {
       });
       cherryInstance.current.on('afterChange', onChange);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div id={cherryConfig.id}>
       <Flex gap={buttonGap} wrap className="button-group">
-        {buttons.map((button, key) => (
-          <Fragment key={key}>{button}</Fragment>
-        ))}
+        {buttons.map(button => button)}
       </Flex>
     </div>
   );

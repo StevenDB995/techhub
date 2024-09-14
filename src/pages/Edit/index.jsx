@@ -3,8 +3,8 @@ import CherryEditor from '../../components/CherryEditor';
 
 function Edit() {
   const buttons = [
-    <Button type="default" size="large" danger>Cancel</Button>,
-    <Button type="primary" size="large">Save</Button>
+    <Button key="cancel" type="default" size="large" danger>Cancel</Button>,
+    <Button key="save" type="primary" size="large">Save</Button>
   ];
 
   return (

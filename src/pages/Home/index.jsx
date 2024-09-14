@@ -1,6 +1,5 @@
 import { LikeOutlined, MessageOutlined } from '@ant-design/icons';
 import { List, Space } from 'antd';
-import PropTypes from 'prop-types';
 import React from 'react';
 import styles from './Home.module.css';
 
@@ -27,11 +26,6 @@ const data = [
     comments: 0
   }
 ];
-
-Action.propTypes = {
-  icon: PropTypes.object,
-  text: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-};
 
 function Action({ icon, text }) {
   return (

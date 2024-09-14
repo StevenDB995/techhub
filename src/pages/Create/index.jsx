@@ -23,9 +23,9 @@ function Create() {
   };
 
   const buttons = [
-    <Button type="default" size="large" danger onClick={handleCancel}>Cancel</Button>,
-    <Button type="default" size="large" onClick={handleSaveAsDraft}>Save as Draft</Button>,
-    <Button type="primary" size="large" onClick={handlePost}>Post</Button>
+    <Button key="cancel" type="default" size="large" danger onClick={handleCancel}>Cancel</Button>,
+    <Button key="draft" type="default" size="large" onClick={handleSaveAsDraft}>Save as Draft</Button>,
+    <Button key="post" type="primary" size="large" onClick={handlePost}>Post</Button>
   ];
 
   return (
