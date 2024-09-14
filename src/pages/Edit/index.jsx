@@ -1,15 +1,15 @@
-import { Button, Flex } from 'antd';
+import { Button } from 'antd';
 import CherryEditor from '../../components/CherryEditor';
 
-const buttonGroup = (
-  <Flex gap="middle" wrap className="button-group">
-    <Button type="default" size="large" danger>Cancel</Button>
-    <Button type="primary" size="large">Save</Button>
-  </Flex>
-);
-
 function Edit() {
-  return <CherryEditor buttonGroup={buttonGroup} />;
+  const buttons = [
+    <Button type="default" size="large" danger>Cancel</Button>,
+    <Button type="primary" size="large">Save</Button>
+  ];
+
+  return (
+    <CherryEditor buttons={buttons} buttonGap="middle" />
+  );
 }
 
 export default Edit;
