@@ -1,5 +1,5 @@
-import { LikeOutlined, MessageOutlined } from '@ant-design/icons';
-import { List, Space } from 'antd';
+import { DeleteOutlined, EditOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons';
+import { Divider, Flex, List, Space, Typography } from 'antd';
 import React from 'react';
 import styles from './Home.module.css';
 
@@ -27,9 +27,11 @@ const data = [
   }
 ];
 
-function Action({ icon, text }) {
+const { Paragraph } = Typography;
+
+function ListFooterItem({ icon, text, size, className }) {
   return (
-    <Space>
+    <Space size={size} className={className}>
       {icon && React.createElement(icon)}
       {text}
     </Space>
@@ -49,16 +51,22 @@ function Home() {
       renderItem={(item, index) => (
         <List.Item
           key={index}
-          actions={[
-            <Action text={item.createdAt} key="createdAt" />,
-            <Action icon={LikeOutlined} text={item.likes} key="like" />,
-            <Action icon={MessageOutlined} text={item.comments} key="comment" />
-          ]}
         >
           <List.Item.Meta
-            title={<span className={styles.listTitle}>{item.title}</span>}
-            description={<span className={styles.listDescription}>{item.previewText}</span>}
+            title={<a className={styles.listItemTitle}>{item.title}</a>}
           />
+          <Paragraph className={styles.listItemContent}>{item.previewText}</Paragraph>
+          <Flex justify="space-between" className={styles.listItemFooter}>
+            <Space size="middle">
+              <ListFooterItem text={item.createdAt} />
+              <ListFooterItem icon={LikeOutlined} text={item.likes} />
+              <ListFooterItem icon={MessageOutlined} text={item.comments} />
+            </Space>
+            <Space split={<Divider type="vertical" />} size={4}>
+              <ListFooterItem className={styles.clickable} icon={EditOutlined} text="Edit" size={6} split />
+              <ListFooterItem className={styles.clickable} icon={DeleteOutlined} text="Delete" size={6} />
+            </Space>
+          </Flex>
         </List.Item>
       )}
     />
