@@ -2,8 +2,14 @@ import { Button } from 'antd';
 import { useState } from 'react';
 import CherryEditor from '../../components/CherryEditor';
 
+const markdownTemplate = `# Title
+## Heading 2
+Paragraph here
+### Heading 3
+If you know, you know ;)`;
+
 function Create() {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState(markdownTemplate);
 
   const handleInputChange = (text) => {
     setInputValue(text);

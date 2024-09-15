@@ -1,3 +1,7 @@
+.cherry-markdown {
+  word-break: normal;
+}
+
 .cherry-dropdown[name="insert"] {
   width: 180px;
 }

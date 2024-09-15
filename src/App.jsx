@@ -21,12 +21,13 @@ function App() {
     }
   ];
 
-  const editorPages = [route.create, route.edit];
+  // pages that display the header
+  const headerPages = [route.home, route.about];
   const location = useLocation();
 
   return (
     <Layout className="app">
-      {!editorPages.includes(location.pathname) && (<Header className="app-header">
+      {headerPages.includes(location.pathname) && (<Header className="app-header">
         <Menu
           theme="dark"
           mode="horizontal"
@@ -39,7 +40,7 @@ function App() {
         <Row justify="center">
           <Col
             span={24}
-            md={!editorPages.includes(location.pathname) ? 18 : 24}
+            lg={headerPages.includes(location.pathname) ? 16 : undefined}
             className="display"
           >
             <Outlet />

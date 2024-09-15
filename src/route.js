@@ -1,7 +1,7 @@
 const route = {
   home: '/',
-  create: '/create',
-  edit: '/edit',
+  create: '/blogs/create',
+  edit: '/blogs/edit/:blogId',
   about: '/about'
 };
 
