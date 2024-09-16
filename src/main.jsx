@@ -25,7 +25,7 @@ const router = createBrowserRouter([
         element: <Create />
       },
       {
-        path: route.edit,
+        path: `${route.edit}/:blogId`,
         element: <Edit />
       },
       {

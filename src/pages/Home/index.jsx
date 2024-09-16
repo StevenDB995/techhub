@@ -79,7 +79,7 @@ function Home() {
                 text="Edit"
                 size={6}
                 onClick={() => {
-                  navigate(route.edit.split(':')[0] + item.id);
+                  navigate(`${route.edit}/${item.id}`);
                 }}
               />
               <ListFooterItem className={styles.clickable} icon={DeleteOutlined} text="Delete" size={6} />
