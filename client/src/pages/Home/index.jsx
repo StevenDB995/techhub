@@ -1,6 +1,7 @@
 import { DeleteOutlined, EditOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons';
 import { Divider, Flex, List, Space, Typography } from 'antd';
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import route from '../../route';
 import styles from './Home.module.css';
@@ -48,6 +49,15 @@ function ListFooterItem({ icon, text, size, className, onClick }) {
 
 function Home() {
   const navigate = useNavigate();
+
+  const fetchData = async () => {
+    const response = await axios.get('http://localhost:3000/api');
+    console.log(response.data);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <List
