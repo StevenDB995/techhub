@@ -1,7 +1,6 @@
-import { DeleteOutlined, EditOutlined, LikeOutlined, MessageOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Divider, Flex, List, Space, Typography } from 'antd';
-import axios from 'axios';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import route from '../../route';
 import styles from './Home.module.css';
@@ -50,15 +49,6 @@ function ListFooterItem({ icon, text, size, className, onClick }) {
 function Home() {
   const navigate = useNavigate();
 
-  const fetchData = async () => {
-    const response = await axios.get('http://localhost:3000/api');
-    console.log(response.data);
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
   return (
     <List
       itemLayout="vertical"
@@ -79,8 +69,8 @@ function Home() {
           <Flex justify="space-between" className={styles.listItemFooter}>
             <Space size="middle">
               <ListFooterItem text={item.createdAt} />
-              <ListFooterItem icon={LikeOutlined} text={item.likes} />
-              <ListFooterItem icon={MessageOutlined} text={item.comments} />
+              {/*<ListFooterItem icon={LikeOutlined} text={item.likes} />*/}
+              {/*<ListFooterItem icon={MessageOutlined} text={item.comments} />*/}
             </Space>
             <Space split={<Divider type="vertical" />} size={4}>
               <ListFooterItem
