@@ -2,7 +2,7 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Divider, Flex, List, Space, Typography } from 'antd';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAllBlogs } from '../../api/services/Blog';
+import { getAllBlogs } from '../../api/services/blogService';
 import Error from '../../components/Error';
 import useFetch from '../../hooks/useFetch';
 import route from '../../route';
@@ -38,7 +38,7 @@ function Home() {
         dataSource={loading ? [] : data}
         renderItem={(item, index) => {
           let previewText = item.previewText;
-          if (previewText.slice(-1) !== '.') {
+          if (previewText && (previewText.slice(-1) !== '.')) {
             previewText += ' ...';
           }
           const createdAt = getDateString(item.createdAt);
@@ -48,9 +48,9 @@ function Home() {
               key={index}
             >
               <List.Item.Meta
-                title={<a className={styles.listItemTitle}>{item.title}</a>}
+                title={<a className={styles.listItemTitle}>{item.title || 'Untitled'}</a>}
               />
-              <Paragraph className={styles.listItemContent}>{previewText}</Paragraph>
+              {previewText && <Paragraph className={styles.listItemContent}>{previewText}</Paragraph>}
               <Flex justify="space-between" className={styles.listItemFooter}>
                 <Space size="middle">
                   <ListFooterItem text={createdAt} />

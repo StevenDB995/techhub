@@ -1,7 +1,7 @@
 import { Button, Modal, Result } from 'antd';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createBlog } from '../../api/services/Blog';
+import { createBlog } from '../../api/services/blogService';
 import CherryEditor from '../../components/CherryEditor';
 import route from '../../route';
 import { extractPreviewText, extractTitle } from '../../utils/mdUtil';
@@ -14,7 +14,7 @@ If you know, you know ;)`;
 
 function Create() {
   const [inputValue, setInputValue] = useState('');
-  const [html, setHtml] = useState(null);
+  const [html, setHtml] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [success, setSuccess] = useState(null);
 
@@ -53,7 +53,13 @@ function Create() {
   const buttons = [
     <Button key="cancel" type="default" size="large" danger onClick={handleCancel}>Cancel</Button>,
     <Button key="draft" type="default" size="large" onClick={handleSaveAsDraft}>Save as Draft</Button>,
-    <Button key="post" type="primary" size="large" onClick={handlePost}>Post</Button>
+    <Button
+      key="post" type="primary" size="large"
+      onClick={handlePost}
+      disabled={inputValue.trim() === ''}
+    >
+      Post
+    </Button>
   ];
 
   return (
@@ -80,7 +86,7 @@ function Create() {
           /> :
           <Result
             status="error"
-            title="Unexpected error"
+            title="Error creating blog"
           />}
       </Modal>
     </>
