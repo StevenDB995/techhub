@@ -11,9 +11,8 @@
   align-items: center;
 }
 
-.app-header > .menu {
-  flex: 1;
-  min-width: 0;
+.app-header .left {
+  flex: 1 1 auto;
   background: transparent;
 }
 
