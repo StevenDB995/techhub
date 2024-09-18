@@ -1,7 +1,7 @@
 import { Button, Modal, Result } from 'antd';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import * as Blog from '../../api/services/Blog';
+import { createBlog } from '../../api/services/Blog';
 import CherryEditor from '../../components/CherryEditor';
 import route from '../../route';
 import { extractPreviewText, extractTitle } from '../mdUtil';
@@ -28,7 +28,7 @@ function Create() {
   const handlePost = async () => {
     const title = extractTitle(inputValue);
     const previewText = extractPreviewText(html);
-    const response = await Blog.createBlog({ title, previewText, content: inputValue });
+    const response = await createBlog({ title, previewText, content: inputValue });
     const responseBody = response.data;
     setIsModalOpen(true);
     setSuccess(responseBody.success);

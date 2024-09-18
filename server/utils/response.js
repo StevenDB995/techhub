@@ -1,4 +1,4 @@
-exports.successResponse = (res, data, message, statusCode = 200) => {
+exports.successResponse = (res, data, message = null, statusCode = 200) => {
   res.status(statusCode).json({
     success: true,
     data,
@@ -9,6 +9,7 @@ exports.successResponse = (res, data, message, statusCode = 200) => {
 exports.errorResponse = (res, message, statusCode = 500) => {
   res.status(statusCode).json({
     success: false,
+    status: statusCode,
     message
   });
 };
