@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import * as Blog from '../../api/services/Blog';
 import CherryEditor from '../../components/CherryEditor';
 import route from '../../route';
+import { extractPreviewText, extractTitle } from '../mdUtil';
 
 const markdownTemplate = `# Title
 ## Heading 2
@@ -12,18 +13,22 @@ Paragraph here
 If you know, you know ;)`;
 
 function Create() {
-  const [inputValue, setInputValue] = useState(markdownTemplate);
+  const [inputValue, setInputValue] = useState('');
+  const [html, setHtml] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [success, setSuccess] = useState(null);
 
   const navigate = useNavigate();
 
-  const handleInputChange = (text) => {
+  const handleInputChange = (text, html) => {
     setInputValue(text);
+    setHtml(html);
   };
 
   const handlePost = async () => {
-    const response = await Blog.createBlog({ content: inputValue });
+    const title = extractTitle(inputValue);
+    const previewText = extractPreviewText(html);
+    const response = await Blog.createBlog({ title, previewText, content: inputValue });
     const responseBody = response.data;
     setIsModalOpen(true);
     setSuccess(responseBody.success);
@@ -54,7 +59,7 @@ function Create() {
   return (
     <>
       <CherryEditor
-        value={inputValue}
+        value={markdownTemplate}
         onChange={handleInputChange}
         buttons={buttons}
         buttonGap="small"
