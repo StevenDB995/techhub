@@ -6,6 +6,7 @@ import { getAllBlogs } from '../../api/services/Blog';
 import Error from '../../components/Error';
 import useFetch from '../../hooks/useFetch';
 import route from '../../route';
+import { getDateString } from '../../utils/dateUtil';
 import styles from './Home.module.css';
 
 const { Paragraph } = Typography;
@@ -40,6 +41,8 @@ function Home() {
           if (previewText.slice(-1) !== '.') {
             previewText += ' ...';
           }
+          const createdAt = getDateString(item.createdAt);
+
           return (
             <List.Item
               key={index}
@@ -50,7 +53,7 @@ function Home() {
               <Paragraph className={styles.listItemContent}>{previewText}</Paragraph>
               <Flex justify="space-between" className={styles.listItemFooter}>
                 <Space size="middle">
-                  <ListFooterItem text={item.createdAt} />
+                  <ListFooterItem text={createdAt} />
                   {/*<ListFooterItem icon={LikeOutlined} text={item.likes} />*/}
                   {/*<ListFooterItem icon={MessageOutlined} text={item.comments} />*/}
                 </Space>
@@ -61,7 +64,7 @@ function Home() {
                     text="Edit"
                     size={6}
                     onClick={() => {
-                      navigate(`${route.edit}/${item.id}`);
+                      navigate(`${route.edit}/${item._id}`);
                     }}
                   />
                   <ListFooterItem className={styles.clickable} icon={DeleteOutlined} text="Delete" size={6} />

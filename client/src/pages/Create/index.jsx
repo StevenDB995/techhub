@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { createBlog } from '../../api/services/Blog';
 import CherryEditor from '../../components/CherryEditor';
 import route from '../../route';
-import { extractPreviewText, extractTitle } from '../mdUtil';
+import { extractPreviewText, extractTitle } from '../../utils/mdUtil';
 
 const markdownTemplate = `# Title
 ## Heading 2
