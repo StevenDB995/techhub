@@ -17,7 +17,7 @@
   background: transparent;
 }
 
-.app-content {
+.app-content .display {
   min-height: calc(100vh - var(--app-header-height));
 }
 

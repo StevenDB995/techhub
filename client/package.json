@@ -1,5 +1,5 @@
 {
-  "name": "techhub",
+  "name": "client",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -13,6 +13,7 @@
     "@ant-design/colors": "^7.1.0",
     "@ant-design/icons": "^5.4.0",
     "antd": "^5.20.6",
+    "axios": "^1.7.7",
     "cherry-markdown": "^0.8.47",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

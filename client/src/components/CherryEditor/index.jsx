@@ -38,7 +38,8 @@ const cherryConfig = {
         ]
       },
       'graph'
-    ]
+    ],
+    toc: true
   }
 };
 
