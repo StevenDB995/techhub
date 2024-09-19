@@ -1,10 +1,11 @@
 const Blog = require('../models/blogModel');
 const { successResponse, errorResponse } = require('../utils/response');
 
-exports.getAllBlogs = async (req, res) => {
+exports.getBlogsByFilter = async (req, res) => {
   try {
+    const status = req.query.status || 'public';
     const blogs = await Blog
-      .find({ status: 'public' })
+      .find({ status: status })
       .sort({ createdAt: -1 });
     return successResponse(res, blogs);
   } catch (err) {

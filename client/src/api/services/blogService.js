@@ -1,7 +1,7 @@
 import api from '../api';
 
-export const getAllBlogs = async () => {
-  return await api.get('/blogs');
+export const getBlogsByFilter = async (params) => {
+  return await api.get('/blogs', { params });
 }
 
 export const getBlogById = async (id) => {

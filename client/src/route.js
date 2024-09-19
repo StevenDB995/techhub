@@ -1,8 +1,9 @@
 const route = {
   home: '/',
+  about: '/about',
   create: '/blogs/create',
   edit: '/blogs/edit', // /:blogId
-  about: '/about'
+  myDrafts: '/drafts'
 };
 
 export default route;

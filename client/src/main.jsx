@@ -8,6 +8,7 @@ import About from './pages/About';
 import Create from './pages/Create';
 import Edit from './pages/Edit';
 import Home from './pages/Home';
+import MyDrafts from './pages/MyDrafts';
 import route from './route';
 import './index.css';
 
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
       {
         path: `${route.edit}/:blogId`,
         element: <Edit />
+      },
+      {
+        path: route.myDrafts,
+        element: <MyDrafts />
       }
     ]
   }

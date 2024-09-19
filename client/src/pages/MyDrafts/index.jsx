@@ -3,8 +3,8 @@ import BlogList from '../../components/BlogList';
 import Error from '../../components/Error';
 import useFetch from '../../hooks/useFetch';
 
-function Home() {
-  const { data, loading, error } = useFetch(getBlogsByFilter);
+function MyDrafts() {
+  const { data, loading, error } = useFetch(getBlogsByFilter, { status: 'draft' });
   return (
     error ?
       <Error status={error.status} message={error.message} /> :
@@ -12,4 +12,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default MyDrafts;

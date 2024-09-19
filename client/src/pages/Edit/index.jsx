@@ -16,7 +16,7 @@ function Edit() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [success, setSuccess] = useState(null);
-  const { data: blog, loading, error } = useFetch(() => getBlogById(blogId));
+  const { data: blog, loading, error } = useFetch(getBlogById, blogId);
 
   const navigate = useNavigate();
 

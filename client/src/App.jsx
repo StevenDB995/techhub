@@ -9,7 +9,7 @@ const { Header, Content, Footer } = Layout;
 
 function App() {
   // pages that display the header
-  const headerPages = [route.home, route.about];
+  const headerPages = [route.home, route.about, route.myDrafts];
   const location = useLocation();
 
   const navItems = [
@@ -37,13 +37,13 @@ function App() {
       },
       {
         label: (
-          <Link to={route.home}>
+          <Link to={route.myDrafts}>
             <Space>
               <InboxOutlined />My Drafts
             </Space>
           </Link>
         ),
-        key: route.home
+        key: route.myDrafts
       }
     ]
   };
