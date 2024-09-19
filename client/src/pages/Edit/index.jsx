@@ -6,7 +6,7 @@ import CherryEditor from '../../components/CherryEditor';
 import Loading from '../../components/CherryEditor/Loading';
 import Error from '../../components/Error';
 import useFetch from '../../hooks/useFetch';
-import route from '../../route';
+import routes from '../../routes';
 import { extractMetaData } from '../../utils/mdUtil';
 
 function Edit() {
@@ -64,7 +64,7 @@ function Edit() {
 
   const handleModalClose = () => {
     if (success) {
-      navigate(route.home);
+      navigate(routes.home);
     } else {
       setIsModalOpen(false);
     }

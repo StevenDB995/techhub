@@ -1,7 +1,7 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Divider, Flex, List, Space, Typography } from 'antd';
 import React from 'react';
-import route from '../../route';
+import routes from '../../routes';
 import { getDateString } from '../../utils/dateUtil';
 import { openInNewTab } from '../../utils/navigateUtil';
 import styles from './BlogList.module.css';
@@ -34,7 +34,7 @@ function ListItem({ data }) {
             text="Edit"
             size={6}
             onClick={() => {
-              openInNewTab(`${route.edit}/${data._id}`);
+              openInNewTab(`${routes.edit}/${data._id}`);
             }}
           />
           <ListFooterItem className={styles.clickable} icon={DeleteOutlined} text="Delete" size={6} />

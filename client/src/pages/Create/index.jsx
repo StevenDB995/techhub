@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createBlog } from '../../api/services/blogService';
 import CherryEditor from '../../components/CherryEditor';
-import route from '../../route';
+import routes from '../../routes';
 import { extractMetaData } from '../../utils/mdUtil';
 
 const markdownTemplate = `# Title
@@ -60,7 +60,7 @@ function Create() {
 
   const handleModalClose = () => {
     if (success) {
-      navigate(route.home);
+      navigate(routes.home);
     } else {
       setIsModalOpen(false);
     }

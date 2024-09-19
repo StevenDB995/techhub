@@ -1,9 +1,10 @@
-const route = {
+const routes = {
   home: '/',
+  blogs: '/blogs',
   about: '/about',
   create: '/blogs/create',
   edit: '/blogs/edit', // /:blogId
-  myDrafts: '/drafts'
+  drafts: '/drafts'
 };
 
-export default route;
+export default routes;

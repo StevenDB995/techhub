@@ -9,7 +9,7 @@ import Create from './pages/Create';
 import Edit from './pages/Edit';
 import Home from './pages/Home';
 import MyDrafts from './pages/MyDrafts';
-import route from './route';
+import routes from './routes';
 import './index.css';
 
 const router = createBrowserRouter([
@@ -18,23 +18,27 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: route.home,
+        path: routes.home,
         element: <Home />
       },
       {
-        path: route.about,
+        path: routes.blogs,
+        element: <Home />
+      },
+      {
+        path: routes.about,
         element: <About />
       },
       {
-        path: route.create,
+        path: routes.create,
         element: <Create />
       },
       {
-        path: `${route.edit}/:blogId`,
+        path: `${routes.edit}/:blogId`,
         element: <Edit />
       },
       {
-        path: route.myDrafts,
+        path: routes.drafts,
         element: <MyDrafts />
       }
     ]
