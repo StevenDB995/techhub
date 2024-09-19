@@ -1,16 +1,14 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Divider, Flex, List, Space, Typography } from 'antd';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import route from '../../route';
 import { getDateString } from '../../utils/dateUtil';
+import { openInNewTab } from '../../utils/navigateUtil';
 import styles from './BlogList.module.css';
 
 const { Paragraph } = Typography;
 
 function ListItem({ data }) {
-  const navigate = useNavigate();
-
   let previewText = data.previewText;
   if (previewText && (previewText.slice(-1) !== '.')) {
     previewText += ' ...';
@@ -25,28 +23,28 @@ function ListItem({ data }) {
       {previewText && <Paragraph className={styles.listItemContent}>{previewText}</Paragraph>}
       <Flex justify="space-between" className={styles.listItemFooter}>
         <Space size="middle">
-          <ListItemFooter text={createdAt} />
+          <ListFooterItem text={createdAt} />
           {/*<ListFooterItem icon={LikeOutlined} text={data.likes} />*/}
           {/*<ListFooterItem icon={MessageOutlined} text={data.comments} />*/}
         </Space>
         <Space split={<Divider type="vertical" />} size={4}>
-          <ListItemFooter
+          <ListFooterItem
             className={styles.clickable}
             icon={EditOutlined}
             text="Edit"
             size={6}
             onClick={() => {
-              navigate(`${route.edit}/${data._id}`);
+              openInNewTab(`${route.edit}/${data._id}`);
             }}
           />
-          <ListItemFooter className={styles.clickable} icon={DeleteOutlined} text="Delete" size={6} />
+          <ListFooterItem className={styles.clickable} icon={DeleteOutlined} text="Delete" size={6} />
         </Space>
       </Flex>
     </List.Item>
-  )
+  );
 }
 
-function ListItemFooter({ icon, text, size, className, onClick }) {
+function ListFooterItem({ icon, text, size, className, onClick }) {
   return (
     <Space size={size} className={className} onClick={onClick}>
       {icon && React.createElement(icon)}

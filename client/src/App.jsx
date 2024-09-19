@@ -1,6 +1,7 @@
 import { FormOutlined, InboxOutlined } from '@ant-design/icons';
 import { Col, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import NewTabLink from './components/NewTabLink';
 import route from './route';
 import './App.css';
 
@@ -10,7 +11,6 @@ function App() {
   // pages that display the header
   const headerPages = [route.home, route.about];
   const location = useLocation();
-  const navigate = useNavigate();
 
   const navItems = [
     {
@@ -27,11 +27,11 @@ function App() {
     items: [
       {
         label: (
-          <Link to={route.create}>
+          <NewTabLink to={route.create}>
             <Space>
               <FormOutlined />New Blog
             </Space>
-          </Link>
+          </NewTabLink>
         ),
         key: route.create
       },
@@ -63,9 +63,8 @@ function App() {
             <Dropdown.Button
               type="primary"
               menu={dropdownMenuProps}
-              onClick={() => navigate(route.create)}
             >
-              Create
+              <NewTabLink to={route.create}>Create</NewTabLink>
             </Dropdown.Button>
           </div>
         </Flex>

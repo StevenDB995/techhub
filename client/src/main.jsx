@@ -21,16 +21,16 @@ const router = createBrowserRouter([
         element: <Home />
       },
       {
+        path: route.about,
+        element: <About />
+      },
+      {
         path: route.create,
         element: <Create />
       },
       {
         path: `${route.edit}/:blogId`,
         element: <Edit />
-      },
-      {
-        path: route.about,
-        element: <About />
       }
     ]
   }
