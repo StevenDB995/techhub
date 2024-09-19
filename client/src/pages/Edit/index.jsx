@@ -33,7 +33,8 @@ function Edit() {
         title,
         previewText,
         content: inputValue,
-        status
+        status,
+        createdAt: (blog.status === 'draft' && status === 'public') ? Date.now() : undefined
       });
       const responseBody = response.data;
       setSuccess(responseBody.success);
