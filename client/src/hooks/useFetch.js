@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 
-
 // A custom hook for fetching data on page load using GET method
 const useFetch = (apiFunc) => {
   const [data, setData] = useState(null);

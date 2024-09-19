@@ -43,7 +43,7 @@ const cherryConfig = {
   }
 };
 
-function CherryEditor({ value, onChange, buttons, buttonGap }) {
+function CherryEditor({ value, onChange, buttons }) {
   const cherryInstance = useRef(null);
 
   useEffect(() => {
@@ -59,7 +59,7 @@ function CherryEditor({ value, onChange, buttons, buttonGap }) {
 
   return (
     <div id={cherryConfig.id}>
-      <Flex gap={buttonGap} wrap className="button-group">
+      <Flex gap={buttons.length > 2 ? 'small' : 'middle'} wrap className="button-group">
         {buttons.map(button => button)}
       </Flex>
     </div>

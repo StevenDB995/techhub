@@ -3,7 +3,9 @@ const { successResponse, errorResponse } = require('../utils/response');
 
 exports.getAllBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find({}).sort({ createdAt: -1 });
+    const blogs = await Blog
+      .find({ status: 'public' })
+      .sort({ createdAt: -1 });
     return successResponse(res, blogs);
   } catch (err) {
     console.error(err);
@@ -26,10 +28,12 @@ exports.getBlogById = async (req, res) => {
 
 exports.createBlog = async (req, res) => {
   try {
-    const { title, previewText, content } = req.body;
-    const blog = new Blog({ title, previewText, content });
-    await blog.save();
-    return successResponse(res, {}, 'Blog posted successfully!', 201);
+    const blog = req.body;
+    blog.createdAt = Date.now();
+    blog.updatedAt = Date.now();
+    const blogModel = new Blog(blog);
+    await blogModel.save();
+    return successResponse(res, {}, 'Blog created successfully!', 201);
   } catch (err) {
     console.error(err);
     return errorResponse(res, 'Error creating blog');
@@ -39,11 +43,8 @@ exports.createBlog = async (req, res) => {
 exports.updateBlogById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, previewText, content } = req.body;
     const updatedBlog = await Blog.findByIdAndUpdate(id, {
-      title,
-      previewText,
-      content,
+      ...req.body,
       updatedAt: Date.now()
     }, { new: true });
 

@@ -5,7 +5,12 @@ const blogSchema = new mongoose.Schema({
   previewText: { type: String },
   content: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now }
+  updatedAt: { type: Date, default: Date.now },
+  status: {
+    type: String,
+    enum: ['public', 'draft', 'deleted'],
+    required: true
+  }
 });
 
 // Create a model based on the schema

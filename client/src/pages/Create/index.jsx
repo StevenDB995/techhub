@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { createBlog } from '../../api/services/blogService';
 import CherryEditor from '../../components/CherryEditor';
 import route from '../../route';
-import { extractPreviewText, extractTitle } from '../../utils/mdUtil';
+import { extractMetaData } from '../../utils/mdUtil';
 
 const markdownTemplate = `# Title
 ## Heading 2
@@ -16,6 +16,7 @@ function Create() {
   const [inputValue, setInputValue] = useState('');
   const [html, setHtml] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
   const [success, setSuccess] = useState(null);
 
   const navigate = useNavigate();
@@ -25,17 +26,32 @@ function Create() {
     setHtml(html);
   };
 
-  const handlePost = async () => {
-    const title = extractTitle(inputValue);
-    const previewText = extractPreviewText(html);
-    const response = await createBlog({ title, previewText, content: inputValue });
-    const responseBody = response.data;
+  const _handleSubmit = async (status, successMessage) => {
+    // status: the new blog status to be set
+    try {
+      const { title, previewText } = extractMetaData(html);
+      const response = await createBlog({
+        title,
+        previewText,
+        content: inputValue,
+        status
+      });
+      const responseBody = response.data;
+      setSuccess(responseBody.success);
+      setModalMessage(responseBody.success ? successMessage : 'Error saving changes');
+    } catch (err) {
+      setSuccess(false);
+      setModalMessage(err.message);
+    }
     setIsModalOpen(true);
-    setSuccess(responseBody.success);
+  };
+
+  const handlePost = () => {
+    void _handleSubmit('public', 'Blog published successfully!');
   };
 
   const handleSaveAsDraft = () => {
-    // TODO: implement handleSaveAsDraft
+    void _handleSubmit('draft', 'Draft saved!');
   };
 
   const handleCancel = () => {
@@ -51,8 +67,8 @@ function Create() {
   };
 
   const buttons = [
-    <Button key="cancel" type="default" size="large" danger onClick={handleCancel}>Cancel</Button>,
-    <Button key="draft" type="default" size="large" onClick={handleSaveAsDraft}>Save as Draft</Button>,
+    <Button key="cancel" size="large" danger onClick={handleCancel}>Cancel</Button>,
+    <Button key="draft" size="large" onClick={handleSaveAsDraft}>Save as Draft</Button>,
     <Button
       key="post" type="primary" size="large"
       onClick={handlePost}
@@ -68,7 +84,6 @@ function Create() {
         value={markdownTemplate}
         onChange={handleInputChange}
         buttons={buttons}
-        buttonGap="small"
       />
       <Modal
         open={isModalOpen}
@@ -79,15 +94,7 @@ function Create() {
           <Button key="ok" type="primary" onClick={handleModalClose}>OK</Button>
         ]}
       >
-        {success ?
-          <Result
-            status="success"
-            title="Blog posted successfully!"
-          /> :
-          <Result
-            status="error"
-            title="Error creating blog"
-          />}
+        <Result status={success ? 'success' : 'error'} title={modalMessage} />
       </Modal>
     </>
   );

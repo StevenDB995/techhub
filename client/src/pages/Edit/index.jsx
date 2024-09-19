@@ -7,13 +7,14 @@ import Loading from '../../components/CherryEditor/Loading';
 import Error from '../../components/Error';
 import useFetch from '../../hooks/useFetch';
 import route from '../../route';
-import { extractPreviewText, extractTitle } from '../../utils/mdUtil';
+import { extractMetaData } from '../../utils/mdUtil';
 
 function Edit() {
   const { blogId } = useParams();
   const [inputValue, setInputValue] = useState('');
   const [html, setHtml] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
   const [success, setSuccess] = useState(null);
   const { data: blog, loading, error } = useFetch(() => getBlogById(blogId));
 
@@ -24,13 +25,36 @@ function Edit() {
     setHtml(html);
   };
 
-  const handleSave = async () => {
-    const title = extractTitle(inputValue);
-    const previewText = extractPreviewText(html);
-    const response = await updateBlogById(blogId, { title, previewText, content: inputValue });
-    const responseBody = response.data;
+  const _handleSubmit = async (status, successMessage) => {
+    // status: the new blog status to be set
+    try {
+      const { title, previewText } = extractMetaData(html);
+      const response = await updateBlogById(blogId, {
+        title,
+        previewText,
+        content: inputValue,
+        status
+      });
+      const responseBody = response.data;
+      setSuccess(responseBody.success);
+      setModalMessage(responseBody.success ? successMessage : 'Error saving changes');
+    } catch (err) {
+      setSuccess(false);
+      setModalMessage(err.message);
+    }
     setIsModalOpen(true);
-    setSuccess(responseBody.success);
+  };
+
+  const handleSave = () => {
+    void _handleSubmit('public', 'All update saved!');
+  };
+
+  const handleSaveAsDraft = () => {
+    void _handleSubmit('draft', 'Draft saved!');
+  };
+
+  const handlePost = () => {
+    void _handleSubmit('public', 'Blog published successfully!');
   };
 
   const handleCancel = () => {
@@ -45,8 +69,8 @@ function Edit() {
     }
   };
 
-  const buttons = [
-    <Button key="cancel" type="default" size="large" danger onClick={handleCancel}>Cancel</Button>,
+  const publicButtons = [
+    <Button key="cancel" size="large" danger onClick={handleCancel}>Cancel</Button>,
     <Button
       key="save" type="primary" size="large"
       onClick={handleSave}
@@ -57,6 +81,19 @@ function Edit() {
     </Button>
   ];
 
+  const draftButtons = [
+    <Button key="cancel" size="large" danger onClick={handleCancel}>Cancel</Button>,
+    <Button
+      key="saveAsDraft" size="large"
+      onClick={handleSaveAsDraft}
+      // cannot save if the content is empty or unchanged
+      disabled={inputValue.trim() === '' || inputValue === blog.content}
+    >
+      Save As Draft
+    </Button>,
+    <Button key="post" type="primary" size="large" onClick={handlePost}>Post</Button>
+  ];
+
   return (
     error ?
       <Error status={error.status} message={error.message} /> :
@@ -65,8 +102,7 @@ function Edit() {
           <CherryEditor
             value={blog.content}
             onChange={handleInputChange}
-            buttons={buttons}
-            buttonGap="middle"
+            buttons={blog.status === 'public' ? publicButtons : draftButtons}
           />
           <Modal
             open={isModalOpen}
@@ -77,15 +113,7 @@ function Edit() {
               <Button key="ok" type="primary" onClick={handleModalClose}>OK</Button>
             ]}
           >
-            {success ?
-              <Result
-                status="success"
-                title="Blog updated successfully!"
-              /> :
-              <Result
-                status="error"
-                title="Error updating blog"
-              />}
+            <Result status={success ? 'success' : 'error'} title={modalMessage} />
           </Modal>
         </>)
   );
