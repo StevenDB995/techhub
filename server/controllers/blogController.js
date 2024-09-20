@@ -1,11 +1,23 @@
 const Blog = require('../models/blogModel');
 const { successResponse, errorResponse } = require('../utils/response');
 
-exports.getBlogsByFilter = async (req, res) => {
+exports.getPublicBlogs = async (req, res) => {
+  try {
+    const blogs = await Blog
+      .find({ status: 'public' })
+      .sort({ createdAt: -1 });
+    return successResponse(res, blogs);
+  } catch (err) {
+    console.error(err);
+    return errorResponse(res, 'Error fetching blogs');
+  }
+}
+
+exports.getBlogsByStatus = async (req, res) => {
   try {
     const status = req.query.status || 'public';
     const blogs = await Blog
-      .find({ status: status })
+      .find({ status })
       .sort({ createdAt: -1 });
     return successResponse(res, blogs);
   } catch (err) {
