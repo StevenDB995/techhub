@@ -1,7 +1,11 @@
 import api from '../api';
 
-export const getAllBlogs = async () => {
-  return await api.get('/blogs');
+export const getPublicBlogs = async () => {
+  return await api.get('/blogs/public');
+}
+
+export const getBlogsByStatus = async (params) => {
+  return await api.get('/blogs', { params });
 }
 
 export const getBlogById = async (id) => {
@@ -14,4 +18,8 @@ export const createBlog = async (blog) => {
 
 export const updateBlogById = async (id, blog) => {
   return await api.patch(`/blogs/${id}`, blog);
+}
+
+export const deleteBlogById = async (id) => {
+  return await api.delete(`/blogs/${id}`);
 }

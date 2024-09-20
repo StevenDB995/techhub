@@ -8,7 +8,8 @@ import About from './pages/About';
 import Create from './pages/Create';
 import Edit from './pages/Edit';
 import Home from './pages/Home';
-import route from './route';
+import MyDrafts from './pages/MyDrafts';
+import routes from './routes';
 import './index.css';
 
 const router = createBrowserRouter([
@@ -17,20 +18,28 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: route.home,
+        path: routes.home,
         element: <Home />
       },
       {
-        path: route.create,
+        path: routes.blogs,
+        element: <Home />
+      },
+      {
+        path: routes.about,
+        element: <About />
+      },
+      {
+        path: routes.create,
         element: <Create />
       },
       {
-        path: `${route.edit}/:blogId`,
+        path: `${routes.edit}/:blogId`,
         element: <Edit />
       },
       {
-        path: route.about,
-        element: <About />
+        path: routes.drafts,
+        element: <MyDrafts />
       }
     ]
   }

@@ -1,9 +1,24 @@
 const Blog = require('../models/blogModel');
 const { successResponse, errorResponse } = require('../utils/response');
 
-exports.getAllBlogs = async (req, res) => {
+exports.getPublicBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find({}).sort({ createdAt: -1 });
+    const blogs = await Blog
+      .find({ status: 'public' })
+      .sort({ createdAt: -1 });
+    return successResponse(res, blogs);
+  } catch (err) {
+    console.error(err);
+    return errorResponse(res, 'Error fetching blogs');
+  }
+}
+
+exports.getBlogsByStatus = async (req, res) => {
+  try {
+    const status = req.query.status || 'public';
+    const blogs = await Blog
+      .find({ status })
+      .sort({ createdAt: -1 });
     return successResponse(res, blogs);
   } catch (err) {
     console.error(err);
@@ -26,10 +41,12 @@ exports.getBlogById = async (req, res) => {
 
 exports.createBlog = async (req, res) => {
   try {
-    const { title, previewText, content } = req.body;
-    const blog = new Blog({ title, previewText, content });
-    await blog.save();
-    return successResponse(res, {}, 'Blog posted successfully!', 201);
+    const blog = req.body;
+    blog.createdAt = Date.now();
+    blog.updatedAt = Date.now();
+    const blogModel = new Blog(blog);
+    await blogModel.save();
+    return successResponse(res, {}, 'Blog created successfully!', 201);
   } catch (err) {
     console.error(err);
     return errorResponse(res, 'Error creating blog');
@@ -39,11 +56,8 @@ exports.createBlog = async (req, res) => {
 exports.updateBlogById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, previewText, content } = req.body;
     const updatedBlog = await Blog.findByIdAndUpdate(id, {
-      title,
-      previewText,
-      content,
+      ...req.body,
       updatedAt: Date.now()
     }, { new: true });
 
@@ -55,5 +69,24 @@ exports.updateBlogById = async (req, res) => {
   } catch (err) {
     console.error(err);
     return errorResponse(res, 'Error updating blog');
+  }
+};
+
+exports.deleteBlogById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const softDeletedBlog = await Blog.findByIdAndUpdate(id, {
+      status: 'deleted',
+      deletedAt: Date.now()
+    }, { new: true });
+
+    if (softDeletedBlog) {
+      return successResponse(res, {}, 'Blog deleted successfully!');
+    } else {
+      return errorResponse(res, 'Blog not found', 404);
+    }
+  } catch (err) {
+    console.error(err);
+    return errorResponse(res, 'Error deleting blog');
   }
 };

@@ -1,10 +1,11 @@
 import { Button, Modal, Result } from 'antd';
+import useModal from 'antd/es/modal/useModal';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createBlog } from '../../api/services/blogService';
 import CherryEditor from '../../components/CherryEditor';
-import route from '../../route';
-import { extractPreviewText, extractTitle } from '../../utils/mdUtil';
+import routes from '../../routes';
+import { extractMetaData } from '../../utils/mdUtil';
 
 const markdownTemplate = `# Title
 ## Heading 2
@@ -15,8 +16,12 @@ If you know, you know ;)`;
 function Create() {
   const [inputValue, setInputValue] = useState('');
   const [html, setHtml] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState('');
   const [success, setSuccess] = useState(null);
+
+  const [cancelModal, cancelModalContext] = useModal();
 
   const navigate = useNavigate();
 
@@ -25,34 +30,60 @@ function Create() {
     setHtml(html);
   };
 
-  const handlePost = async () => {
-    const title = extractTitle(inputValue);
-    const previewText = extractPreviewText(html);
-    const response = await createBlog({ title, previewText, content: inputValue });
-    const responseBody = response.data;
-    setIsModalOpen(true);
-    setSuccess(responseBody.success);
+  const handleSubmit = async (status, successMessage) => {
+    // status: the new blog status to be set
+    try {
+      const { title, previewText } = extractMetaData(html);
+      const response = await createBlog({
+        title,
+        previewText,
+        content: inputValue,
+        status
+      });
+      const responseBody = response.data;
+      setSuccess(responseBody.success);
+      setFeedbackMessage(responseBody.success ? successMessage : 'Error saving changes');
+    } catch (err) {
+      setSuccess(false);
+      setFeedbackMessage(err.message);
+    }
+    setFeedbackModalOpen(true);
+  };
+
+  const handlePost = () => {
+    void handleSubmit('public', 'Blog published successfully!');
   };
 
   const handleSaveAsDraft = () => {
-    // TODO: implement handleSaveAsDraft
+    void handleSubmit('draft', 'Draft saved!');
   };
 
   const handleCancel = () => {
-    // TODO: implement handleCancel
+    cancelModal.confirm({
+      title: 'Quit Editing',
+      content: 'Your current progress will be lost. Are you sure?',
+      centered: true,
+      okText: 'Keep Editing',
+      cancelText: 'Quit',
+      cancelButtonProps: {
+        type: 'primary',
+        danger: true
+      },
+      onCancel: () => navigate(routes.home)
+    });
   };
 
-  const handleModalClose = () => {
+  const handleFeedbackModalClose = () => {
     if (success) {
-      navigate(route.home);
+      navigate(routes.home);
     } else {
-      setIsModalOpen(false);
+      setFeedbackModalOpen(false);
     }
   };
 
   const buttons = [
-    <Button key="cancel" type="default" size="large" danger onClick={handleCancel}>Cancel</Button>,
-    <Button key="draft" type="default" size="large" onClick={handleSaveAsDraft}>Save as Draft</Button>,
+    <Button key="cancel" size="large" danger onClick={handleCancel}>Cancel</Button>,
+    <Button key="draft" size="large" onClick={handleSaveAsDraft}>Save as Draft</Button>,
     <Button
       key="post" type="primary" size="large"
       onClick={handlePost}
@@ -68,27 +99,18 @@ function Create() {
         value={markdownTemplate}
         onChange={handleInputChange}
         buttons={buttons}
-        buttonGap="small"
       />
       <Modal
-        open={isModalOpen}
-        afterClose={handleModalClose}
+        open={feedbackModalOpen}
         closable={false}
         centered={true}
         footer={[
-          <Button key="ok" type="primary" onClick={handleModalClose}>OK</Button>
+          <Button key="ok" type="primary" onClick={handleFeedbackModalClose}>OK</Button>
         ]}
       >
-        {success ?
-          <Result
-            status="success"
-            title="Blog posted successfully!"
-          /> :
-          <Result
-            status="error"
-            title="Error creating blog"
-          />}
+        <Result status={success ? 'success' : 'error'} title={feedbackMessage} />
       </Modal>
+      {cancelModalContext}
     </>
   );
 }

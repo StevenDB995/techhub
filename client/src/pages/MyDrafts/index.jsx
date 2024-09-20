@@ -1,10 +1,10 @@
-import { getPublicBlogs } from '../../api/services/blogService';
+import { getBlogsByStatus } from '../../api/services/blogService';
 import BlogList from '../../components/BlogList';
 import Error from '../../components/Error';
 import useFetch from '../../hooks/useFetch';
 
-function Home() {
-  const { data, setData, loading, error } = useFetch(getPublicBlogs);
+function MyDrafts() {
+  const { data, setData, loading, error } = useFetch(getBlogsByStatus, { status: 'draft' });
   return (
     error ?
       <Error status={error.status} message={error.message} /> :
@@ -12,4 +12,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default MyDrafts;

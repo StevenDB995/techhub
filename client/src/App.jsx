@@ -1,25 +1,35 @@
 import { FormOutlined, InboxOutlined } from '@ant-design/icons';
 import { Col, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import route from './route';
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import routes from './routes';
 import './App.css';
 
 const { Header, Content, Footer } = Layout;
 
+// pages that do not display the header
+const nonHeaderPages = [routes.create, routes.edit];
+
 function App() {
-  // pages that display the header
-  const headerPages = [route.home, route.about];
   const location = useLocation();
-  const navigate = useNavigate();
+  const shouldDisplayHeader = !nonHeaderPages.some((key) => location.pathname.startsWith(key));
+
+  const getSelectedKey = () => {
+    if (location.pathname.startsWith(routes.blogs) ||
+      location.pathname.startsWith(routes.drafts) ||
+      location.pathname === routes.home) {
+      return routes.blogs;
+    }
+    return location.pathname;
+  };
 
   const navItems = [
     {
-      label: <Link to={route.home}>Home</Link>,
-      key: route.home
+      label: <Link to={routes.blogs}>Blogs</Link>,
+      key: routes.blogs
     },
     {
-      label: <Link to={route.about}>About</Link>,
-      key: route.about
+      label: <Link to={routes.about}>About</Link>,
+      key: routes.about
     }
   ];
 
@@ -27,35 +37,35 @@ function App() {
     items: [
       {
         label: (
-          <Link to={route.create}>
+          <Link to={routes.create}>
             <Space>
               <FormOutlined />New Blog
             </Space>
           </Link>
         ),
-        key: route.create
+        key: routes.create
       },
       {
         label: (
-          <Link to={route.home}>
+          <Link to={routes.drafts}>
             <Space>
               <InboxOutlined />My Drafts
             </Space>
           </Link>
         ),
-        key: route.home
+        key: routes.drafts
       }
     ]
   };
 
   return (
     <Layout className="app">
-      {headerPages.includes(location.pathname) && <Header className="app-header">
+      {shouldDisplayHeader && <Header className="app-header">
         <Flex flex="max-content" justify="space-between" align="center">
           <Menu
             theme="dark"
             mode="horizontal"
-            defaultSelectedKeys={[location.pathname]}
+            selectedKeys={[getSelectedKey()]}
             items={navItems}
             className="left"
           />
@@ -63,9 +73,8 @@ function App() {
             <Dropdown.Button
               type="primary"
               menu={dropdownMenuProps}
-              onClick={() => navigate(route.create)}
             >
-              Create
+              <Link to={routes.create}>Create</Link>
             </Dropdown.Button>
           </div>
         </Flex>
@@ -74,7 +83,7 @@ function App() {
         <Row justify="center">
           <Col
             span={24}
-            lg={headerPages.includes(location.pathname) ? 16 : undefined}
+            lg={shouldDisplayHeader ? 16 : undefined}
             className="display"
           >
             <Outlet />
