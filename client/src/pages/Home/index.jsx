@@ -4,11 +4,11 @@ import Error from '../../components/Error';
 import useFetch from '../../hooks/useFetch';
 
 function Home() {
-  const { data, loading, error } = useFetch(getPublicBlogs);
+  const { data, setData, loading, error } = useFetch(getPublicBlogs);
   return (
     error ?
       <Error status={error.status} message={error.message} /> :
-      <BlogList data={data} loading={loading} />
+      <BlogList data={data} setData={setData} loading={loading} />
   );
 }
 

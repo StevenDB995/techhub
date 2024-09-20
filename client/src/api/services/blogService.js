@@ -19,3 +19,7 @@ export const createBlog = async (blog) => {
 export const updateBlogById = async (id, blog) => {
   return await api.patch(`/blogs/${id}`, blog);
 }
+
+export const deleteBlogById = async (id) => {
+  return await api.delete(`/blogs/${id}`);
+}

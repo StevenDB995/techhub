@@ -6,6 +6,7 @@ const blogSchema = new mongoose.Schema({
   content: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+  deletedAt: { type: Date  },
   status: {
     type: String,
     enum: ['public', 'draft', 'deleted'],

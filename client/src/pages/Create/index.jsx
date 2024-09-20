@@ -87,7 +87,6 @@ function Create() {
       />
       <Modal
         open={isModalOpen}
-        afterClose={handleModalClose}
         closable={false}
         centered={true}
         footer={[

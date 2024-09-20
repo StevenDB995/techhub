@@ -71,3 +71,22 @@ exports.updateBlogById = async (req, res) => {
     return errorResponse(res, 'Error updating blog');
   }
 };
+
+exports.deleteBlogById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const softDeletedBlog = await Blog.findByIdAndUpdate(id, {
+      status: 'deleted',
+      deletedAt: Date.now()
+    }, { new: true });
+
+    if (softDeletedBlog) {
+      return successResponse(res, {}, 'Blog deleted successfully!');
+    } else {
+      return errorResponse(res, 'Blog not found', 404);
+    }
+  } catch (err) {
+    console.error(err);
+    return errorResponse(res, 'Error deleting blog');
+  }
+};

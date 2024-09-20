@@ -26,7 +26,7 @@ const useFetch = (apiFunc, ...params) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { data, loading, error };
+  return { data, setData, loading, error };
 };
 
 export default useFetch;
