@@ -1,14 +1,16 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Divider, Flex, List, Space, Typography } from 'antd';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import routes from '../../routes';
 import { getDateString } from '../../utils/dateUtil';
-import { openInNewTab } from '../../utils/navigateUtil';
 import styles from './BlogList.module.css';
 
 const { Paragraph } = Typography;
 
 function ListItem({ data }) {
+  const navigate = useNavigate();
+
   let previewText = data.previewText;
   if (previewText && (previewText.slice(-1) !== '.')) {
     previewText += ' ...';
@@ -34,7 +36,7 @@ function ListItem({ data }) {
             text="Edit"
             size={6}
             onClick={() => {
-              openInNewTab(`${routes.edit}/${data._id}`);
+              navigate(`${routes.edit}/${data._id}`);
             }}
           />
           <ListFooterItem className={styles.clickable} icon={DeleteOutlined} text="Delete" size={6} />

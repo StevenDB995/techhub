@@ -1,7 +1,6 @@
 import { FormOutlined, InboxOutlined } from '@ant-design/icons';
 import { Col, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import NewTabLink from './components/NewTabLink';
 import routes from './routes';
 import './App.css';
 
@@ -38,11 +37,11 @@ function App() {
     items: [
       {
         label: (
-          <NewTabLink to={routes.create}>
+          <Link to={routes.create}>
             <Space>
               <FormOutlined />New Blog
             </Space>
-          </NewTabLink>
+          </Link>
         ),
         key: routes.create
       },
@@ -75,7 +74,7 @@ function App() {
               type="primary"
               menu={dropdownMenuProps}
             >
-              <NewTabLink to={routes.create}>Create</NewTabLink>
+              <Link to={routes.create}>Create</Link>
             </Dropdown.Button>
           </div>
         </Flex>
