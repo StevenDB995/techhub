@@ -1,4 +1,5 @@
 import { Button, Modal, Result } from 'antd';
+import useModal from 'antd/es/modal/useModal';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getBlogById, updateBlogById } from '../../api/services/blogService';
@@ -11,12 +12,16 @@ import { extractMetaData } from '../../utils/mdUtil';
 
 function Edit() {
   const { blogId } = useParams();
+  const { data: blog, loading, error } = useFetch(getBlogById, blogId);
+
   const [inputValue, setInputValue] = useState('');
   const [html, setHtml] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
+
+  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState('');
   const [success, setSuccess] = useState(null);
-  const { data: blog, loading, error } = useFetch(getBlogById, blogId);
+
+  const [cancelModal, cancelModalContext] = useModal();
 
   const navigate = useNavigate();
 
@@ -25,7 +30,7 @@ function Edit() {
     setHtml(html);
   };
 
-  const _handleSubmit = async (status, successMessage) => {
+  const handleSubmit = async (status, successMessage) => {
     // status: the new blog status to be set
     try {
       const { title, previewText } = extractMetaData(html);
@@ -38,35 +43,46 @@ function Edit() {
       });
       const responseBody = response.data;
       setSuccess(responseBody.success);
-      setModalMessage(responseBody.success ? successMessage : 'Error saving changes');
+      setFeedbackMessage(responseBody.success ? successMessage : 'Error saving changes');
     } catch (err) {
       setSuccess(false);
-      setModalMessage(err.message);
+      setFeedbackMessage(err.message);
     }
-    setIsModalOpen(true);
+    setFeedbackModalOpen(true);
   };
 
   const handleSave = () => {
-    void _handleSubmit('public', 'All update saved!');
+    void handleSubmit('public', 'All update saved!');
   };
 
   const handleSaveAsDraft = () => {
-    void _handleSubmit('draft', 'Draft saved!');
+    void handleSubmit('draft', 'Draft saved!');
   };
 
   const handlePost = () => {
-    void _handleSubmit('public', 'Blog published successfully!');
+    void handleSubmit('public', 'Blog published successfully!');
   };
 
   const handleCancel = () => {
-    // TODO: implement handleCancel
+    cancelModal.confirm({
+      title: 'Quit Editing',
+      content: 'Your current progress will be lost. Are you sure?',
+      centered: true,
+      okText: 'Keep Editing',
+      cancelText: 'Quit',
+      cancelButtonProps: {
+        type: 'primary',
+        danger: true
+      },
+      onCancel: () => navigate(routes.home)
+    });
   };
 
   const handleModalClose = () => {
     if (success) {
       navigate(routes.home);
     } else {
-      setIsModalOpen(false);
+      setFeedbackModalOpen(false);
     }
   };
 
@@ -106,7 +122,7 @@ function Edit() {
             buttons={blog.status === 'public' ? publicButtons : draftButtons}
           />
           <Modal
-            open={isModalOpen}
+            open={feedbackModalOpen}
             afterClose={handleModalClose}
             closable={false}
             centered={true}
@@ -114,8 +130,9 @@ function Edit() {
               <Button key="ok" type="primary" onClick={handleModalClose}>OK</Button>
             ]}
           >
-            <Result status={success ? 'success' : 'error'} title={modalMessage} />
+            <Result status={success ? 'success' : 'error'} title={feedbackMessage} />
           </Modal>
+          {cancelModalContext}
         </>)
   );
 }

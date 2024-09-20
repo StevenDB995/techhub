@@ -73,14 +73,14 @@ function BlogList({ data, setData, loading }) {
       content: 'Are you sure?',
       okText: 'Delete',
       okButtonProps: {
-        type: 'primary',
         danger: true
       },
+      autoFocusButton: null,
       onOk: () => handleBlogDelete(blogId)
     });
   };
 
-  const feedbackDelete = (success) => {
+  const feedbackDelete = (success, errorMessage) => {
     if (success) {
       feedbackModal.success({
         title: 'Success',
@@ -90,7 +90,7 @@ function BlogList({ data, setData, loading }) {
     } else {
       feedbackModal.error({
         title: 'Error',
-        content: 'Error deleting blog',
+        content: errorMessage || 'Error deleting blog',
         cancelButtonProps: { style: { display: 'none' } }
       });
     }
@@ -102,9 +102,8 @@ function BlogList({ data, setData, loading }) {
       const resBody = response.data;
       feedbackDelete(resBody.success);
       setData(data.filter(blog => blog._id !== blogId));
-    } catch (error) {
-      feedbackDelete(false);
-      console.error(error);
+    } catch (err) {
+      feedbackDelete(false, err.message);
     }
   };
 
