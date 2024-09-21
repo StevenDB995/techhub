@@ -1,9 +1,7 @@
-import { Button, Modal, Result } from 'antd';
-import useModal from 'antd/es/modal/useModal';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createBlog } from '../../api/services/blogService';
 import CherryEditor from '../../components/CherryEditor';
+import useFeedbackModal from '../../hooks/modals/useFeedbackModal';
 import routes from '../../routes';
 import { extractMetaData } from '../../utils/mdUtil';
 
@@ -14,23 +12,10 @@ Paragraph here
 If you know, you know ;)`;
 
 function Create() {
-  const [inputValue, setInputValue] = useState('');
-  const [html, setHtml] = useState('');
-
-  const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState('');
-  const [success, setSuccess] = useState(null);
-
-  const [cancelModal, cancelModalContext] = useModal();
-
+  const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
   const navigate = useNavigate();
 
-  const handleInputChange = (text, html) => {
-    setInputValue(text);
-    setHtml(html);
-  };
-
-  const handleSubmit = async (status, successMessage) => {
+  const handleSubmit = async (inputValue, html, status, successMessage) => {
     // status: the new blog status to be set
     try {
       const { title, previewText } = extractMetaData(html);
@@ -40,77 +25,42 @@ function Create() {
         content: inputValue,
         status
       });
-      const responseBody = response.data;
-      setSuccess(responseBody.success);
-      setFeedbackMessage(responseBody.success ? successMessage : 'Error saving changes');
+      const resBody = response.data;
+      const message = resBody.success ? successMessage : 'Error saving changes';
+      showFeedbackModal(resBody.success, message);
     } catch (err) {
-      setSuccess(false);
-      setFeedbackMessage(err.message);
-    }
-    setFeedbackModalOpen(true);
-  };
-
-  const handlePost = () => {
-    void handleSubmit('public', 'Blog published successfully!');
-  };
-
-  const handleSaveAsDraft = () => {
-    void handleSubmit('draft', 'Draft saved!');
-  };
-
-  const handleCancel = () => {
-    cancelModal.confirm({
-      title: 'Quit Editing',
-      content: 'Your current progress will be lost. Are you sure?',
-      centered: true,
-      okText: 'Keep Editing',
-      cancelText: 'Quit',
-      cancelButtonProps: {
-        type: 'primary',
-        danger: true
-      },
-      onCancel: () => navigate(routes.home)
-    });
-  };
-
-  const handleFeedbackModalClose = () => {
-    if (success) {
-      navigate(routes.home);
-    } else {
-      setFeedbackModalOpen(false);
+      showFeedbackModal(false, err.message);
     }
   };
 
-  const buttons = [
-    <Button key="cancel" size="large" danger onClick={handleCancel}>Cancel</Button>,
-    <Button key="draft" size="large" onClick={handleSaveAsDraft}>Save as Draft</Button>,
-    <Button
-      key="post" type="primary" size="large"
-      onClick={handlePost}
-      disabled={inputValue.trim() === ''}
-    >
-      Post
-    </Button>
+  const handlePost = (inputValue, html) => {
+    void handleSubmit(inputValue, html, 'public', 'Blog published successfully!');
+  };
+
+  const handleSaveAsDraft = (inputValue, html) => {
+    void handleSubmit(inputValue, html, 'draft', 'Draft saved!');
+  };
+
+  const buttonPropsList = [
+    {
+      text: 'Save As Draft',
+      submitCallback: handleSaveAsDraft
+    },
+    {
+      text: 'Post',
+      type: 'primary',
+      submitCallback: handlePost,
+      isDisabledCallback: inputValue => inputValue.trim() === ''
+    }
   ];
 
   return (
     <>
       <CherryEditor
         value={markdownTemplate}
-        onChange={handleInputChange}
-        buttons={buttons}
+        buttonPropsList={buttonPropsList}
       />
-      <Modal
-        open={feedbackModalOpen}
-        closable={false}
-        centered={true}
-        footer={[
-          <Button key="ok" type="primary" onClick={handleFeedbackModalClose}>OK</Button>
-        ]}
-      >
-        <Result status={success ? 'success' : 'error'} title={feedbackMessage} />
-      </Modal>
-      {cancelModalContext}
+      <FeedbackModal successCallback={() => navigate(routes.home)} />
     </>
   );
 }
