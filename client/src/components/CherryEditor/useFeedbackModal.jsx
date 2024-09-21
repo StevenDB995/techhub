@@ -12,21 +12,21 @@ const useFeedbackModal = () => {
     setOpen(true);
   };
 
-  const handleClose = (successCallback, errorCallback) => {
+  const handleClose = (onSuccess, onError) => {
     setOpen(false);
     if (success) {
-      successCallback && successCallback();
+      onSuccess && onSuccess();
     } else {
-      errorCallback && errorCallback();
+      onError && onError();
     }
   };
 
-  const FeedbackModal = ({ successCallback, errorCallback }) => (
+  const FeedbackModal = ({ onSuccess, onError }) => (
     <Modal
       open={open}
       centered={true}
       closable={false}
-      onOk={() => handleClose(successCallback, errorCallback)}
+      onOk={() => handleClose(onSuccess, onError)}
       cancelButtonProps={{ style: { display: 'none' } }}
     >
       <Result status={success ? 'success' : 'error'} title={message} />

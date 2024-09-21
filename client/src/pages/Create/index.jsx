@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { createBlog } from '../../api/services/blogService';
 import CherryEditor from '../../components/CherryEditor';
-import useFeedbackModal from '../../hooks/useFeedbackModal';
+import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
 import routes from '../../routes';
 import { extractMetaData } from '../../utils/mdUtil';
 
@@ -44,13 +44,13 @@ function Create() {
   const buttonPropsList = [
     {
       text: 'Save As Draft',
-      submitCallback: handleSaveAsDraft
+      onSubmit: handleSaveAsDraft
     },
     {
       text: 'Post',
       type: 'primary',
-      submitCallback: handlePost,
-      isDisabledCallback: inputValue => inputValue.trim() === ''
+      onSubmit: handlePost,
+      isDisabled: inputValue => inputValue.trim() === ''
     }
   ];
 
@@ -60,7 +60,7 @@ function Create() {
         value={markdownTemplate}
         buttonPropsList={buttonPropsList}
       />
-      <FeedbackModal successCallback={() => navigate(routes.home)} />
+      <FeedbackModal onSuccess={() => navigate(routes.home)} />
     </>
   );
 }

@@ -94,8 +94,8 @@ function CherryEditor({ value, buttonPropsList }) {
               key={index}
               size="large"
               type={buttonProps.type}
-              onClick={() => buttonProps.submitCallback(inputValue, html)}
-              disabled={buttonProps.isDisabledCallback && buttonProps.isDisabledCallback(inputValue)}
+              onClick={() => buttonProps.onSubmit(inputValue, html)}
+              disabled={buttonProps.isDisabled && buttonProps.isDisabled(inputValue)}
             >
               {buttonProps.text}
             </Button>

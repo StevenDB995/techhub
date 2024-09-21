@@ -3,7 +3,7 @@ import { getBlogById, updateBlogById } from '../../api/services/blogService';
 import CherryEditor from '../../components/CherryEditor';
 import Loading from '../../components/CherryEditor/Loading';
 import Error from '../../components/Error';
-import useFeedbackModal from '../../hooks/useFeedbackModal';
+import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
 import useFetch from '../../hooks/useFetch';
 import routes from '../../routes';
 import { extractMetaData } from '../../utils/mdUtil';
@@ -51,21 +51,21 @@ function Edit() {
     {
       text: 'Save',
       type: 'primary',
-      submitCallback: handleSave,
-      isDisabledCallback: isDisabled
+      onSubmit: handleSave,
+      isDisabled: isDisabled
     }
   ];
 
   const draftButtons = [
     {
       text: 'Save As Draft',
-      submitCallback: handleSaveAsDraft,
-      isDisabledCallback: isDisabled
+      onSubmit: handleSaveAsDraft,
+      isDisabled: isDisabled
     },
     {
       text: 'Post',
       type: 'primary',
-      submitCallback: handlePost
+      onSubmit: handlePost
     }
   ];
 
@@ -78,7 +78,7 @@ function Edit() {
             value={blog.content}
             buttonPropsList={blog.status === 'public' ? publicButtons : draftButtons}
           />
-          <FeedbackModal successCallback={() => navigate(routes.home)} />
+          <FeedbackModal onSuccess={() => navigate(routes.home)} />
         </>)
   );
 }
