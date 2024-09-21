@@ -2,10 +2,11 @@ import { Button, Flex } from 'antd';
 import useModal from 'antd/es/modal/useModal';
 import Cherry from 'cherry-markdown';
 import { useEffect, useRef, useState } from 'react';
-import 'cherry-markdown/dist/cherry-markdown.css';
-import './CherryEditor.css';
 import { useNavigate } from 'react-router-dom';
 import routes from '../../routes';
+import Loading from './Loading';
+import 'cherry-markdown/dist/cherry-markdown.css';
+import './CherryEditor.css';
 
 const cherryConfig = {
   id: 'cherry-editor',
@@ -50,12 +51,19 @@ function CherryEditor({ value, buttonPropsList }) {
   const cherryInstance = useRef(null);
   const [inputValue, setInputValue] = useState('');
   const [html, setHtml] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const [cancelModal, cancelModalContext] = useModal();
   const navigate = useNavigate();
 
   const handleInputChange = (text, html) => {
     setInputValue(text);
     setHtml(html);
+  };
+
+  const handleSubmit = async (onSubmit) => {
+    setSubmitting(true);
+    await onSubmit(inputValue, html);
+    setSubmitting(false);
   };
 
   const handleCancel = () => {
@@ -94,7 +102,7 @@ function CherryEditor({ value, buttonPropsList }) {
               key={index}
               size="large"
               type={buttonProps.type}
-              onClick={() => buttonProps.onSubmit(inputValue, html)}
+              onClick={() => handleSubmit(buttonProps.onSubmit)}
               disabled={buttonProps.isDisabled && buttonProps.isDisabled(inputValue)}
             >
               {buttonProps.text}
@@ -102,6 +110,7 @@ function CherryEditor({ value, buttonPropsList }) {
           ))}
         </Flex>
       </div>
+      <Loading display={submitting} />
       {cancelModalContext}
     </>
   );

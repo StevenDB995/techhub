@@ -33,12 +33,12 @@ function Create() {
     }
   };
 
-  const handlePost = (inputValue, html) => {
-    void handleSubmit(inputValue, html, 'public', 'Blog published successfully!');
+  const handlePost = async (inputValue, html) => {
+    await handleSubmit(inputValue, html, 'public', 'Blog published successfully!');
   };
 
-  const handleSaveAsDraft = (inputValue, html) => {
-    void handleSubmit(inputValue, html, 'draft', 'Draft saved!');
+  const handleSaveAsDraft = async (inputValue, html) => {
+    await handleSubmit(inputValue, html, 'draft', 'Draft saved!');
   };
 
   const buttonPropsList = [

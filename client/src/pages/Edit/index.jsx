@@ -2,8 +2,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getBlogById, updateBlogById } from '../../api/services/blogService';
 import CherryEditor from '../../components/CherryEditor';
 import Loading from '../../components/CherryEditor/Loading';
-import Error from '../../components/Error';
 import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
+import Error from '../../components/Error';
 import useFetch from '../../hooks/useFetch';
 import routes from '../../routes';
 import { extractMetaData } from '../../utils/mdUtil';
@@ -33,16 +33,16 @@ function Edit() {
     }
   };
 
-  const handleSave = (inputValue, html) => {
-    void handleSubmit(inputValue, html, 'public', 'All update saved!');
+  const handleSave = async (inputValue, html) => {
+    await handleSubmit(inputValue, html, 'public', 'All update saved!');
   };
 
-  const handleSaveAsDraft = (inputValue, html) => {
-    void handleSubmit(inputValue, html, 'draft', 'Draft saved!');
+  const handleSaveAsDraft = async (inputValue, html) => {
+    await handleSubmit(inputValue, html, 'draft', 'Draft saved!');
   };
 
-  const handlePost = (inputValue, html) => {
-    void handleSubmit(inputValue, html, 'public', 'Blog published successfully!');
+  const handlePost = async (inputValue, html) => {
+    await handleSubmit(inputValue, html, 'public', 'Blog published successfully!');
   };
 
   const isDisabled = inputValue => (inputValue.trim() === '' || inputValue === blog.content);
