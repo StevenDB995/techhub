@@ -3,7 +3,7 @@ import { getBlogById, updateBlogById } from '../../api/services/blogService';
 import CherryEditor from '../../components/CherryEditor';
 import Loading from '../../components/CherryEditor/Loading';
 import Error from '../../components/Error';
-import useFeedbackModal from '../../hooks/modals/useFeedbackModal';
+import useFeedbackModal from '../../hooks/useFeedbackModal';
 import useFetch from '../../hooks/useFetch';
 import routes from '../../routes';
 import { extractMetaData } from '../../utils/mdUtil';

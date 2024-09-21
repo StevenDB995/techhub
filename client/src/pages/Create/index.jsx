@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { createBlog } from '../../api/services/blogService';
 import CherryEditor from '../../components/CherryEditor';
-import useFeedbackModal from '../../hooks/modals/useFeedbackModal';
+import useFeedbackModal from '../../hooks/useFeedbackModal';
 import routes from '../../routes';
 import { extractMetaData } from '../../utils/mdUtil';
 
