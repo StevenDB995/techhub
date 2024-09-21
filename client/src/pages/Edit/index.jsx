@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { getBlogById, updateBlogById } from '../../api/services/blogService';
 import CherryEditor from '../../components/CherryEditor';
-import Loading from '../../components/CherryEditor/Loading';
 import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
 import Error from '../../components/Error';
 import useFetch from '../../hooks/useFetch';
@@ -45,7 +44,7 @@ function Edit() {
     await handleSubmit(inputValue, html, 'public', 'Blog published successfully!');
   };
 
-  const isDisabled = inputValue => (inputValue.trim() === '' || inputValue === blog.content);
+  const isDisabled = inputValue => (inputValue.trim() === '' || blog && (inputValue === blog.content));
 
   const publicButtons = [
     {
@@ -72,14 +71,14 @@ function Edit() {
   return (
     error ?
       <Error status={error.status} message={error.message} /> :
-      (loading ? <Loading /> :
-        <>
-          <CherryEditor
-            value={blog.content}
-            buttonPropsList={blog.status === 'public' ? publicButtons : draftButtons}
-          />
-          <FeedbackModal onSuccess={() => navigate(routes.home)} />
-        </>)
+      <>
+        <CherryEditor
+          value={blog ? blog.content : ''}
+          loading={loading}
+          buttonPropsList={blog && blog.status === 'public' ? publicButtons : draftButtons}
+        />
+        <FeedbackModal onSuccess={() => navigate(routes.home)} />
+      </>
   );
 }
 

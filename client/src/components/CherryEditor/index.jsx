@@ -47,7 +47,7 @@ const cherryConfig = {
   }
 };
 
-function CherryEditor({ value, buttonPropsList }) {
+function CherryEditor({ value, loading = false, buttonPropsList }) {
   const cherryInstance = useRef(null);
   const [inputValue, setInputValue] = useState('');
   const [html, setHtml] = useState('');
@@ -92,25 +92,31 @@ function CherryEditor({ value, buttonPropsList }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // fill the content on page load
+  useEffect(() => {
+    cherryInstance.current.setMarkdown(value);
+    setInputValue(value);
+  }, [value]);
+
   return (
     <>
       <div id={cherryConfig.id}>
         <Flex gap={buttonPropsList.length > 1 ? 'small' : 'middle'} wrap className="button-group">
           <Button key="cancel" size="large" danger onClick={handleCancel}>Cancel</Button>
-          {buttonPropsList.map((buttonProps, index) => (
+          {buttonPropsList.map(({ type, text, onSubmit, isDisabled }, index) => (
             <Button
               key={index}
               size="large"
-              type={buttonProps.type}
-              onClick={() => handleSubmit(buttonProps.onSubmit)}
-              disabled={buttonProps.isDisabled && buttonProps.isDisabled(inputValue)}
+              type={type}
+              onClick={() => handleSubmit(onSubmit)}
+              disabled={isDisabled && isDisabled(inputValue)}
             >
-              {buttonProps.text}
+              {text}
             </Button>
           ))}
         </Flex>
       </div>
-      <Loading display={submitting} />
+      <Loading display={loading || submitting} />
       {cancelModalContext}
     </>
   );
