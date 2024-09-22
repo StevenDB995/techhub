@@ -42,8 +42,6 @@ exports.getBlogById = async (req, res) => {
 exports.createBlog = async (req, res) => {
   try {
     const blog = req.body;
-    blog.createdAt = Date.now();
-    blog.updatedAt = Date.now();
     const blogModel = new Blog(blog);
     await blogModel.save();
     return successResponse(res, {}, 'Blog created successfully!', 201);
