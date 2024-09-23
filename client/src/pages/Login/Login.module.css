@@ -3,7 +3,8 @@
 }
 
 .loginForm {
-  width: 280px;
+  width: 320px;
+  padding: 16px;
 }
 
 .loginForm .formItem {
