@@ -19,15 +19,13 @@ function Create() {
     // status: the new blog status to be set
     try {
       const { title, previewText } = extractMetaData(html);
-      const response = await createBlog({
+      await createBlog({
         title,
         previewText,
         content: inputValue,
         status
       });
-      const resBody = response.data;
-      const message = resBody.success ? successMessage : 'Error saving changes';
-      showFeedbackModal(resBody.success, message);
+      showFeedbackModal(true, successMessage);
     } catch (err) {
       showFeedbackModal(false, err.message);
     }

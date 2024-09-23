@@ -17,16 +17,14 @@ function Edit() {
     // status: the new blog status to be set
     try {
       const { title, previewText } = extractMetaData(html);
-      const response = await updateBlogById(blogId, {
+      await updateBlogById(blogId, {
         title,
         previewText,
         content: inputValue,
         status,
         createdAt: (blog.status === 'draft' && status === 'public') ? Date.now() : undefined
       });
-      const resBody = response.data;
-      const message = resBody.success ? successMessage : 'Error saving changes';
-      showFeedbackModal(resBody.success, message);
+      showFeedbackModal(true, successMessage);
     } catch (err) {
       showFeedbackModal(false, err.message);
     }

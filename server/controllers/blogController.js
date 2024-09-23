@@ -1,15 +1,15 @@
 const Blog = require('../models/blogModel');
-const { successResponse, errorResponse } = require('../utils/response');
+const { messageResponse, dataResponse } = require('../utils/response');
 
 exports.getPublicBlogs = async (req, res) => {
   try {
     const blogs = await Blog
       .find({ status: 'public' })
       .sort({ createdAt: -1 });
-    return successResponse(res, blogs);
+    return dataResponse(res, 200, blogs);
   } catch (err) {
     console.error(err);
-    return errorResponse(res, 'Error fetching blogs');
+    return messageResponse(res, 500, 'Error fetching blogs');
   }
 }
 
@@ -19,10 +19,10 @@ exports.getBlogsByStatus = async (req, res) => {
     const blogs = await Blog
       .find({ status })
       .sort({ createdAt: -1 });
-    return successResponse(res, blogs);
+    return dataResponse(res, 200, blogs);
   } catch (err) {
     console.error(err);
-    return errorResponse(res, 'Error fetching blogs');
+    return messageResponse(res, 500, 'Error fetching blogs');
   }
 };
 
@@ -31,11 +31,11 @@ exports.getBlogById = async (req, res) => {
     const { id } = req.params;
     const blog = await Blog.findById(id);
     return blog ?
-      successResponse(res, blog) :
-      errorResponse(res, 'Blog not found', 404);
+      dataResponse(res, 200, blog) :
+      messageResponse(res, 404, 'Blog not found');
   } catch (err) {
     console.error(err);
-    return errorResponse(res, 'Error fetching blog');
+    return messageResponse(res, 500, 'Error fetching blog');
   }
 };
 
@@ -44,10 +44,10 @@ exports.createBlog = async (req, res) => {
     const blog = req.body;
     const blogModel = new Blog(blog);
     await blogModel.save();
-    return successResponse(res, {}, 'Blog created successfully!', 201);
+    return messageResponse(res, 201, 'Blog created successfully!');
   } catch (err) {
     console.error(err);
-    return errorResponse(res, 'Error creating blog');
+    return messageResponse(res, 500, 'Error creating blog');
   }
 };
 
@@ -60,13 +60,13 @@ exports.updateBlogById = async (req, res) => {
     }, { new: true });
 
     if (updatedBlog) {
-      return successResponse(res, {}, 'Blog updated successfully!');
+      return messageResponse(res, 200, 'Blog updated successfully!');
     } else {
-      return errorResponse(res, 'Blog not found', 404);
+      return messageResponse(res, 404, 'Blog not found');
     }
   } catch (err) {
     console.error(err);
-    return errorResponse(res, 'Error updating blog');
+    return messageResponse(res, 500, 'Error updating blog');
   }
 };
 
@@ -79,12 +79,12 @@ exports.deleteBlogById = async (req, res) => {
     }, { new: true });
 
     if (softDeletedBlog) {
-      return successResponse(res, {}, 'Blog deleted successfully!');
+      return messageResponse(res, 200, 'Blog deleted successfully!');
     } else {
-      return errorResponse(res, 'Blog not found', 404);
+      return messageResponse(res, 404, 'Blog not found');
     }
   } catch (err) {
     console.error(err);
-    return errorResponse(res, 'Error deleting blog');
+    return messageResponse(res, 500, 'Error deleting blog');
   }
 };

@@ -9,12 +9,7 @@ const useFetch = (apiFunc, ...params) => {
   const fetchData = async () => {
     try {
       const response = await apiFunc(...params);
-      const responseBody = response.data;
-      if (responseBody.success) {
-        setData(responseBody.data);
-      } else {
-        setError(responseBody);
-      }
+      setData(response.data);
     } catch (err) {
       setError(err);
     }

@@ -98,12 +98,9 @@ function BlogList({ data, setData, loading }) {
 
   const handleBlogDelete = async (blogId) => {
     try {
-      const response = await deleteBlogById(blogId);
-      const resBody = response.data;
-      feedbackDelete(resBody.success);
-      if (resBody.success) {
-        setData(data.filter(blog => blog._id !== blogId));
-      }
+      await deleteBlogById(blogId);
+      feedbackDelete(true);
+      setData(data.filter(blog => blog._id !== blogId));
     } catch (err) {
       feedbackDelete(false, err.message);
     }
