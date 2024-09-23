@@ -1,5 +1,5 @@
 import { geekblue } from '@ant-design/colors';
-import { ConfigProvider } from 'antd';
+import { App as AntdApp, ConfigProvider } from 'antd';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -8,6 +8,7 @@ import About from './pages/About';
 import Create from './pages/Create';
 import Edit from './pages/Edit';
 import Home from './pages/Home';
+import Login from './pages/Login';
 import MyDrafts from './pages/MyDrafts';
 import routes from './routes';
 import './index.css';
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
       {
         path: routes.home,
         element: <Home />
+      },
+      {
+        path: routes.login,
+        element: <Login />
       },
       {
         path: routes.blogs,
@@ -47,18 +52,25 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: geekblue.primary
-        },
-        components: {
-          Layout: {
-            headerBg: geekblue[8]
+    <AntdApp
+      message={{
+        top: 72
+      }}
+    >
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: geekblue.primary
+          },
+          components: {
+            Layout: {
+              headerBg: geekblue[8]
+            }
           }
-        }
-      }}>
-      <RouterProvider router={router} />
-    </ConfigProvider>
+        }}
+      >
+        <RouterProvider router={router} />
+      </ConfigProvider>
+    </AntdApp>
   </StrictMode>
 );

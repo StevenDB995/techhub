@@ -1,0 +1,16 @@
+.loginContainer {
+  height: 480px;
+}
+
+.loginForm {
+  width: 280px;
+}
+
+.loginForm .formItem {
+  margin-bottom: 12px;
+}
+
+.loginForm .buttonContainer {
+  padding-top: 24px;
+  margin-bottom: 0;
+}

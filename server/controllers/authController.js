@@ -43,8 +43,12 @@ exports.login = async (req, res) => {
 
   try {
     const user = await User.findOne({ username });
+    if (!user || !user.isActive) {
+      return messageResponse(res, 401, 'Invalid credentials');
+    }
+
     const match = await user.comparePassword(password);
-    if (!user || !user.isActive || !match) {
+    if (!match) {
       return messageResponse(res, 401, 'Invalid credentials');
     }
 
