@@ -101,7 +101,9 @@ function BlogList({ data, setData, loading }) {
       const response = await deleteBlogById(blogId);
       const resBody = response.data;
       feedbackDelete(resBody.success);
-      setData(data.filter(blog => blog._id !== blogId));
+      if (resBody.success) {
+        setData(data.filter(blog => blog._id !== blogId));
+      }
     } catch (err) {
       feedbackDelete(false, err.message);
     }

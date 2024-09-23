@@ -2,7 +2,6 @@ const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const { errorResponse, successResponse } = require('../utils/response');
 const { isValidUsername, isValidPassword, isValidEmail } = require('../utils/validate');
-require('dotenv').config();
 
 const { JWT_SECRET } = process.env;
 
@@ -49,11 +48,7 @@ exports.login = async (req, res) => {
       return errorResponse(res, 'Invalid credentials', 404);
     }
 
-    const token = jwt.sign({
-      userId: user._id,
-      username: user.username
-    }, JWT_SECRET, { expiresIn: '1h' });
-
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
     return successResponse(res, {
       token,
       username: user.username
