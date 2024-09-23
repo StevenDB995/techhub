@@ -52,25 +52,25 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <AntdApp
-      message={{
-        top: 72
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: geekblue.primary
+        },
+        components: {
+          Layout: {
+            headerBg: geekblue[8]
+          }
+        }
       }}
     >
-      <ConfigProvider
-        theme={{
-          token: {
-            colorPrimary: geekblue.primary
-          },
-          components: {
-            Layout: {
-              headerBg: geekblue[8]
-            }
-          }
+      <AntdApp
+        message={{
+          top: 72
         }}
       >
         <RouterProvider router={router} />
-      </ConfigProvider>
-    </AntdApp>
+      </AntdApp>
+    </ConfigProvider>
   </StrictMode>
 );
