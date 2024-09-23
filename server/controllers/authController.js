@@ -8,7 +8,7 @@ const { JWT_SECRET } = process.env;
 
 exports.signup = async (req, res) => {
   const { username, password, email } = req.body;
-  if (!isValidUsername(username) || !isValidPassword(password) || (email && !isValidEmail(email))) {
+  if (!isValidUsername(username) || !isValidPassword(password) || !isValidEmail(email)) {
     return errorResponse(res, 'Bad request', 400);
   }
 
@@ -19,16 +19,21 @@ exports.signup = async (req, res) => {
       return errorResponse(res, 'Forbidden', 403);
     }
 
-    let user = await User.findOne({ username });
-    if (user) {
-      return errorResponse(res, 'User already exists', 400);
-    }
-
-    user = new User({ username, password, email });
+    const user = new User({ username, password, email });
     await user.save();
     return successResponse(res, {}, 'Signed up successfully!', 201);
 
   } catch (err) {
+    // Check if the error is a duplicate key error
+    if (err.code === 11000) {
+      if (err.keyPattern.username) {
+        return errorResponse(res, 'User already exists', 400);
+      }
+      if (err.keyPattern.email) {
+        return errorResponse(res, 'Email already registered', 400);
+      }
+    }
+
     console.error(err);
     return errorResponse(res, 'Error signing up');
   }
