@@ -25,7 +25,9 @@ function ProtectedRoute() {
 
   if (loading) return <Loading />;
 
-  return error ? <Navigate to={routes.login} replace /> : <Outlet />;
+  return error ?
+    <Navigate to={routes.login} replace state={{ from: location }} /> :
+    <Outlet />;
 }
 
 export default ProtectedRoute;
