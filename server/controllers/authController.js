@@ -5,6 +5,10 @@ const { isValidUsername, isValidPassword, isValidEmail } = require('../utils/val
 
 const { JWT_SECRET } = process.env;
 
+exports.isAuthenticated = async (req, res) => {
+  return messageResponse(res, 200, 'Authenticated');
+};
+
 exports.signup = async (req, res) => {
   const { username, password, email } = req.body;
   if (!isValidUsername(username) || !isValidPassword(password) || !isValidEmail(email)) {

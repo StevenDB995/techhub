@@ -4,6 +4,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
+import ProtectedRoute from './components/ProtectedRoute';
 import About from './pages/About';
 import Create from './pages/Create';
 import Edit from './pages/Edit';
@@ -35,16 +36,21 @@ const router = createBrowserRouter([
         element: <About />
       },
       {
-        path: routes.create,
-        element: <Create />
-      },
-      {
-        path: `${routes.edit}/:blogId`,
-        element: <Edit />
-      },
-      {
-        path: routes.drafts,
-        element: <MyDrafts />
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: routes.create,
+            element: <Create />
+          },
+          {
+            path: `${routes.edit}/:blogId`,
+            element: <Edit />
+          },
+          {
+            path: routes.drafts,
+            element: <MyDrafts />
+          }
+        ]
       }
     ]
   }

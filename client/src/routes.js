@@ -5,7 +5,7 @@ const routes = {
   about: '/about',
   create: '/blogs/create',
   edit: '/blogs/edit', // /:blogId
-  drafts: '/drafts'
+  drafts: '/blogs/drafts'
 };
 
 export default routes;
