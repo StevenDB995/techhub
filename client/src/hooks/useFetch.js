@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 // A custom hook for fetching data on page load using GET method
 const useFetch = (apiFunc, ...params) => {
@@ -6,7 +6,8 @@ const useFetch = (apiFunc, ...params) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await apiFunc(...params);
       setData(response.data);
@@ -14,14 +15,15 @@ const useFetch = (apiFunc, ...params) => {
       setError(err);
     }
     setLoading(false);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [apiFunc]);
 
   useEffect(() => {
     void fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { data, setData, loading, error };
+  return { data, setData, loading, error, refetch: fetchData };
 };
 
 export default useFetch;
