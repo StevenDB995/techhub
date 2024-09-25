@@ -1,6 +1,7 @@
 import { FormOutlined, InboxOutlined } from '@ant-design/icons';
-import { Col, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
+import { Button, Col, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import useAuth from './hooks/useAuth';
 import routes from './routes';
 import './App.css';
 
@@ -10,6 +11,7 @@ const { Header, Content, Footer } = Layout;
 const nonHeaderPages = [routes.create, routes.edit];
 
 function App() {
+  const { isAuthenticated } = useAuth();
   const location = useLocation();
   const shouldDisplayHeader = !nonHeaderPages.some((key) => location.pathname.startsWith(key));
 
@@ -70,12 +72,18 @@ function App() {
             className="left"
           />
           <div className="right">
-            <Dropdown.Button
-              type="primary"
-              menu={dropdownMenuProps}
-            >
-              <Link to={routes.create}>Create</Link>
-            </Dropdown.Button>
+            {
+              isAuthenticated ?
+                <Dropdown.Button
+                  type="primary"
+                  menu={dropdownMenuProps}
+                >
+                  <Link to={routes.create}>Create</Link>
+                </Dropdown.Button> :
+                <Button type="text" style={{ color: 'rgba(255, 255, 255, 0.88)' }}>
+                  <Link to={routes.login}>Login</Link>
+                </Button>
+            }
           </div>
         </Flex>
       </Header>}

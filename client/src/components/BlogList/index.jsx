@@ -3,7 +3,7 @@ import { Divider, Flex, List, Space, Typography } from 'antd';
 import useModal from 'antd/es/modal/useModal';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { deleteBlogById } from '../../api/services/blogService';
+import useAxios from '../../hooks/useAxios';
 import routes from '../../routes';
 import { getDateString } from '../../utils/dateUtil';
 import styles from './BlogList.module.css';
@@ -64,6 +64,7 @@ function ListFooterItem({ icon, text, size, className, onClick }) {
 }
 
 function BlogList({ data, setData, loading }) {
+  const axios = useAxios();
   const [deleteModal, deleteModalContext] = useModal();
   const [feedbackModal, feedbackModalContext] = useModal();
 
@@ -98,7 +99,7 @@ function BlogList({ data, setData, loading }) {
 
   const handleBlogDelete = async (blogId) => {
     try {
-      await deleteBlogById(blogId);
+      await axios.delete(`/blogs/${blogId}`);
       feedbackDelete(true);
       setData(data.filter(blog => blog._id !== blogId));
     } catch (err) {

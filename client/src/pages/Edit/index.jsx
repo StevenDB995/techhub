@@ -1,15 +1,16 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { getBlogById, updateBlogById } from '../../api/services/blogService';
 import CherryEditor from '../../components/CherryEditor';
 import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
 import Error from '../../components/Error';
+import useAxios from '../../hooks/useAxios';
 import useFetch from '../../hooks/useFetch';
 import routes from '../../routes';
 import { extractMetaData } from '../../utils/mdUtil';
 
 function Edit() {
   const { blogId } = useParams();
-  const { data: blog, loading, error } = useFetch(getBlogById, blogId);
+  const { data: blog, loading, error } = useFetch(`/blogs/${blogId}`);
+  const axios = useAxios();
   const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
   const navigate = useNavigate();
 
@@ -17,7 +18,7 @@ function Edit() {
     // status: the new blog status to be set
     try {
       const { title, previewText } = extractMetaData(html);
-      await updateBlogById(blogId, {
+      await axios.patch(`/blogs/${blogId}`, {
         title,
         previewText,
         content: inputValue,

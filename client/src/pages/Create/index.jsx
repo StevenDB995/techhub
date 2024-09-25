@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { createBlog } from '../../api/services/blogService';
 import CherryEditor from '../../components/CherryEditor';
 import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
+import useAxios from '../../hooks/useAxios';
 import routes from '../../routes';
 import { extractMetaData } from '../../utils/mdUtil';
 
@@ -12,6 +12,7 @@ Paragraph here
 If you know, you know ;)`;
 
 function Create() {
+  const axios = useAxios();
   const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
   const navigate = useNavigate();
 
@@ -19,7 +20,7 @@ function Create() {
     // status: the new blog status to be set
     try {
       const { title, previewText } = extractMetaData(html);
-      await createBlog({
+      await axios.post('/blogs', {
         title,
         previewText,
         content: inputValue,

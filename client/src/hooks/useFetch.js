@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
+import useAxios from './useAxios';
 
 // A custom hook for fetching data on page load using GET method
-const useFetch = (apiFunc, ...params) => {
+const useFetch = (url, config = undefined) => {
+  const axios = useAxios();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -9,14 +11,14 @@ const useFetch = (apiFunc, ...params) => {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await apiFunc(...params);
+      const response = await axios.get(url, config);
       setData(response.data);
     } catch (err) {
       setError(err);
     }
     setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [apiFunc]);
+  }, [url]);
 
   useEffect(() => {
     void fetchData();

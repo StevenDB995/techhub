@@ -4,7 +4,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
-import ProtectedRoute from './components/ProtectedRoute';
+import AuthProvider from './contexts/AuthProvider';
 import About from './pages/About';
 import Create from './pages/Create';
 import Edit from './pages/Edit';
@@ -36,21 +36,16 @@ const router = createBrowserRouter([
         element: <About />
       },
       {
-        element: <ProtectedRoute />,
-        children: [
-          {
-            path: routes.create,
-            element: <Create />
-          },
-          {
-            path: `${routes.edit}/:blogId`,
-            element: <Edit />
-          },
-          {
-            path: routes.drafts,
-            element: <MyDrafts />
-          }
-        ]
+        path: routes.create,
+        element: <Create />
+      },
+      {
+        path: `${routes.edit}/:blogId`,
+        element: <Edit />
+      },
+      {
+        path: routes.drafts,
+        element: <MyDrafts />
       }
     ]
   }
@@ -75,7 +70,9 @@ createRoot(document.getElementById('root')).render(
           top: 72
         }}
       >
-        <RouterProvider router={router} />
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
       </AntdApp>
     </ConfigProvider>
   </StrictMode>
