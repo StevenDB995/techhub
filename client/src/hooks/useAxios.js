@@ -1,60 +1,55 @@
 import { App as AntdApp } from 'antd';
-import axios from 'axios';
 import { useContext, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
+import api, { createAxios } from '../api/axios';
 import { AuthContext } from '../contexts/AuthProvider';
 import routes from '../routes';
 
+// create a custom axios hook to allow access to global context states
+
 const useAxios = () => {
-  const { logout } = useContext(AuthContext);
+  const { login, logout } = useContext(AuthContext);
   const location = useLocation();
   const { message: antdMessage } = AntdApp.useApp();
 
-  const handle401 = (error) => {
-    error.message = 'Unauthorized';
-    if (!location.pathname.startsWith(routes.login)) {
-      logout();
-      // navigate(routes.login, { state: { from: location } });
-      void antdMessage.info('Session expired. Please login');
-    }
-  };
-
   return useMemo(() => {
-    const axiosInstance = axios.create({
-      baseURL: '/api',
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+    const axiosInstance = createAxios();
 
-    axiosInstance.interceptors.request.use((config) => {
-      const accessToken = localStorage.getItem('accessToken');
-      if (accessToken) {
-        config.headers['Authorization'] = `Bearer ${accessToken}`;
-      }
-      return config;
-    });
-
+    // interceptor designated for 401 response
     axiosInstance.interceptors.response.use(
       response => response,
-      error => {
+      async error => {
         if (error.response) {
           const statusCode = error.response.status;
 
           if (statusCode === 401) {
-            handle401(error);
-          } else if (statusCode === 403) {
-            error.message = 'Permission denied';
-          } else if (statusCode === 404) {
-            error.message = 'Resource not found';
-          } else if (statusCode >= 500) {
-            error.message = 'Server error. Please try again later.';
-          } else {
-            error.message = error.response.data.message;
+            if (location.pathname.startsWith(routes.login)) {
+              // propagate failed login
+              return Promise.reject(error);
+            }
+
+            try {
+              // request to refresh token
+              // use the common axios instance instead to prevent infinite loop of refresh requests
+              const refreshResponse = await api.post('/auth/refresh-token');
+              // store the new access token
+              login(refreshResponse.data.accessToken);
+              // retry the previous request
+              // expect no further 401 error
+              // use the common axios instance to handle other potential error status
+              return api.request(error.config);
+
+            } catch (refreshError) {
+              refreshError.message = 'Session expired';
+              logout();
+              // navigate(routes.login, { state: { from: location } });
+              antdMessage.info('Session expired. Please login');
+
+              return Promise.reject(refreshError);
+            }
           }
         }
-        // still throw the error for specific cases to handle
+
         return Promise.reject(error);
       });
 

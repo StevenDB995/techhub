@@ -9,6 +9,7 @@ const { NODE_ENV, REFRESH_TOKEN_SECRET } = process.env;
 const cookieConfig = {
   httpOnly: true,
   secure: NODE_ENV === 'production',
+  path: '/api/auth/refresh-token',
   sameSite: 'Strict',
   maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
 };
@@ -32,7 +33,7 @@ exports.refreshToken = async (req, res) => {
       return messageResponse(res, 401, 'Session expired');
     }
 
-    console.error(err);
+    console.error(err.message);
     return messageResponse(res, 500, 'Unexpected error');
   }
 }
