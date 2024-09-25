@@ -18,8 +18,8 @@ function Login() {
   const handleLogin = async (formData) => {
     try {
       const response = await axios.post('/auth/login', formData);
-      const { token } = response.data;
-      login(token);
+      const { accessToken } = response.data;
+      login(accessToken);
       antdMessage.success('Successfully logged in!');
       navigate(from, { replace: true });
     } catch (err) {

@@ -21,16 +21,17 @@ const useAxios = () => {
 
   return useMemo(() => {
     const axiosInstance = axios.create({
-      baseURL: 'http://localhost:3000/api',
+      baseURL: '/api',
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json'
       }
     });
 
     axiosInstance.interceptors.request.use((config) => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
+      const accessToken = localStorage.getItem('accessToken');
+      if (accessToken) {
+        config.headers['Authorization'] = `Bearer ${accessToken}`;
       }
       return config;
     });

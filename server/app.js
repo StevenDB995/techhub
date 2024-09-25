@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const apiRoutes = require('./routes/apiRoutes');
 
 const { NODE_ENV, CLIENT_URL } = process.env;
@@ -12,6 +13,7 @@ const corsOptions = {
 // Middlewares
 app.use(cors(corsOptions));
 app.use(express.json()); // handle json request body
+app.use(cookieParser());
 
 // Use the centralized API routes
 app.use('/api', apiRoutes);
