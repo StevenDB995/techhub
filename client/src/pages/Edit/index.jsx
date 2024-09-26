@@ -9,7 +9,7 @@ import { extractMetaData } from '../../utils/mdUtil';
 
 function Edit() {
   const { blogId } = useParams();
-  const { data: blog, loading, error } = useFetch(`/blogs/${blogId}`);
+  const { data: blog, loading, error } = useFetch(`/users/me/blogs/${blogId}`);
   const axios = useAxios();
   const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
   const navigate = useNavigate();

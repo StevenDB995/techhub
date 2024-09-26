@@ -15,6 +15,28 @@ exports.getMyBlogsByStatus = async (req, res) => {
   }
 };
 
+exports.getMyBlogById = async (req, res) => {
+  const { blogId } = req.params;
+  try {
+    const blog = await Blog.findById(blogId);
+
+    if (!blog) {
+      return messageResponse(res, 404, 'Blog not found');
+    }
+
+    // authorize
+    if (!blog.author.equals(req.user)) {
+      return messageResponse(res, 403, 'Permission denied');
+    }
+
+    return dataResponse(res, 200, blog);
+
+  } catch (err) {
+    console.error(err);
+    return messageResponse(res, 500, 'Error fetching blog');
+  }
+}
+
 // for public view
 exports.getPublicBlogs = async (req, res) => {
   const { userId } = req.params;

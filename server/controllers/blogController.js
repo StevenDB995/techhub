@@ -24,6 +24,7 @@ exports.getBlogById = async (req, res) => {
       return messageResponse(res, 404, 'Blog not found');
     }
 
+    // authorize
     if (blog.status !== 'public') {
       return messageResponse(res, 403, 'Permission denied');
     }
