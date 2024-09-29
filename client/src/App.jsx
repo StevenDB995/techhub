@@ -86,17 +86,17 @@ function App() {
           </div>
         </Flex>
       </Header>}
-      <Content className="app-content">
+      {shouldDisplayHeader ?
+        <Content className="app-content">
         <Row justify="center">
-          <Col
-            span={24}
-            lg={shouldDisplayHeader ? 16 : undefined}
-            className="display"
-          >
+          <Col span={24} lg={16} className="display">
             <Outlet />
           </Col>
         </Row>
-      </Content>
+      </Content> :
+      <Content className="app-content">
+        <Outlet />
+      </Content>}
       <Footer className="app-footer">
         Ant Design ©{new Date().getFullYear()} Created by Ant UED
       </Footer>

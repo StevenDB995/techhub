@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import BlogList from '../../components/BlogList';
 import Error from '../../components/Error';
 import useFetch from '../../hooks/useFetch';
+import styles from './Blogs.module.css';
 
 const options = [
   {
@@ -42,11 +43,12 @@ function Blogs() {
     error ?
       <Error status={error.status} message={error.message} /> :
       <>
-        <Select defaultValue={initialStatus} options={options} onChange={onChange} style={{ minWidth: '128px' }} />
+        <div className={styles.selectContainer}>
+          <Select className={styles.select} defaultValue={initialStatus} options={options} onChange={onChange} />
+        </div>
         <BlogList data={data} setData={setData} loading={loading} />
       </>
-  )
-    ;
+  );
 }
 
 export default Blogs;
