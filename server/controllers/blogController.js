@@ -12,7 +12,7 @@ exports.getAllBlogs = async (req, res) => {
     console.error(err);
     return messageResponse(res, 500, 'Error fetching blogs');
   }
-}
+};
 
 // for public view only
 exports.getBlogById = async (req, res) => {
@@ -53,19 +53,31 @@ exports.createBlog = async (req, res) => {
 };
 
 exports.updateBlogById = async (req, res) => {
-  // TODO: authorize
+  const { id } = req.params;
   try {
-    const { id } = req.params;
-    const updatedBlog = await Blog.findByIdAndUpdate(id, {
-      ...req.body,
-      updatedAt: Date.now()
-    }, { new: true });
-
-    if (updatedBlog) {
-      return messageResponse(res, 200, 'Blog updated successfully!');
-    } else {
+    const blog = await Blog.findById(id);
+    if (!blog) {
       return messageResponse(res, 404, 'Blog not found');
     }
+
+    // authorize
+    if (!blog.author.equals(req.user)) {
+      return messageResponse(res, 403, 'Permission denied');
+    }
+
+    const updateData = {
+      ...req.body,
+      updatedAt: Date.now()
+    };
+
+    // update the createdAt field if the status of the blog changes from 'draft' to 'public'
+    if (blog.status === 'draft' && req.body.status === 'public') {
+      updateData.createdAt = Date.now();
+    }
+
+    await Blog.findByIdAndUpdate(id, updateData, { new: true });
+    return messageResponse(res, 200, 'Blog updated successfully!');
+
   } catch (err) {
     console.error(err);
     return messageResponse(res, 500, 'Error updating blog');
@@ -73,19 +85,25 @@ exports.updateBlogById = async (req, res) => {
 };
 
 exports.deleteBlogById = async (req, res) => {
-  // TODO: authorize
+  const { id } = req.params;
   try {
-    const { id } = req.params;
-    const softDeletedBlog = await Blog.findByIdAndUpdate(id, {
+    const blog = await Blog.findById(id);
+    if (!blog) {
+      return messageResponse(res, 404, 'Blog not found');
+    }
+
+    // authorize
+    if (!blog.author.equals(req.user)) {
+      return messageResponse(res, 403, 'Permission denied');
+    }
+
+    await Blog.findByIdAndUpdate(id, {
       status: 'deleted',
       deletedAt: Date.now()
     }, { new: true });
 
-    if (softDeletedBlog) {
-      return messageResponse(res, 200, 'Blog deleted successfully!');
-    } else {
-      return messageResponse(res, 404, 'Blog not found');
-    }
+    return messageResponse(res, 200, 'Blog deleted successfully!');
+
   } catch (err) {
     console.error(err);
     return messageResponse(res, 500, 'Error deleting blog');

@@ -18,12 +18,11 @@ function Edit() {
     // status: the new blog status to be set
     try {
       const { title, previewText } = extractMetaData(html);
-      await axios.patch(`/blogs/${blogId}`, {
+      await axios.put(`/blogs/${blogId}`, {
         title,
         previewText,
         content: inputValue,
-        status,
-        createdAt: (blog.status === 'draft' && status === 'public') ? Date.now() : undefined
+        status
       });
       showFeedbackModal(true, successMessage);
     } catch (err) {
