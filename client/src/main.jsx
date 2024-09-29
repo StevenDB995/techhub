@@ -6,11 +6,11 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
 import AuthProvider from './contexts/AuthProvider';
 import About from './pages/About';
+import Blogs from './pages/Blogs';
 import Create from './pages/Create';
 import Edit from './pages/Edit';
 import Home from './pages/Home';
 import Login from './pages/Login';
-import MyDrafts from './pages/MyDrafts';
 import routes from './routes';
 import './index.css';
 
@@ -24,16 +24,16 @@ const router = createBrowserRouter([
         element: <Home />
       },
       {
+        path: routes.about,
+        element: <About />
+      },
+      {
         path: routes.login,
         element: <Login />
       },
       {
         path: routes.blogs,
-        element: <Home />
-      },
-      {
-        path: routes.about,
-        element: <About />
+        element: <Blogs />
       },
       {
         path: routes.create,
@@ -42,10 +42,6 @@ const router = createBrowserRouter([
       {
         path: `${routes.edit}/:blogId`,
         element: <Edit />
-      },
-      {
-        path: routes.drafts,
-        element: <MyDrafts />
       }
     ]
   }

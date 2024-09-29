@@ -17,17 +17,16 @@ function App() {
 
   const getSelectedKey = () => {
     if (location.pathname.startsWith(routes.blogs) ||
-      location.pathname.startsWith(routes.drafts) ||
       location.pathname === routes.home) {
-      return routes.blogs;
+      return routes.home;
     }
     return location.pathname;
   };
 
   const navItems = [
     {
-      label: <Link to={routes.blogs}>Blogs</Link>,
-      key: routes.blogs
+      label: <Link to={routes.home}>Home</Link>,
+      key: routes.home
     },
     {
       label: <Link to={routes.about}>About</Link>,
@@ -49,13 +48,13 @@ function App() {
       },
       {
         label: (
-          <Link to={routes.drafts}>
+          <Link to={routes.blogs}>
             <Space>
-              <InboxOutlined />My Drafts
+              <InboxOutlined />My Blogs
             </Space>
           </Link>
         ),
-        key: routes.drafts
+        key: routes.blogs
       }
     ]
   };
@@ -81,7 +80,7 @@ function App() {
                   <Link to={routes.create}>Create</Link>
                 </Dropdown.Button> :
                 <Button type="text" style={{ color: 'rgba(255, 255, 255, 0.88)' }}>
-                  <Link to={routes.login}>Login</Link>
+                  <Link to={routes.login}>Log In</Link>
                 </Button>
             }
           </div>

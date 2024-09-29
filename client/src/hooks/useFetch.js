@@ -8,10 +8,10 @@ const useFetch = (url, config = undefined) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (newConfig = config) => {
     setLoading(true);
     try {
-      const response = await axios.get(url, config);
+      const response = await axios.get(url, newConfig);
       setData(response.data);
     } catch (err) {
       setError(err);
