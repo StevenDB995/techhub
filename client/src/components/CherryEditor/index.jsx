@@ -1,19 +1,17 @@
-import { Button, Flex } from 'antd';
+import { Button, Flex, Input } from 'antd';
 import useModal from 'antd/es/modal/useModal';
 import Cherry from 'cherry-markdown';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import routes from '../../routes';
+import { extractMetaData } from '../../utils/mdUtil';
 import Loading from '../Loading';
 import 'cherry-markdown/dist/cherry-markdown.css';
-import './CherryEditor.css';
+import styles from './CherryEditor.module.css';
 
 const cherryConfig = {
   id: 'cherry-editor',
   locale: 'en_US',
-  editor: {
-    height: '100vh'
-  },
   toolbars: {
     toolbar: [
       'bold',
@@ -47,22 +45,32 @@ const cherryConfig = {
   }
 };
 
-function CherryEditor({ value, loading = false, buttonPropsList }) {
+function CherryEditor({ initialTitle = '', initialContent, loading = false, buttonPropsList }) {
   const cherryInstance = useRef(null);
-  const [inputValue, setInputValue] = useState('');
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
   const [html, setHtml] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [cancelModal, cancelModalContext] = useModal();
   const navigate = useNavigate();
 
-  const handleInputChange = (text, html) => {
-    setInputValue(text);
+  const handleTitleChange = (e) => {
+    setTitle(e.target.value);
+  };
+
+  const handleContentChange = (text, html) => {
+    setContent(text);
     setHtml(html);
   };
 
   const handleSubmit = async (onSubmit) => {
     setSubmitting(true);
-    await onSubmit(inputValue, html);
+    const { title: defaultTitle, previewText } = extractMetaData(html);
+    await onSubmit({
+      title: title || defaultTitle,
+      previewText,
+      content
+    });
     setSubmitting(false);
   };
 
@@ -83,25 +91,25 @@ function CherryEditor({ value, loading = false, buttonPropsList }) {
 
   useEffect(() => {
     if (!cherryInstance.current) {
-      cherryInstance.current = new Cherry({
-        value,
-        ...cherryConfig
-      });
-      cherryInstance.current.on('afterChange', handleInputChange);
+      cherryInstance.current = new Cherry(cherryConfig);
+      cherryInstance.current.on('afterChange', handleContentChange);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // fill the content on page load
   useEffect(() => {
-    cherryInstance.current.setMarkdown(value);
-    setInputValue(value);
-  }, [value]);
+    cherryInstance.current.setMarkdown(initialContent);
+    setContent(initialContent);
+    setTitle(initialTitle);
+  }, [initialTitle, initialContent]);
 
   return (
-    <>
-      <div id={cherryConfig.id}>
-        <Flex gap={buttonPropsList.length > 1 ? 'small' : 'middle'} wrap className="button-group">
+    <div className={styles.contentWrapper}>
+      <Flex align="center" className={styles.titleContainer}>
+        <Input placeholder='Title' value={title} onChange={handleTitleChange} className={styles.titleInput} />
+      </Flex>
+      <div id={cherryConfig.id} className={styles.cherryEditor}>
+        <Flex gap={buttonPropsList.length > 1 ? 'small' : 'middle'} wrap className={styles.buttonGroup}>
           <Button key="cancel" size="large" danger onClick={handleCancel}>Cancel</Button>
           {buttonPropsList.map(({ type, text, onSubmit, isDisabled }, index) => (
             <Button
@@ -109,7 +117,7 @@ function CherryEditor({ value, loading = false, buttonPropsList }) {
               size="large"
               type={type}
               onClick={() => handleSubmit(onSubmit)}
-              disabled={isDisabled && isDisabled(inputValue)}
+              disabled={isDisabled && isDisabled(title, content)}
             >
               {text}
             </Button>
@@ -118,7 +126,7 @@ function CherryEditor({ value, loading = false, buttonPropsList }) {
       </div>
       <Loading display={loading || submitting} />
       {cancelModalContext}
-    </>
+    </div>
   );
 }
 

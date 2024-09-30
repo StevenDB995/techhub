@@ -3,9 +3,8 @@ import CherryEditor from '../../components/CherryEditor';
 import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
 import useAxios from '../../hooks/useAxios';
 import routes from '../../routes';
-import { extractMetaData } from '../../utils/mdUtil';
 
-const markdownTemplate = `# Title
+const markdownTemplate = `# Heading 1
 ## Heading 2
 Paragraph here
 ### Heading 3
@@ -16,28 +15,24 @@ function Create() {
   const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
   const navigate = useNavigate();
 
-  const handleSubmit = async (inputValue, html, status, successMessage) => {
-    // status: the new blog status to be set
+  const handleSubmit = async (blogData, successMessage) => {
+    // blogData.status: the new blog status to be set
     try {
-      const { title, previewText } = extractMetaData(html);
-      await axios.post('/blogs', {
-        title,
-        previewText,
-        content: inputValue,
-        status
-      });
+      await axios.post('/blogs', blogData);
       showFeedbackModal(true, successMessage);
     } catch (err) {
       showFeedbackModal(false, err.message);
     }
   };
 
-  const handlePost = async (inputValue, html) => {
-    await handleSubmit(inputValue, html, 'public', 'Blog published successfully!');
+  const handlePost = async (blogData) => {
+    blogData.status = 'public';
+    await handleSubmit(blogData, 'Blog published successfully!');
   };
 
-  const handleSaveAsDraft = async (inputValue, html) => {
-    await handleSubmit(inputValue, html, 'draft', 'Draft saved!');
+  const handleSaveAsDraft = async (blogData) => {
+    blogData.status = 'draft';
+    await handleSubmit(blogData, 'Draft saved!');
   };
 
   const buttonPropsList = [
@@ -49,14 +44,14 @@ function Create() {
       text: 'Post',
       type: 'primary',
       onSubmit: handlePost,
-      isDisabled: inputValue => inputValue.trim() === ''
+      isDisabled: (_, content) => content.trim() === ''
     }
   ];
 
   return (
     <>
       <CherryEditor
-        value={markdownTemplate}
+        initialContent={markdownTemplate}
         buttonPropsList={buttonPropsList}
       />
       <FeedbackModal onSuccess={() => navigate(routes.home)} />

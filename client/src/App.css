@@ -28,3 +28,18 @@
 .cherry-markdown {
   word-break: normal !important;
 }
+
+#cherry-editor .cherry-dropdown[name="insert"] {
+  width: 180px;
+}
+
+#cherry-viewer .cherry {
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+#cherry-viewer .cherry-previewer {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 16px !important;
+}

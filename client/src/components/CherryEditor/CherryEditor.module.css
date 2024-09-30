@@ -1,0 +1,27 @@
+.contentWrapper {
+  --title-container-height: 56px;
+}
+
+.titleContainer {
+  height: var(--title-container-height);
+  position: relative;
+  z-index: 99;
+  background: white;
+  padding: 0 20px;
+}
+
+.titleInput {
+  font-size: 18px;
+}
+
+.cherryEditor {
+  height: calc(100vh - var(--title-container-height)) !important;
+}
+
+.buttonGroup {
+  z-index: 99;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 24px;
+}

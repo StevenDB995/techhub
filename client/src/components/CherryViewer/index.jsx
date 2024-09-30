@@ -1,6 +1,5 @@
 import Cherry from 'cherry-markdown';
 import { useEffect, useRef } from 'react';
-import './CherryViewer.css';
 
 const cherryConfig = {
   id: 'cherry-viewer',
