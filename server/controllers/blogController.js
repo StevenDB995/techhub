@@ -1,92 +1,111 @@
 const Blog = require('../models/blogModel');
-const { successResponse, errorResponse } = require('../utils/response');
+const { messageResponse, dataResponse } = require('../utils/response');
 
-exports.getPublicBlogs = async (req, res) => {
+// get all public blogs
+exports.getAllBlogs = async (req, res) => {
   try {
     const blogs = await Blog
       .find({ status: 'public' })
       .sort({ createdAt: -1 });
-    return successResponse(res, blogs);
+    return dataResponse(res, 200, blogs);
   } catch (err) {
     console.error(err);
-    return errorResponse(res, 'Error fetching blogs');
-  }
-}
-
-exports.getBlogsByStatus = async (req, res) => {
-  try {
-    const status = req.query.status || 'public';
-    const blogs = await Blog
-      .find({ status })
-      .sort({ createdAt: -1 });
-    return successResponse(res, blogs);
-  } catch (err) {
-    console.error(err);
-    return errorResponse(res, 'Error fetching blogs');
+    return messageResponse(res, 500, 'Error fetching blogs');
   }
 };
 
+// for public view only
 exports.getBlogById = async (req, res) => {
   try {
     const { id } = req.params;
     const blog = await Blog.findById(id);
-    return blog ?
-      successResponse(res, blog) :
-      errorResponse(res, 'Blog not found', 404);
+
+    if (!blog) {
+      return messageResponse(res, 404, 'Blog not found');
+    }
+
+    // authorize
+    if (blog.status !== 'public') {
+      return messageResponse(res, 403, 'Permission denied');
+    }
+
+    return dataResponse(res, 200, blog);
+
   } catch (err) {
     console.error(err);
-    return errorResponse(res, 'Error fetching blog');
+    return messageResponse(res, 500, 'Error fetching blog');
   }
 };
 
 exports.createBlog = async (req, res) => {
   try {
-    const blog = req.body;
-    blog.createdAt = Date.now();
-    blog.updatedAt = Date.now();
+    const blog = {
+      ...req.body,
+      author: req.user
+    };
     const blogModel = new Blog(blog);
     await blogModel.save();
-    return successResponse(res, {}, 'Blog created successfully!', 201);
+    return messageResponse(res, 201, 'Blog created successfully!');
   } catch (err) {
     console.error(err);
-    return errorResponse(res, 'Error creating blog');
+    return messageResponse(res, 500, 'Error creating blog');
   }
 };
 
 exports.updateBlogById = async (req, res) => {
+  const { id } = req.params;
   try {
-    const { id } = req.params;
-    const updatedBlog = await Blog.findByIdAndUpdate(id, {
+    const blog = await Blog.findById(id);
+    if (!blog) {
+      return messageResponse(res, 404, 'Blog not found');
+    }
+
+    // authorize
+    if (!blog.author.equals(req.user)) {
+      return messageResponse(res, 403, 'Permission denied');
+    }
+
+    const updateData = {
       ...req.body,
       updatedAt: Date.now()
-    }, { new: true });
+    };
 
-    if (updatedBlog) {
-      return successResponse(res, {}, 'Blog updated successfully!');
-    } else {
-      return errorResponse(res, 'Blog not found', 404);
+    // update the createdAt field if the status of the blog changes from 'draft' to 'public'
+    if (blog.status === 'draft' && req.body.status === 'public') {
+      updateData.createdAt = Date.now();
     }
+
+    await Blog.findByIdAndUpdate(id, updateData, { new: true });
+    return messageResponse(res, 200, 'Blog updated successfully!');
+
   } catch (err) {
     console.error(err);
-    return errorResponse(res, 'Error updating blog');
+    return messageResponse(res, 500, 'Error updating blog');
   }
 };
 
 exports.deleteBlogById = async (req, res) => {
+  const { id } = req.params;
   try {
-    const { id } = req.params;
-    const softDeletedBlog = await Blog.findByIdAndUpdate(id, {
+    const blog = await Blog.findById(id);
+    if (!blog) {
+      return messageResponse(res, 404, 'Blog not found');
+    }
+
+    // authorize
+    if (!blog.author.equals(req.user)) {
+      return messageResponse(res, 403, 'Permission denied');
+    }
+
+    await Blog.findByIdAndUpdate(id, {
       status: 'deleted',
       deletedAt: Date.now()
     }, { new: true });
 
-    if (softDeletedBlog) {
-      return successResponse(res, {}, 'Blog deleted successfully!');
-    } else {
-      return errorResponse(res, 'Blog not found', 404);
-    }
+    return messageResponse(res, 200, 'Blog deleted successfully!');
+
   } catch (err) {
     console.error(err);
-    return errorResponse(res, 'Error deleting blog');
+    return messageResponse(res, 500, 'Error deleting blog');
   }
 };

@@ -1,15 +1,16 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { getBlogById, updateBlogById } from '../../api/services/blogService';
 import CherryEditor from '../../components/CherryEditor';
 import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
 import Error from '../../components/Error';
+import useAxios from '../../hooks/useAxios';
 import useFetch from '../../hooks/useFetch';
 import routes from '../../routes';
 import { extractMetaData } from '../../utils/mdUtil';
 
 function Edit() {
   const { blogId } = useParams();
-  const { data: blog, loading, error } = useFetch(getBlogById, blogId);
+  const { data: blog, loading, error } = useFetch(`/users/me/blogs/${blogId}`);
+  const axios = useAxios();
   const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
   const navigate = useNavigate();
 
@@ -17,16 +18,13 @@ function Edit() {
     // status: the new blog status to be set
     try {
       const { title, previewText } = extractMetaData(html);
-      const response = await updateBlogById(blogId, {
+      await axios.put(`/blogs/${blogId}`, {
         title,
         previewText,
         content: inputValue,
-        status,
-        createdAt: (blog.status === 'draft' && status === 'public') ? Date.now() : undefined
+        status
       });
-      const resBody = response.data;
-      const message = resBody.success ? successMessage : 'Error saving changes';
-      showFeedbackModal(resBody.success, message);
+      showFeedbackModal(true, successMessage);
     } catch (err) {
       showFeedbackModal(false, err.message);
     }

@@ -1,15 +1,7 @@
-exports.successResponse = (res, data, message = null, statusCode = 200) => {
-  res.status(statusCode).json({
-    success: true,
-    data,
-    message
-  });
+exports.dataResponse = (res, statusCode, data) => {
+  return res.status(statusCode).json(data);
 };
 
-exports.errorResponse = (res, message, statusCode = 500) => {
-  res.status(statusCode).json({
-    success: false,
-    status: statusCode,
-    message
-  });
+exports.messageResponse = (res, statusCode, message) => {
+  return res.status(statusCode).json({ message });
 };

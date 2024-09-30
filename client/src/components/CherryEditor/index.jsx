@@ -4,7 +4,7 @@ import Cherry from 'cherry-markdown';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import routes from '../../routes';
-import Loading from './Loading';
+import Loading from '../Loading';
 import 'cherry-markdown/dist/cherry-markdown.css';
 import './CherryEditor.css';
 

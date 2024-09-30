@@ -1,10 +1,10 @@
 const routes = {
   home: '/',
-  blogs: '/blogs',
   about: '/about',
+  login: '/login',
+  blogs: '/blogs',
   create: '/blogs/create',
-  edit: '/blogs/edit', // /:blogId
-  drafts: '/drafts'
+  edit: '/blogs/edit' // /:blogId
 };
 
 export default routes;

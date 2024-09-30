@@ -1,14 +1,16 @@
 import { geekblue } from '@ant-design/colors';
-import { ConfigProvider } from 'antd';
+import { App as AntdApp, ConfigProvider } from 'antd';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
+import AuthProvider from './contexts/AuthProvider';
 import About from './pages/About';
+import Blogs from './pages/Blogs';
 import Create from './pages/Create';
 import Edit from './pages/Edit';
 import Home from './pages/Home';
-import MyDrafts from './pages/MyDrafts';
+import Login from './pages/Login';
 import routes from './routes';
 import './index.css';
 
@@ -22,12 +24,16 @@ const router = createBrowserRouter([
         element: <Home />
       },
       {
-        path: routes.blogs,
-        element: <Home />
-      },
-      {
         path: routes.about,
         element: <About />
+      },
+      {
+        path: routes.login,
+        element: <Login />
+      },
+      {
+        path: routes.blogs,
+        element: <Blogs />
       },
       {
         path: routes.create,
@@ -36,10 +42,6 @@ const router = createBrowserRouter([
       {
         path: `${routes.edit}/:blogId`,
         element: <Edit />
-      },
-      {
-        path: routes.drafts,
-        element: <MyDrafts />
       }
     ]
   }
@@ -57,8 +59,17 @@ createRoot(document.getElementById('root')).render(
             headerBg: geekblue[8]
           }
         }
-      }}>
-      <RouterProvider router={router} />
+      }}
+    >
+      <AntdApp
+        message={{
+          top: 72
+        }}
+      >
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </AntdApp>
     </ConfigProvider>
   </StrictMode>
 );

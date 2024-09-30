@@ -1,6 +1,7 @@
 import { FormOutlined, InboxOutlined } from '@ant-design/icons';
-import { Col, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
+import { Button, Col, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import useAuth from './hooks/useAuth';
 import routes from './routes';
 import './App.css';
 
@@ -10,22 +11,22 @@ const { Header, Content, Footer } = Layout;
 const nonHeaderPages = [routes.create, routes.edit];
 
 function App() {
+  const { isAuthenticated } = useAuth();
   const location = useLocation();
   const shouldDisplayHeader = !nonHeaderPages.some((key) => location.pathname.startsWith(key));
 
   const getSelectedKey = () => {
     if (location.pathname.startsWith(routes.blogs) ||
-      location.pathname.startsWith(routes.drafts) ||
       location.pathname === routes.home) {
-      return routes.blogs;
+      return routes.home;
     }
     return location.pathname;
   };
 
   const navItems = [
     {
-      label: <Link to={routes.blogs}>Blogs</Link>,
-      key: routes.blogs
+      label: <Link to={routes.home}>Home</Link>,
+      key: routes.home
     },
     {
       label: <Link to={routes.about}>About</Link>,
@@ -47,13 +48,13 @@ function App() {
       },
       {
         label: (
-          <Link to={routes.drafts}>
+          <Link to={routes.blogs}>
             <Space>
-              <InboxOutlined />My Drafts
+              <InboxOutlined />My Blogs
             </Space>
           </Link>
         ),
-        key: routes.drafts
+        key: routes.blogs
       }
     ]
   };
@@ -70,26 +71,32 @@ function App() {
             className="left"
           />
           <div className="right">
-            <Dropdown.Button
-              type="primary"
-              menu={dropdownMenuProps}
-            >
-              <Link to={routes.create}>Create</Link>
-            </Dropdown.Button>
+            {
+              isAuthenticated ?
+                <Dropdown.Button
+                  type="primary"
+                  menu={dropdownMenuProps}
+                >
+                  <Link to={routes.create}>Create</Link>
+                </Dropdown.Button> :
+                <Button type="text" style={{ color: 'rgba(255, 255, 255, 0.88)' }}>
+                  <Link to={routes.login}>Log In</Link>
+                </Button>
+            }
           </div>
         </Flex>
       </Header>}
-      <Content className="app-content">
+      {shouldDisplayHeader ?
+        <Content className="app-content">
         <Row justify="center">
-          <Col
-            span={24}
-            lg={shouldDisplayHeader ? 16 : undefined}
-            className="display"
-          >
+          <Col span={24} lg={16} className="display">
             <Outlet />
           </Col>
         </Row>
-      </Content>
+      </Content> :
+      <Content className="app-content">
+        <Outlet />
+      </Content>}
       <Footer className="app-footer">
         Ant Design ©{new Date().getFullYear()} Created by Ant UED
       </Footer>
