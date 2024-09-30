@@ -6,5 +6,5 @@
 #cherry-viewer .cherry-previewer {
   border: none !important;
   background: transparent !important;
-  padding: 0 !important;
+  padding: 0 16px !important;
 }

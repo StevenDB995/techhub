@@ -18,7 +18,7 @@
 
 .app-content .display {
   min-height: calc(100vh - var(--app-header-height));
-  padding: 24px;
+  padding: 20px;
 }
 
 .app-footer {
