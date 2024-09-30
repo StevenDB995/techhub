@@ -24,3 +24,7 @@
 .app-footer {
   text-align: center;
 }
+
+.cherry-markdown {
+  word-break: normal !important;
+}

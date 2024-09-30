@@ -11,6 +11,7 @@ import Create from './pages/Create';
 import Edit from './pages/Edit';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import View from './pages/View';
 import routes from './routes';
 import './index.css';
 
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: routes.blogs,
         element: <Blogs />
+      },
+      {
+        path: `${routes.blogs}/:blogId`,
+        element: <View />
       },
       {
         path: routes.create,

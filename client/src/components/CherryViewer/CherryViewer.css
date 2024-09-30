@@ -1,0 +1,10 @@
+#cherry-viewer .cherry {
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+#cherry-viewer .cherry-previewer {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+}

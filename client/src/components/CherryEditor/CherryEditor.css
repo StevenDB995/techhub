@@ -1,12 +1,8 @@
-.cherry-markdown {
-  word-break: normal;
-}
-
-.cherry-dropdown[name="insert"] {
+#cherry-editor .cherry-dropdown[name="insert"] {
   width: 180px;
 }
 
-.button-group {
+#cherry-editor .button-group {
   z-index: 99;
   position: absolute;
   bottom: 0;

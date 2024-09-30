@@ -2,7 +2,7 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Divider, Flex, List, Space, Typography } from 'antd';
 import useModal from 'antd/es/modal/useModal';
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useAxios from '../../hooks/useAxios';
 import routes from '../../routes';
 import { getDateString } from '../../utils/dateUtil';
@@ -22,7 +22,7 @@ function ListItem({ item, editable, onDelete }) {
   return (
     <List.Item>
       <List.Item.Meta
-        title={<a className={styles.listItemTitle}>{item.title || 'Untitled'}</a>}
+        title={<Link to={`${routes.blogs}/${item._id}`} className={styles.listItemTitle}>{item.title || 'Untitled'}</Link>}
       />
       {previewText && <Paragraph className={styles.listItemContent}>{previewText}</Paragraph>}
       <Flex justify="space-between" className={styles.listItemFooter}>
