@@ -1,6 +1,5 @@
 import Cherry from 'cherry-markdown';
 import { useEffect, useRef } from 'react';
-import Loading from '../Loading';
 import './CherryViewer.css';
 
 const cherryConfig = {
@@ -17,7 +16,7 @@ const cherryConfig = {
   }
 };
 
-function CherryViewer({ value, loading }) {
+function CherryViewer({ value }) {
   const cherryInstance = useRef(null);
 
   useEffect(() => {
@@ -36,10 +35,7 @@ function CherryViewer({ value, loading }) {
   }, [value]);
 
   return (
-    <>
-      <div id={cherryConfig.id}></div>
-      <Loading display={loading} />
-    </>
+    <div id={cherryConfig.id}></div>
   );
 }
 

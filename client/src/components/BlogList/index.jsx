@@ -22,7 +22,12 @@ function ListItem({ item, editable, onDelete }) {
   return (
     <List.Item>
       <List.Item.Meta
-        title={<Link to={`${routes.blogs}/${item._id}`} className={styles.listItemTitle}>{item.title || 'Untitled'}</Link>}
+        title={
+          <Link to={`${routes.blogs}/${item._id}`} className={styles.listItemTitle}>
+            {item.title || 'Untitled'}
+          </Link>
+        }
+        description={item.author.username}
       />
       {previewText && <Paragraph className={styles.listItemContent}>{previewText}</Paragraph>}
       <Flex justify="space-between" className={styles.listItemFooter}>
