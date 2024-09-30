@@ -1,7 +1,10 @@
 const mongoose = require('mongoose');
 
-const { DB_URI } = process.env;
-mongoose.set('debug', true);
+const { NODE_ENV, DB_URI } = process.env;
+
+if (NODE_ENV === 'development') {
+  mongoose.set('debug', true);
+}
 
 const connectDB = async () => {
   try {

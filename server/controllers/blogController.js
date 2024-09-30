@@ -6,6 +6,7 @@ exports.getAllBlogs = async (req, res) => {
   try {
     const blogs = await Blog
       .find({ status: 'public' })
+      .select('-content')
       .sort({ createdAt: -1 });
     return dataResponse(res, 200, blogs);
   } catch (err) {

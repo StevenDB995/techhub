@@ -7,6 +7,7 @@ exports.getMyBlogsByStatus = async (req, res) => {
     const status = req.query.status || 'public';
     const blogs = await Blog
       .find({ author: req.user, status })
+      .select('-content')
       .sort({ createdAt: -1 });
     return dataResponse(res, 200, blogs);
   } catch (err) {
@@ -35,7 +36,7 @@ exports.getMyBlogById = async (req, res) => {
     console.error(err);
     return messageResponse(res, 500, 'Error fetching blog');
   }
-}
+};
 
 // for public view
 exports.getPublicBlogs = async (req, res) => {
@@ -44,10 +45,10 @@ exports.getPublicBlogs = async (req, res) => {
     const blogs = await Blog.find({
       author: userId,
       status: 'public'
-    }).sort({ createdAt: -1 });
+    }).select('-content').sort({ createdAt: -1 });
     return dataResponse(res, 200, blogs);
   } catch (err) {
     console.error(err);
     return messageResponse(res, 500, 'Error fetching blogs');
   }
-}
+};
