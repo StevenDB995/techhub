@@ -4,7 +4,8 @@ const routes = {
   login: '/login',
   blogs: '/blogs',
   create: '/blogs/create',
-  edit: '/blogs/edit' // /:blogId
+  edit: '/blogs/edit', // /:blogId
+  preview: '/blogs/preview' // /:blogId
 };
 
 export default routes;

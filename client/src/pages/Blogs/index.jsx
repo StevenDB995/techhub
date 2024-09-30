@@ -46,7 +46,7 @@ function Blogs() {
         <div className={styles.selectContainer}>
           <Select className={styles.select} defaultValue={initialStatus} options={options} onChange={onChange} />
         </div>
-        <BlogList data={data} loading={loading} editable={true} />
+        <BlogList data={data} loading={loading} isPublic={false} />
       </>
   );
 }

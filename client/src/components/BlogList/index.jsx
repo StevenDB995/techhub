@@ -10,7 +10,7 @@ import styles from './BlogList.module.css';
 
 const { Paragraph } = Typography;
 
-function ListItem({ item, editable, onDelete }) {
+function ListItem({ item, isPublic, onDelete }) {
   const navigate = useNavigate();
 
   let previewText = item.previewText;
@@ -23,7 +23,10 @@ function ListItem({ item, editable, onDelete }) {
     <List.Item>
       <List.Item.Meta
         title={
-          <Link to={`${routes.blogs}/${item._id}`} className={styles.listItemTitle}>
+          <Link
+            to={`${isPublic ? routes.blogs : routes.preview}/${item._id}`}
+            className={styles.listItemTitle}
+          >
             {item.title || 'Untitled'}
           </Link>
         }
@@ -36,7 +39,7 @@ function ListItem({ item, editable, onDelete }) {
           {/*<ListFooterItem icon={LikeOutlined} text={data.likes} />*/}
           {/*<ListFooterItem icon={MessageOutlined} text={data.comments} />*/}
         </Space>
-        {editable && <Space split={<Divider type="vertical" />} size={4}>
+        {!isPublic && <Space split={<Divider type="vertical" />} size={4}>
           <ListFooterItem
             className={styles.clickable}
             icon={EditOutlined}
@@ -68,7 +71,7 @@ function ListFooterItem({ icon, text, size, className, onClick }) {
   );
 }
 
-function BlogList({ data, loading, editable = false }) {
+function BlogList({ data, loading, isPublic = true }) {
   const axios = useAxios();
   const [blogs, setBlogs] = useState([]);
   const [deleteModal, deleteModalContext] = useModal();
@@ -128,7 +131,7 @@ function BlogList({ data, loading, editable = false }) {
         }}
         loading={loading}
         dataSource={blogs}
-        renderItem={(item) => <ListItem item={item} editable={editable} onDelete={confirmDelete} />}
+        renderItem={(item) => <ListItem item={item} isPublic={isPublic} onDelete={confirmDelete} />}
       />
       <div>{deleteModalContext}</div>
       <div>{feedbackModalContext}</div>
