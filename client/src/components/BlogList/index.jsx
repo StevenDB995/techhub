@@ -10,7 +10,7 @@ import styles from './BlogList.module.css';
 
 const { Paragraph } = Typography;
 
-function ListItem({ item, onDelete }) {
+function ListItem({ item, editable, onDelete }) {
   const navigate = useNavigate();
 
   let previewText = item.previewText;
@@ -31,7 +31,7 @@ function ListItem({ item, onDelete }) {
           {/*<ListFooterItem icon={LikeOutlined} text={data.likes} />*/}
           {/*<ListFooterItem icon={MessageOutlined} text={data.comments} />*/}
         </Space>
-        <Space split={<Divider type="vertical" />} size={4}>
+        {editable && <Space split={<Divider type="vertical" />} size={4}>
           <ListFooterItem
             className={styles.clickable}
             icon={EditOutlined}
@@ -48,7 +48,7 @@ function ListItem({ item, onDelete }) {
             size={6}
             onClick={() => onDelete(item._id)}
           />
-        </Space>
+        </Space>}
       </Flex>
     </List.Item>
   );
@@ -63,7 +63,7 @@ function ListFooterItem({ icon, text, size, className, onClick }) {
   );
 }
 
-function BlogList({ data, loading }) {
+function BlogList({ data, loading, editable = false }) {
   const axios = useAxios();
   const [blogs, setBlogs] = useState([]);
   const [deleteModal, deleteModalContext] = useModal();
@@ -123,7 +123,7 @@ function BlogList({ data, loading }) {
         }}
         loading={loading}
         dataSource={blogs}
-        renderItem={(item) => <ListItem item={item} onDelete={confirmDelete} />}
+        renderItem={(item) => <ListItem item={item} editable={editable} onDelete={confirmDelete} />}
       />
       <div>{deleteModalContext}</div>
       <div>{feedbackModalContext}</div>
