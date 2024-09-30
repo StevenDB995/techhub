@@ -3,11 +3,11 @@ import Error from '../../components/Error';
 import useFetch from '../../hooks/useFetch';
 
 function Home() {
-  const { data, setData, loading, error } = useFetch('/blogs');
+  const { data, loading, error } = useFetch('/blogs');
   return (
     error ?
       <Error status={error.status} message={error.message} /> :
-      <BlogList data={data} setData={setData} loading={loading} />
+      <BlogList data={data} loading={loading} />
   );
 }
 

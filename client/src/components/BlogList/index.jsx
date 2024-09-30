@@ -1,7 +1,7 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Divider, Flex, List, Space, Typography } from 'antd';
 import useModal from 'antd/es/modal/useModal';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAxios from '../../hooks/useAxios';
 import routes from '../../routes';
@@ -63,10 +63,15 @@ function ListFooterItem({ icon, text, size, className, onClick }) {
   );
 }
 
-function BlogList({ data, setData, loading }) {
+function BlogList({ data, loading }) {
   const axios = useAxios();
+  const [blogs, setBlogs] = useState([]);
   const [deleteModal, deleteModalContext] = useModal();
   const [feedbackModal, feedbackModalContext] = useModal();
+
+  useEffect(() => {
+    if (data) setBlogs(data);
+  }, [data]);
 
   const confirmDelete = (blogId) => {
     deleteModal.confirm({
@@ -101,7 +106,7 @@ function BlogList({ data, setData, loading }) {
     try {
       await axios.delete(`/blogs/${blogId}`);
       feedbackDelete(true);
-      setData(data.filter(blog => blog._id !== blogId));
+      setBlogs(blogs.filter(blog => blog._id !== blogId));
     } catch (err) {
       feedbackDelete(false, err.message);
     }
@@ -117,7 +122,7 @@ function BlogList({ data, setData, loading }) {
           align: 'center'
         }}
         loading={loading}
-        dataSource={loading ? [] : data}
+        dataSource={blogs}
         renderItem={(item) => <ListItem item={item} onDelete={confirmDelete} />}
       />
       <div>{deleteModalContext}</div>

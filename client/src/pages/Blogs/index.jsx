@@ -20,7 +20,7 @@ const url = '/users/me/blogs';
 const initialStatus = 'public';
 
 function Blogs() {
-  const { data, setData, loading, error, refetch } = useFetch(url);
+  const { data, loading, error, refetch } = useFetch(url);
   const [blogStatus, setBlogStatus] = useState(initialStatus);
   const [isBlogStatusChanged, setIsBlogStatusChanged] = useState(false);
 
@@ -46,7 +46,7 @@ function Blogs() {
         <div className={styles.selectContainer}>
           <Select className={styles.select} defaultValue={initialStatus} options={options} onChange={onChange} />
         </div>
-        <BlogList data={data} setData={setData} loading={loading} />
+        <BlogList data={data} loading={loading} />
       </>
   );
 }
