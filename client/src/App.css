@@ -18,9 +18,28 @@
 
 .app-content .display {
   min-height: calc(100vh - var(--app-header-height));
-  padding: 24px;
+  padding: 20px;
 }
 
 .app-footer {
   text-align: center;
+}
+
+.cherry-markdown {
+  word-break: normal !important;
+}
+
+#cherry-editor .cherry-dropdown[name="insert"] {
+  width: 180px;
+}
+
+#cherry-viewer .cherry {
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+#cherry-viewer .cherry-previewer {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 16px !important;
 }

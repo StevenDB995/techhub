@@ -6,6 +6,8 @@ exports.getAllBlogs = async (req, res) => {
   try {
     const blogs = await Blog
       .find({ status: 'public' })
+      .select('-content')
+      .populate('author', 'username')
       .sort({ createdAt: -1 });
     return dataResponse(res, 200, blogs);
   } catch (err) {
@@ -18,7 +20,7 @@ exports.getAllBlogs = async (req, res) => {
 exports.getBlogById = async (req, res) => {
   try {
     const { id } = req.params;
-    const blog = await Blog.findById(id);
+    const blog = await Blog.findById(id).populate('author', 'username');
 
     if (!blog) {
       return messageResponse(res, 404, 'Blog not found');
