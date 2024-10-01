@@ -1,5 +1,6 @@
 import { Button, Flex, Result } from 'antd';
 import routes from '../../routes';
+import styles from './Error.module.css';
 
 function Error({ status = 'error', title = 'Sorry, something went wrong.', message }) {
   const statusValues = ['success', 'error', 'info', 'warning', '404', '403', '500'];
@@ -12,7 +13,7 @@ function Error({ status = 'error', title = 'Sorry, something went wrong.', messa
   }
 
   return (
-    <Flex align="center" justify="center" style={{ height: '100%' }}>
+    <Flex align="center" justify="center" className={styles.errorContainer}>
       <Result
         status={status}
         title={title}

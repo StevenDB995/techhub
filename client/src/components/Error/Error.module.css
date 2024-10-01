@@ -1,0 +1,3 @@
+.errorContainer {
+  height: calc(100vh - var(--app-header-height));
+}
