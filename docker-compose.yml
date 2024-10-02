@@ -18,12 +18,10 @@ services:
   mongodb:
     image: mongo:7.0.14
     container_name: techhub-db
+    restart: always
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASS=${DB_PASS}
     ports:
       - '27017:27017'
     volumes:
