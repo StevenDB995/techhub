@@ -15,7 +15,6 @@
     "antd": "^5.20.6",
     "axios": "^1.7.7",
     "cherry-markdown": "^0.8.47",
-    "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2"
