@@ -72,7 +72,7 @@ function App() {
   return (
     <Layout className="app">
       {shouldDisplayHeader && <Header className="app-header">
-        <div className="brand">Steven's techHub</div>
+        <div className="brand">Steven&apos;s techHub</div>
         <Flex flex="max-content" justify="space-between" align="center">
           <Menu
             theme="dark"
