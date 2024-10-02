@@ -11,6 +11,13 @@
   align-items: center;
 }
 
+.app-header > .brand {
+  padding: 0 16px;
+  font-family: Roboto, monospace;
+  font-size: 16px;
+  color: white;
+}
+
 .app-header .left {
   flex: 1 1 auto;
   background: transparent;
@@ -23,6 +30,18 @@
 
 .app-footer {
   text-align: center;
+}
+
+.app-footer .social-media {
+  margin-top: 12px;
+}
+
+.app-footer .footer-link {
+  color: black !important;
+}
+
+.app-footer .footer-icon {
+  font-size: 24px;
 }
 
 .cherry-markdown {

@@ -1,0 +1,12 @@
+# sensitive environment variables
+.env*
+
+# npm dependencies
+node_modules
+
+# built dist
+dist
+
+# git related files
+.git/
+.gitignore
