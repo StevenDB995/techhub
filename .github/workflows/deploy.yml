@@ -35,6 +35,18 @@ jobs:
     - name: Pull the web app image from DockerHub
       run: docker pull ${{ secrets.DOCKER_USERNAME }}/techhub-app:latest
 
+    - name: Bring down running containers
+      run: docker compose down
+
     - name: Deploy and run docker compose
+      env:
+        APP_IMAGE: ${{ vars.APP_IMAGE }}
+        SERVER_PORT: ${{ vars.SERVER_PORT }}
+        MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASS: ${{ secrets.DB_PASS }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+        REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
       run: docker compose up -d
 
