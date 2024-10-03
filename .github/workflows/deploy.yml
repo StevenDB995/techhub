@@ -26,6 +26,7 @@ jobs:
 
   deploy:
     runs-on: self-hosted  # Use your self-hosted runner
+    needs: build  # Wait for the build stage to complete
 
     steps:
     - name: Checkout the code on the deployment host
