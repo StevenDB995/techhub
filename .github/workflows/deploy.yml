@@ -3,8 +3,6 @@ name: deploy
 on:
   push:
     branches: [ "main" ]  # Trigger on push to main branch
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   build:
@@ -26,13 +24,16 @@ jobs:
     - name: Push the Docker image to DockerHub
       run: docker push ${{ secrets.DOCKER_USERNAME }}/techhub-app:latest
 
-  # deploy:
-  #   runs-on: self-hosted  # Use your self-hosted runner
+  deploy:
+    runs-on: self-hosted  # Use your self-hosted runner
 
-  #   steps:
-  #   - name: Pull the Docker image from DockerHub
-  #     run: docker pull ${{ secrets.DOCKER_USERNAME }}/techhub-app:latest
+    steps:
+    - name: Checkout the code on the deployment host
+      uses: actions/checkout@v4  # Bring the docker-compose.yml to the host
 
-  #   - name: Deploy and run docker-compose
-  #     run: docker compose up -d  # Pulls and runs the containers in detached mode
+    - name: Pull the web app image from DockerHub
+      run: docker pull ${{ secrets.DOCKER_USERNAME }}/techhub-app:latest
+
+    - name: Deploy and run docker compose
+      run: docker compose up -d
 
