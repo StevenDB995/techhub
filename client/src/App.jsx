@@ -6,12 +6,13 @@ import {
   InstagramFilled,
   LinkedinFilled
 } from '@ant-design/icons';
-import { Button, Col, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
-import axios from 'axios';
+import { App as AntdApp, Button, Col, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
+import request from 'axios';
 import { useEffect, useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import NewTabLink from './components/NewTabLink';
 import useAuth from './hooks/useAuth';
+import useAxios from './hooks/useAxios';
 import routes from './routes';
 import './App.css';
 
@@ -21,13 +22,16 @@ const { Header, Content, Footer } = Layout;
 const nonHeaderPages = [routes.create, routes.edit];
 
 function App() {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const [footerData, setFooterData] = useState(null);
+  const axios = useAxios();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { message: antdMessage } = AntdApp.useApp();
   const shouldDisplayHeader = !nonHeaderPages.some((key) => location.pathname.startsWith(key));
 
   useEffect(() => {
-    axios.get('/footer.json').then(res => {
+    request.get('/footer.json').then(res => {
       setFooterData(res.data);
     }).catch(err => console.error(err.message));
   }, []);
@@ -74,8 +78,15 @@ function App() {
     }
   ];
 
-  const handleLogout = () => {
-    console.log('logout');
+  const handleLogout = async () => {
+    try {
+      await axios.post('/auth/logout');
+      logout();
+      navigate(routes.home);
+      void antdMessage.info('You are logged out');
+    } catch (err) {
+      console.error(err.message);
+    }
   };
 
   const userDropdownItems = [

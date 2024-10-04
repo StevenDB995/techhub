@@ -101,3 +101,8 @@ exports.login = async (req, res) => {
     return messageResponse(res, 500, 'Unexpected error');
   }
 };
+
+exports.logout = async (req, res) => {
+  res.clearCookie(constants.REFRESH_TOKEN_NAME, { path: constants.REFRESH_TOKEN_PATH });
+  return messageResponse(res, 200, 'Logged out');
+};
