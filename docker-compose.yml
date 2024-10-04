@@ -28,7 +28,7 @@ services:
     ports:
       - '27017:27017'
     volumes:
-      - ./data/db:/data/db # host:container
+      - techhub-db:/data/db # host:container
       - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro # mount init script
     networks:
       - app_network
@@ -36,3 +36,6 @@ services:
 networks:
   app_network:
     driver: bridge
+
+volumes:
+  techhub-db:
