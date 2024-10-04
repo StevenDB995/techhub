@@ -1,6 +1,7 @@
 services:
   app:
     image: ${APP_IMAGE}:${APP_VERSION}
+    container_name: techhub-app
     environment:
       - NODE_ENV=production
       - SERVER_PORT=3000
@@ -16,6 +17,7 @@ services:
 
   mongodb:
     image: mongo:7.0.14
+    container_name: techhub-db
     restart: always
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
@@ -26,7 +28,7 @@ services:
     ports:
       - '27017:27017'
     volumes:
-      - db:/data/db # host:container
+      - techhub-db:/data/db # host:container
       - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro # mount init script
     networks:
       - app_network
@@ -36,4 +38,5 @@ networks:
     driver: bridge
 
 volumes:
-  db:
+  techhub-db:
+    name: techhub-db
