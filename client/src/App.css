@@ -23,6 +23,10 @@
   background: transparent;
 }
 
+.app-header .text-item {
+  color: rgba(255, 255, 255, 0.88) !important;
+}
+
 .app-content .display {
   min-height: calc(100vh - var(--app-header-height));
   padding: 20px;

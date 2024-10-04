@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const { messageResponse, errorTypes } = require('../utils/response');
+const constants = require('../config/constants');
 
 const { ACCESS_TOKEN_SECRET } = process.env;
 
@@ -19,7 +20,7 @@ const authMiddleware = async (req, res, next) => {
       const user = await User.findById(userId);
       if (!user?.isActive) {
         // instruct to clear refresh token in browser
-        res.clearCookie('refreshToken', { path: '/api/auth/refresh-token' });
+        res.clearCookie(constants.REFRESH_TOKEN_NAME, { path: constants.REFRESH_TOKEN_PATH });
         return messageResponse(res, 403, 'Forbidden', errorTypes.ILLEGAL_USER);
       }
     } catch (dbError) {

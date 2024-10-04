@@ -1,4 +1,11 @@
-import { FormOutlined, GithubFilled, InboxOutlined, InstagramFilled, LinkedinFilled } from '@ant-design/icons';
+import {
+  CaretDownFilled,
+  FormOutlined,
+  GithubFilled,
+  InboxOutlined,
+  InstagramFilled,
+  LinkedinFilled
+} from '@ant-design/icons';
 import { Button, Col, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
@@ -14,7 +21,7 @@ const { Header, Content, Footer } = Layout;
 const nonHeaderPages = [routes.create, routes.edit];
 
 function App() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [footerData, setFooterData] = useState(null);
   const location = useLocation();
   const shouldDisplayHeader = !nonHeaderPages.some((key) => location.pathname.startsWith(key));
@@ -44,30 +51,40 @@ function App() {
     }
   ];
 
-  const dropdownMenuProps = {
-    items: [
-      {
-        label: (
-          <Link to={routes.create}>
-            <Space>
-              <FormOutlined />New Blog
-            </Space>
-          </Link>
-        ),
-        key: routes.create
-      },
-      {
-        label: (
-          <Link to={routes.blogs}>
-            <Space>
-              <InboxOutlined />My Blogs
-            </Space>
-          </Link>
-        ),
-        key: routes.blogs
-      }
-    ]
+  const createDropdownItems = [
+    {
+      label: (
+        <Link to={routes.create}>
+          <Space>
+            <FormOutlined />New Blog
+          </Space>
+        </Link>
+      ),
+      key: routes.create
+    },
+    {
+      label: (
+        <Link to={routes.blogs}>
+          <Space>
+            <InboxOutlined />My Blogs
+          </Space>
+        </Link>
+      ),
+      key: routes.blogs
+    }
+  ];
+
+  const handleLogout = () => {
+    console.log('logout');
   };
+
+  const userDropdownItems = [
+    {
+      label: 'Logout',
+      onClick: handleLogout,
+      key: 'logout'
+    }
+  ];
 
   return (
     <Layout className="app">
@@ -84,13 +101,24 @@ function App() {
           <div className="right">
             {
               isAuthenticated ?
-                <Dropdown.Button
-                  type="primary"
-                  menu={dropdownMenuProps}
-                >
-                  <Link to={routes.create}>Create</Link>
-                </Dropdown.Button> :
-                <Button type="text" style={{ color: 'rgba(255, 255, 255, 0.88)' }}>
+                <Flex align="center" gap="middle">
+                  <div>
+                    <Dropdown.Button
+                      type="primary"
+                      menu={{ items: createDropdownItems }}
+                    >
+                      <Link to={routes.create}>Create</Link>
+                    </Dropdown.Button>
+                  </div>
+                  <div>
+                    <Dropdown menu={{ items: userDropdownItems }}>
+                      <Space className="text-item">
+                        {`Hi, ${user?.username}!`}<CaretDownFilled />
+                      </Space>
+                    </Dropdown>
+                  </div>
+                </Flex> :
+                <Button type="text" className="text-item">
                   <Link to={routes.login}>Log In</Link>
                 </Button>
             }
