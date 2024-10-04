@@ -1,5 +1,16 @@
+const User = require('../models/userModel');
 const Blog = require('../models/blogModel');
 const { dataResponse, messageResponse } = require('../utils/response');
+
+exports.getCurrentUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.user).select('-password');
+    return dataResponse(res, 200, user);
+  } catch (err) {
+    console.error(err);
+    return messageResponse(res, 500, 'Error fetching user');
+  }
+}
 
 // for self content management
 exports.getMyBlogsByStatus = async (req, res) => {

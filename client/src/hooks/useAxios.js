@@ -1,6 +1,6 @@
 import { App as AntdApp } from 'antd';
 import { useContext, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import api, { createAxios } from '../api/axios';
 import { AuthContext } from '../contexts/AuthProvider';
 import routes from '../routes';
@@ -10,6 +10,7 @@ import routes from '../routes';
 const useAxios = () => {
   const { login, logout } = useContext(AuthContext);
   const location = useLocation();
+  const navigate = useNavigate();
   const { message: antdMessage } = AntdApp.useApp();
 
   return useMemo(() => {
@@ -21,6 +22,7 @@ const useAxios = () => {
       async error => {
         if (error.response) {
           const statusCode = error.response.status;
+          const responseBody = error.response.data;
 
           if (statusCode === 401) {
             if (location.pathname.startsWith(routes.login)) {
@@ -47,6 +49,13 @@ const useAxios = () => {
 
               return Promise.reject(refreshError);
             }
+
+          } else if (statusCode === 403 && responseBody.type === 'ILLEGAL_USER') {
+            // sign out the user if it's marked as inactive or removed
+            // when its session has not expired
+            logout();
+            antdMessage.error('Illegal user. signing out');
+            navigate(routes.home);
           }
         }
 

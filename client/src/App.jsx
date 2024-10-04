@@ -1,10 +1,18 @@
-import { FormOutlined, GithubFilled, InboxOutlined, InstagramFilled, LinkedinFilled } from '@ant-design/icons';
-import { Button, Col, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
-import axios from 'axios';
+import {
+  CaretDownFilled,
+  FormOutlined,
+  GithubFilled,
+  InboxOutlined,
+  InstagramFilled,
+  LinkedinFilled
+} from '@ant-design/icons';
+import { App as AntdApp, Button, Col, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
+import request from 'axios';
 import { useEffect, useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import NewTabLink from './components/NewTabLink';
 import useAuth from './hooks/useAuth';
+import useAxios from './hooks/useAxios';
 import routes from './routes';
 import './App.css';
 
@@ -14,13 +22,16 @@ const { Header, Content, Footer } = Layout;
 const nonHeaderPages = [routes.create, routes.edit];
 
 function App() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const [footerData, setFooterData] = useState(null);
+  const axios = useAxios();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { message: antdMessage } = AntdApp.useApp();
   const shouldDisplayHeader = !nonHeaderPages.some((key) => location.pathname.startsWith(key));
 
   useEffect(() => {
-    axios.get('/footer.json').then(res => {
+    request.get('/footer.json').then(res => {
       setFooterData(res.data);
     }).catch(err => console.error(err.message));
   }, []);
@@ -44,30 +55,47 @@ function App() {
     }
   ];
 
-  const dropdownMenuProps = {
-    items: [
-      {
-        label: (
-          <Link to={routes.create}>
-            <Space>
-              <FormOutlined />New Blog
-            </Space>
-          </Link>
-        ),
-        key: routes.create
-      },
-      {
-        label: (
-          <Link to={routes.blogs}>
-            <Space>
-              <InboxOutlined />My Blogs
-            </Space>
-          </Link>
-        ),
-        key: routes.blogs
-      }
-    ]
+  const createDropdownItems = [
+    {
+      label: (
+        <Link to={routes.create}>
+          <Space>
+            <FormOutlined />New Blog
+          </Space>
+        </Link>
+      ),
+      key: routes.create
+    },
+    {
+      label: (
+        <Link to={routes.blogs}>
+          <Space>
+            <InboxOutlined />My Blogs
+          </Space>
+        </Link>
+      ),
+      key: routes.blogs
+    }
+  ];
+
+  const handleLogout = async () => {
+    try {
+      await axios.post('/auth/logout');
+      logout();
+      navigate(routes.home);
+      void antdMessage.info('You are logged out');
+    } catch (err) {
+      console.error(err.message);
+    }
   };
+
+  const userDropdownItems = [
+    {
+      label: 'Logout',
+      onClick: handleLogout,
+      key: 'logout'
+    }
+  ];
 
   return (
     <Layout className="app">
@@ -84,13 +112,24 @@ function App() {
           <div className="right">
             {
               isAuthenticated ?
-                <Dropdown.Button
-                  type="primary"
-                  menu={dropdownMenuProps}
-                >
-                  <Link to={routes.create}>Create</Link>
-                </Dropdown.Button> :
-                <Button type="text" style={{ color: 'rgba(255, 255, 255, 0.88)' }}>
+                <Flex align="center" gap="middle">
+                  <div>
+                    <Dropdown.Button
+                      type="primary"
+                      menu={{ items: createDropdownItems }}
+                    >
+                      <Link to={routes.create}>Create</Link>
+                    </Dropdown.Button>
+                  </div>
+                  <div>
+                    <Dropdown menu={{ items: userDropdownItems }}>
+                      <Space className="text-item">
+                        {`Hi, ${user?.username}!`}<CaretDownFilled />
+                      </Space>
+                    </Dropdown>
+                  </div>
+                </Flex> :
+                <Button type="text" className="text-item">
                   <Link to={routes.login}>Log In</Link>
                 </Button>
             }
