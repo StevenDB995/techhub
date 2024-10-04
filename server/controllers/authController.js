@@ -47,7 +47,7 @@ exports.signup = async (req, res) => {
   try {
     // For now the system can have only one user
     // Will remove this constraint in future for system functionalities
-    if (await User.countDocuments() > 0) {
+    if (await User.countDocuments() >= 2) {
       return messageResponse(res, 403, 'Forbidden');
     }
 
