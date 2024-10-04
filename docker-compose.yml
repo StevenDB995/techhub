@@ -39,3 +39,4 @@ networks:
 
 volumes:
   techhub-db:
+    name: techhub-db
