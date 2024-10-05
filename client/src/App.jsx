@@ -22,13 +22,24 @@ const { Header, Content, Footer } = Layout;
 const nonHeaderPages = [routes.create, routes.edit];
 
 function App() {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
+  const [user, setUser] = useState(null);
   const [footerData, setFooterData] = useState(null);
   const axios = useAxios();
+
   const location = useLocation();
   const navigate = useNavigate();
   const { message: antdMessage } = AntdApp.useApp();
+
   const shouldDisplayHeader = !nonHeaderPages.some((key) => location.pathname.startsWith(key));
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      axios.get('/users/me')
+        .then(res => setUser(res.data))
+        .catch(err => console.error(err.message));
+    }
+  }, [isAuthenticated, axios]);
 
   useEffect(() => {
     request.get('/footer.json').then(res => {
