@@ -1,35 +1,26 @@
-import {
-  CaretDownFilled,
-  FormOutlined,
-  GithubFilled,
-  InboxOutlined,
-  InstagramFilled,
-  LinkedinFilled
-} from '@ant-design/icons';
-import { App as AntdApp, Button, Col, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
+import { GithubFilled, InstagramFilled, LinkedinFilled } from '@ant-design/icons';
+import { Col, Flex, Layout, Row } from 'antd';
 import request from 'axios';
 import { useEffect, useState } from 'react';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
+import AppNavbar from './components/AppNavbar';
 import NewTabLink from './components/NewTabLink';
 import useAuth from './hooks/useAuth';
 import useAxios from './hooks/useAxios';
 import routes from './routes';
 import './App.css';
 
-const { Header, Content, Footer } = Layout;
+const { Content, Footer } = Layout;
 
 // pages that do not display the header
 const nonHeaderPages = [routes.create, routes.edit];
 
 function App() {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [user, setUser] = useState(null);
   const [footerData, setFooterData] = useState(null);
   const axios = useAxios();
-
   const location = useLocation();
-  const navigate = useNavigate();
-  const { message: antdMessage } = AntdApp.useApp();
 
   const shouldDisplayHeader = !nonHeaderPages.some((key) => location.pathname.startsWith(key));
 
@@ -47,106 +38,9 @@ function App() {
     }).catch(err => console.error(err.message));
   }, []);
 
-  const getSelectedKey = () => {
-    if (location.pathname.startsWith(routes.blogs) ||
-      location.pathname === routes.home) {
-      return routes.home;
-    }
-    return location.pathname;
-  };
-
-  const navItems = [
-    {
-      label: <Link to={routes.home}>Home</Link>,
-      key: routes.home
-    },
-    {
-      label: <Link to={routes.about}>About</Link>,
-      key: routes.about
-    }
-  ];
-
-  const createDropdownItems = [
-    {
-      label: (
-        <Link to={routes.create}>
-          <Space>
-            <FormOutlined />New Blog
-          </Space>
-        </Link>
-      ),
-      key: routes.create
-    },
-    {
-      label: (
-        <Link to={routes.blogs}>
-          <Space>
-            <InboxOutlined />My Blogs
-          </Space>
-        </Link>
-      ),
-      key: routes.blogs
-    }
-  ];
-
-  const handleLogout = async () => {
-    try {
-      await axios.post('/auth/logout');
-      logout();
-      navigate(routes.home);
-      void antdMessage.info('You are logged out');
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-
-  const userDropdownItems = [
-    {
-      label: 'Logout',
-      onClick: handleLogout,
-      key: 'logout'
-    }
-  ];
-
   return (
     <Layout className="app">
-      {shouldDisplayHeader && <Header className="app-header">
-        <div className="brand">Steven&apos;s techHub</div>
-        <Flex flex="max-content" justify="space-between" align="center">
-          <Menu
-            theme="dark"
-            mode="horizontal"
-            selectedKeys={[getSelectedKey()]}
-            items={navItems}
-            className="left"
-          />
-          <div className="right">
-            {
-              isAuthenticated ?
-                <Flex align="center" gap="middle">
-                  <div>
-                    <Dropdown.Button
-                      type="primary"
-                      menu={{ items: createDropdownItems }}
-                    >
-                      <Link to={routes.create}>Create</Link>
-                    </Dropdown.Button>
-                  </div>
-                  <div>
-                    <Dropdown menu={{ items: userDropdownItems }}>
-                      <Space className="text-item">
-                        {`Hi, ${user?.username}!`}<CaretDownFilled />
-                      </Space>
-                    </Dropdown>
-                  </div>
-                </Flex> :
-                <Button type="text" className="text-item">
-                  <Link to={routes.login}>Log In</Link>
-                </Button>
-            }
-          </div>
-        </Flex>
-      </Header>}
+      {shouldDisplayHeader && <AppNavbar user={user} />}
       {shouldDisplayHeader ?
         <Content className="app-content">
           <Row justify="center">

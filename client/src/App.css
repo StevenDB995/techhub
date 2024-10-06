@@ -2,31 +2,6 @@
   --app-header-height: 64px;
 }
 
-.app-header {
-  position: sticky;
-  top: 0;
-  height: var(--app-header-height);
-  z-index: 999;
-  display: flex;
-  align-items: center;
-}
-
-.app-header > .brand {
-  padding: 0 16px;
-  font-family: Roboto, monospace;
-  font-size: 16px;
-  color: white;
-}
-
-.app-header .left {
-  flex: 1 1 auto;
-  background: transparent;
-}
-
-.app-header .text-item {
-  color: rgba(255, 255, 255, 0.88) !important;
-}
-
 .app-content .display {
   min-height: calc(100vh - var(--app-header-height));
   padding: 20px;

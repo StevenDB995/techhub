@@ -1,0 +1,33 @@
+.appHeader {
+  position: sticky;
+  top: 0;
+  height: var(--app-header-height);
+  z-index: 999;
+  display: flex;
+  align-items: center;
+}
+
+.appHeader.mobile {
+  padding: 0 24px;
+}
+
+.brand {
+  padding: 0 16px;
+  font-family: Roboto, monospace;
+  font-size: 16px;
+  color: white;
+}
+
+.left {
+  flex: 1 1 auto;
+}
+
+.right {
+  flex: 1 1 auto;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.textItem {
+  color: rgba(255, 255, 255, 0.88) !important;
+}
