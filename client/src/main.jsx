@@ -67,6 +67,10 @@ createRoot(document.getElementById('root')).render(
         components: {
           Layout: {
             headerBg: geekblue[8]
+          },
+          Menu: {
+            darkItemBg: 'transparent',
+            darkSubMenuItemBg: 'transparent'
           }
         }
       }}
