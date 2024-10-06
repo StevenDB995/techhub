@@ -1,8 +1,11 @@
-.appHeader {
+.appNavbar {
   position: sticky;
   top: 0;
-  height: var(--app-header-height);
   z-index: 999;
+}
+
+.appHeader {
+  height: var(--app-header-height);
   display: flex;
   align-items: center;
 }

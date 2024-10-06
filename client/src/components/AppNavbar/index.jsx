@@ -139,7 +139,7 @@ function AppNavbar({ user }) {
   };
 
   return (
-    <Row>
+    <Row className={styles.appNavbar}>
       <Col span={0} md={24}>
         <Header className={styles.appHeader}>
           {brand}
