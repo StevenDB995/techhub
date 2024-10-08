@@ -43,7 +43,7 @@ hosting web services.
 
 ## TODO
 
-The following features are expected in the system in the near future:
+The following features are expected in the system in the next release:
 
 - [ ] Auto save blogs;
 - [ ] Comment blog posts;
