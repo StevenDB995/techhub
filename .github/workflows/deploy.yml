@@ -3,6 +3,8 @@ name: deploy
 on:
   push:
     branches: [ "main" ]  # Trigger on push to main branch
+    paths-ignore:  # do not trigger on change of any README
+      - '**/README.md'
 
 jobs:
   build:
