@@ -86,6 +86,9 @@ exports.login = async (req, res) => {
       return messageResponse(res, 401, 'Invalid credentials');
     }
 
+    user.lastLogin = Date.now();
+    await user.save();
+
     const accessToken = signAccessToken(user._id);
     const refreshToken = signRefreshToken(user._id);
 
