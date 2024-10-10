@@ -1,7 +1,7 @@
 # Steven's techHub
 
-[Steven's techHub](https://techhub.stevendb.xyz) is a markdown-based blogging platform. As a software engineer and
-developer exposed to extensive technical content on a daily basis, I need a place to take notes and organise my
+[Steven's techHub](https://techhub.stevendb.xyz) is a technical blogging and journaling platform. As a software engineer
+and developer exposed to extensive technical content on a daily basis, I need a place to take notes and organise my
 thoughts, and I think it would be cool if I share some tricks and insights to the community. This platform is well
 crafted for this purpose, and it will be actively maintained as long as I stay in the industry (I don't see the day I
 quit though, 'cause I love it). For now only I and a visitor account can post content onto this website, concerning the
@@ -9,8 +9,8 @@ project scale, budget and my time. However, more users will be welcomed to contr
 more interactive features are expected to be introduced to the platform, such as comments and likes.
 
 This is a personal project I started mainly to expand my skill sets and enhance my technical proficiency. Therefore,
-every development aspects are relevant, including UI, app backend, persistent storage, deployment and CI/CD. It's a
-really enjoyable journey, and I look forward to gain more technical insights through this project.
+every development aspects are relevant, including UI, app backend, persistent storage, deployment and CI/CD. It's really
+an enjoyable journey, and I look forward to gaining more technical insights through this project.
 
 ## Visitor account
 
