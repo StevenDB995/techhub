@@ -1,6 +1,8 @@
 const User = require('../models/userModel');
 const Blog = require('../models/blogModel');
 const { dataResponse, messageResponse } = require('../utils/response');
+const { isValidPassword } = require('../utils/validate');
+const { hashPassword } = require('../utils/password');
 
 exports.getCurrentUser = async (req, res) => {
   try {
@@ -10,7 +12,7 @@ exports.getCurrentUser = async (req, res) => {
     console.error(err);
     return messageResponse(res, 500, 'Error fetching user');
   }
-}
+};
 
 // for self content management
 exports.getMyBlogsByStatus = async (req, res) => {
@@ -64,5 +66,33 @@ exports.getPublicBlogs = async (req, res) => {
   } catch (err) {
     console.error(err);
     return messageResponse(res, 500, 'Error fetching blogs');
+  }
+};
+
+// admin only
+exports.updateUser = async (req, res) => {
+  const { userId } = req.params;
+
+  // TODO: authorize
+
+  // TODO: validate username and email
+
+  const updateData = req.body;
+  if (!isValidPassword(updateData.password)) {
+    return messageResponse(res, 400, 'Invalid password');
+  }
+
+  // TODO: check whether the username and email exists
+
+  try {
+    if (updateData.password) {
+      updateData.password = await hashPassword(updateData.password);
+    }
+    updateData.updatedAt = Date.now();
+    await User.findByIdAndUpdate(userId, updateData, { new: true });
+    return messageResponse(res, 200, 'User updated successfully!');
+  } catch (err) {
+    console.error(err);
+    return messageResponse(res, 500, 'Error updating user');
   }
 };

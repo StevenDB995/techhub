@@ -2,6 +2,7 @@ const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const { messageResponse, dataResponse } = require('../utils/response');
 const { isValidUsername, isValidPassword, isValidEmail } = require('../utils/validate');
+const { hashPassword, comparePassword } = require('../utils/password');
 const { signAccessToken, signRefreshToken } = require('../utils/token');
 const constants = require('../config/constants');
 
@@ -52,7 +53,8 @@ exports.signup = async (req, res) => {
       return messageResponse(res, 403, 'Forbidden');
     }
 
-    const user = new User({ username, password, email });
+    const hashedPassword = await hashPassword(password);
+    const user = new User({ username, password: hashedPassword, email });
     await user.save();
     return messageResponse(res, 201, 'Signed up successfully!');
 
@@ -81,7 +83,7 @@ exports.login = async (req, res) => {
       return messageResponse(res, 401, 'Invalid credentials');
     }
 
-    const match = await user.comparePassword(password);
+    const match = await comparePassword(password, user.password);
     if (!match) {
       return messageResponse(res, 401, 'Invalid credentials');
     }

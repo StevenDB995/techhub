@@ -9,5 +9,6 @@ router.get('/me/blogs', authMiddleware, userController.getMyBlogsByStatus);
 router.get('/me/blogs/:blogId', authMiddleware, userController.getMyBlogById);
 
 router.get('/:userId/blogs', userController.getPublicBlogs);
+router.put('/:userId', userController.updateUser);
 
 module.exports = router;
