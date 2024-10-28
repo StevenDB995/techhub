@@ -1,8 +1,10 @@
+import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CherryEditor from '../../components/CherryEditor';
 import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
 import useAxios from '../../hooks/useAxios';
 import routes from '../../routes';
+import { parseJSON } from '../../utils/jsonUtil';
 
 const markdownTemplate = `# Heading 1
 ## Heading 2
@@ -10,16 +12,21 @@ Paragraph here
 ### Heading 3
 If you know, you know ;)`;
 
+const localStorageKey = 'create';
+
 function Create() {
   const axios = useAxios();
   const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
   const navigate = useNavigate();
+
+  const localDraft = useRef(parseJSON(localStorage.getItem(localStorageKey)));
 
   const handleSubmit = async (blogData, successMessage) => {
     // blogData.status: the new blog status to be set
     try {
       await axios.post('/blogs', blogData);
       showFeedbackModal(true, successMessage);
+      localStorage.removeItem(localStorageKey);
     } catch (err) {
       showFeedbackModal(false, err.message);
     }
@@ -51,8 +58,10 @@ function Create() {
   return (
     <>
       <CherryEditor
-        initialContent={markdownTemplate}
+        initialTitle={localDraft.current?.title || ''}
+        initialContent={localDraft.current?.content || markdownTemplate}
         buttonPropsList={buttonPropsList}
+        localStorageKey={localStorageKey}
       />
       <FeedbackModal onSuccess={() => navigate(routes.home)} />
     </>
