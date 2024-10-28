@@ -73,8 +73,9 @@ function Edit() {
   };
 
   const isDisabled = (title, content) => (
+    !blog ||
     content.trim() === '' ||
-    blog && (content === blog.content && title === blog.title)
+    content === blog.content && title === blog.title
   );
 
   const publicButtons = [
