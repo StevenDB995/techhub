@@ -45,7 +45,14 @@ const cherryConfig = {
   }
 };
 
-function CherryEditor({ initialTitle = '', initialContent, loading = false, buttonPropsList }) {
+function CherryEditor({
+  initialTitle = '',
+  initialContent,
+  loading = false,
+  buttonPropsList,
+  localStorageKey,
+  loadSourceConfirmed = true  // whether the load source (localStorage or database) of the blog is confirmed
+}) {
   const cherryInstance = useRef(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -103,10 +110,17 @@ function CherryEditor({ initialTitle = '', initialContent, loading = false, butt
     setTitle(initialTitle);
   }, [initialTitle, initialContent]);
 
+  // auto-save using localStorage
+  useEffect(() => {
+    if (!loading && loadSourceConfirmed) {
+      localStorage.setItem(localStorageKey, JSON.stringify({ title, content }));
+    }
+  }, [title, content, loading, loadSourceConfirmed, localStorageKey]);
+
   return (
     <div className={styles.contentWrapper}>
       <Flex align="center" className={styles.titleContainer}>
-        <Input placeholder='Title' value={title} onChange={handleTitleChange} className={styles.titleInput} />
+        <Input placeholder="Title" value={title} onChange={handleTitleChange} className={styles.titleInput} />
       </Flex>
       <div id={cherryConfig.id} className={styles.cherryEditor}>
         <Flex gap={buttonPropsList.length > 1 ? 'small' : 'middle'} wrap className={styles.buttonGroup}>

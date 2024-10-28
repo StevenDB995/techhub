@@ -1,3 +1,5 @@
+import useModal from 'antd/es/modal/useModal';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import CherryEditor from '../../components/CherryEditor';
 import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
@@ -5,19 +7,51 @@ import Error from '../../components/Error';
 import useAxios from '../../hooks/useAxios';
 import useFetch from '../../hooks/useFetch';
 import routes from '../../routes';
+import { parseJSON } from '../../utils/jsonUtil';
+
+const localStorageKeyPrefix = 'edit-';
 
 function Edit() {
   const { blogId } = useParams();
   const { data: blog, loading, error } = useFetch(`/users/me/blogs/${blogId}`);
   const axios = useAxios();
-  const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
   const navigate = useNavigate();
+
+  // whether to use local draft or not
+  const [usesLocalDraft, setUsesLocalDraft] = useState(false);
+  // whether the load source (localStorage or database) of the blog is confirmed
+  const [loadSourceConfirmed, setLoadSourceConfirmed] = useState(false);
+
+  const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
+  const [confirmLoadSourceModal, confirmLocalDraftModalContext] = useModal();
+
+  const localStorageKey = localStorageKeyPrefix + blogId;
+  const localDraft = useRef(parseJSON(localStorage.getItem(localStorageKey)));
+
+  useEffect(() => {
+    if (localStorage.getItem(localStorageKey)) {
+      confirmLoadSourceModal.confirm({
+        title: 'Unsaved draft found',
+        content: 'You have an unsaved draft of this blog. Do you want to continue editing?',
+        okText: 'Continue',
+        cancelText: 'Discard',
+        cancelButtonProps: {
+          danger: true
+        },
+        onOk: () => setUsesLocalDraft(true),
+        afterClose: () => setLoadSourceConfirmed(true)
+      });
+    } else {
+      setLoadSourceConfirmed(true);
+    }
+  }, [confirmLoadSourceModal, localStorageKey]);
 
   const handleSubmit = async (blogData, successMessage) => {
     // blogData.status: the new blog status to be set
     try {
       await axios.put(`/blogs/${blogId}`, blogData);
       showFeedbackModal(true, successMessage);
+      localStorage.removeItem(localStorageKey);
     } catch (err) {
       showFeedbackModal(false, err.message);
     }
@@ -70,12 +104,15 @@ function Edit() {
       <Error status={error.status} message={error.message} /> :
       <>
         <CherryEditor
-          initialTitle={blog ? blog.title : ''}
-          initialContent={blog ? blog.content : ''}
+          initialTitle={(usesLocalDraft ? localDraft.current?.title : blog?.title) || ''}
+          initialContent={(usesLocalDraft ? localDraft.current?.content : blog?.content) || ''}
           loading={loading}
-          buttonPropsList={blog && blog.status === 'public' ? publicButtons : draftButtons}
+          buttonPropsList={blog?.status === 'public' ? publicButtons : draftButtons}
+          localStorageKey={localStorageKey}
+          loadSourceConfirmed={loadSourceConfirmed}
         />
         <FeedbackModal onSuccess={() => navigate(routes.home)} />
+        {confirmLocalDraftModalContext}
       </>
   );
 }
