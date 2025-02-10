@@ -1,5 +1,5 @@
 import { Select } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import BlogList from '../../components/BlogList';
 import Error from '../../components/Error';
 import useFetch from '../../hooks/useFetch';
@@ -22,20 +22,20 @@ const initialStatus = 'public';
 function Blogs() {
   const { data, loading, error, refetch } = useFetch(url);
   const [blogStatus, setBlogStatus] = useState(initialStatus);
-  const [isBlogStatusChanged, setIsBlogStatusChanged] = useState(false);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
-    if (isBlogStatusChanged) {
+    if (!isFirstRender.current) {
       void refetch({
         params: { status: blogStatus }
       });
     }
-  }, [blogStatus, isBlogStatusChanged, refetch]);
+  }, [blogStatus, refetch]);
 
   const onChange = (value) => {
     setBlogStatus(value);
-    if (!isBlogStatusChanged) {
-      setIsBlogStatusChanged(true);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
     }
   };
 
