@@ -84,7 +84,7 @@ function CherryEditor({
   const handleCancel = () => {
     cancelModal.confirm({
       title: 'Quit Editing',
-      content: 'Your current progress will be lost. Are you sure?',
+      content: 'Are you sure? Don\'t worry, your current progress will be saved locally after quiting.',
       centered: true,
       okText: 'Keep Editing',
       cancelText: 'Quit',

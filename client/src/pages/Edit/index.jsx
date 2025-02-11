@@ -112,7 +112,7 @@ function Edit() {
           localStorageKey={localStorageKey}
           loadSourceConfirmed={loadSourceConfirmed}
         />
-        <FeedbackModal onSuccess={() => navigate(routes.home)} />
+        <FeedbackModal onSuccess={() => navigate(routes.blogs)} />
         {confirmLocalDraftModalContext}
       </>
   );
