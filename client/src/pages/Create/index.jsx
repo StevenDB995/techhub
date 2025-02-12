@@ -63,7 +63,7 @@ function Create() {
         buttonPropsList={buttonPropsList}
         localStorageKey={localStorageKey}
       />
-      <FeedbackModal onSuccess={() => navigate(routes.home)} />
+      <FeedbackModal onSuccess={() => navigate(routes.blogs)} />
     </>
   );
 }

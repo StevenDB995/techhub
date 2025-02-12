@@ -54,7 +54,7 @@ const useAxios = () => {
             // sign out the user if it's marked as inactive or removed
             // when its session has not expired
             logout();
-            antdMessage.error('Illegal user. signing out');
+            antdMessage.error('Illegal user. Signing out');
             navigate(routes.home);
           }
         }
