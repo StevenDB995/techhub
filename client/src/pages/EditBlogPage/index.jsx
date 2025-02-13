@@ -1,4 +1,4 @@
-import useModal from 'antd/es/modal/useModal';
+import { App as AntdApp } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import CherryEditor from '../../components/CherryEditor';
@@ -21,15 +21,15 @@ function EditBlogPage() {
   // whether the load source (localStorage or database) of the blog is confirmed
   const [loadSourceConfirmed, setLoadSourceConfirmed] = useState(false);
 
+  const { modal: antdModal } = AntdApp.useApp();
   const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
-  const [confirmLoadSourceModal, confirmLocalDraftModalContext] = useModal();
 
   const localStorageKey = localStorageKeyPrefix + blogId;
   const localDraft = useRef(parseJSON(localStorage.getItem(localStorageKey)));
 
   useEffect(() => {
     if (localStorage.getItem(localStorageKey)) {
-      confirmLoadSourceModal.confirm({
+      antdModal.confirm({
         title: 'Unsaved draft found',
         content: 'You have an unsaved draft of this blog. Do you want to continue editing?',
         okText: 'Continue',
@@ -43,7 +43,7 @@ function EditBlogPage() {
     } else {
       setLoadSourceConfirmed(true);
     }
-  }, [confirmLoadSourceModal, localStorageKey]);
+  }, [antdModal, localStorageKey]);
 
   const handleSubmit = async (blogData, successMessage) => {
     // blogData.status: the new blog status to be set
@@ -112,7 +112,6 @@ function EditBlogPage() {
           loadSourceConfirmed={loadSourceConfirmed}
         />
         <FeedbackModal onSuccess={() => navigate('/my-blogs')} />
-        {confirmLocalDraftModalContext}
       </>
   );
 }

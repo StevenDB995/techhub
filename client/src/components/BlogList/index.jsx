@@ -1,6 +1,5 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Divider, Flex, List, Space, Typography } from 'antd';
-import useModal from 'antd/es/modal/useModal';
+import { App as AntdApp, Divider, Flex, List, Space, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAxios from '../../hooks/useAxios';
@@ -73,15 +72,14 @@ function ListFooterItem({ icon, text, size, className, onClick }) {
 function BlogList({ data, loading, isPublic = true }) {
   const axios = useAxios();
   const [blogs, setBlogs] = useState([]);
-  const [deleteModal, deleteModalContext] = useModal();
-  const [feedbackModal, feedbackModalContext] = useModal();
+  const { modal: antdModal } = AntdApp.useApp();
 
   useEffect(() => {
     if (data) setBlogs(data);
   }, [data]);
 
   const confirmDelete = (blogId) => {
-    deleteModal.confirm({
+    antdModal.confirm({
       title: 'Confirm Delete',
       content: 'Are you sure?',
       okText: 'Delete',
@@ -95,13 +93,13 @@ function BlogList({ data, loading, isPublic = true }) {
 
   const feedbackDelete = (success, errorMessage) => {
     if (success) {
-      feedbackModal.success({
+      antdModal.success({
         title: 'Success',
         content: 'Blog deleted',
         cancelButtonProps: { style: { display: 'none' } }
       });
     } else {
-      feedbackModal.error({
+      antdModal.error({
         title: 'Error',
         content: errorMessage || 'Error deleting blog',
         cancelButtonProps: { style: { display: 'none' } }
@@ -132,8 +130,6 @@ function BlogList({ data, loading, isPublic = true }) {
         dataSource={blogs}
         renderItem={(item) => <ListItem item={item} isPublic={isPublic} onDelete={confirmDelete} />}
       />
-      <div>{deleteModalContext}</div>
-      <div>{feedbackModalContext}</div>
     </>
   );
 }

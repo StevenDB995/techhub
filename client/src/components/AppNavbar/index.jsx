@@ -18,8 +18,8 @@ function AppNavbar({ user }) {
 
   const [isDrawerExpanded, setIsDrawerExpanded] = useState(false);
 
-  const getSelectedKey = (mode) => {
-    if (mode !== 'mobile' &&
+  const getSelectedKey = (isMobile) => {
+    if (!isMobile &&
       (location.pathname.startsWith('/my-blogs') || location.pathname === '/')) {
       return '/';
     }
@@ -31,7 +31,7 @@ function AppNavbar({ user }) {
       await axios.post('/auth/logout');
       logout();
       navigate('/');
-      void antdMessage.info('You are logged out');
+      antdMessage.info('You are logged out');
     } catch (err) {
       console.error(err.message);
     }
@@ -119,7 +119,7 @@ function AppNavbar({ user }) {
       mobileNavItems.push(...[
         {
           key: 'myBlogs',
-          label: 'My MyBlogs',
+          label: 'My Blogs',
           children: createDropdownItems
         },
         {
@@ -147,7 +147,7 @@ function AppNavbar({ user }) {
               className={styles.left}
               theme="dark"
               mode="horizontal"
-              selectedKeys={[getSelectedKey()]}
+              selectedKeys={[getSelectedKey(false)]}
               items={leftNavItems}
             />
             {
@@ -193,7 +193,7 @@ function AppNavbar({ user }) {
             <Menu
               theme="dark"
               mode="inline"
-              selectedKeys={[getSelectedKey('mobile')]}
+              selectedKeys={[getSelectedKey(true)]}
               items={getMobileNavItems()}
             />
           </Drawer>
