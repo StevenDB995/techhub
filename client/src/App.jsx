@@ -2,27 +2,24 @@ import { GithubFilled, InstagramFilled, LinkedinFilled } from '@ant-design/icons
 import { Col, Flex, Layout, Row } from 'antd';
 import request from 'axios';
 import { useEffect, useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useMatch } from 'react-router-dom';
 import AppNavbar from './components/AppNavbar';
 import NewTabLink from './components/NewTabLink';
 import useAuth from './hooks/useAuth';
 import useAxios from './hooks/useAxios';
-import routes from './routes';
 import './App.css';
 
 const { Content, Footer } = Layout;
-
-// pages that do not display the header
-const nonHeaderPages = [routes.create, routes.edit];
 
 function App() {
   const { isAuthenticated } = useAuth();
   const [user, setUser] = useState(null);
   const [footerData, setFooterData] = useState(null);
   const axios = useAxios();
-  const location = useLocation();
 
-  const shouldDisplayHeader = !nonHeaderPages.some((key) => location.pathname.startsWith(key));
+  const matchCreate = useMatch('/my-blogs/create');
+  const matchEdit = useMatch('/my-blogs/:blogId/edit');
+  const shouldDisplayHeader = !(matchCreate || matchEdit);
 
   useEffect(() => {
     if (isAuthenticated) {

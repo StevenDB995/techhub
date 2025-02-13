@@ -3,7 +3,6 @@ import useModal from 'antd/es/modal/useModal';
 import Cherry from 'cherry-markdown';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import routes from '../../routes';
 import { extractMetaData } from '../../utils/mdUtil';
 import Loading from '../Loading';
 import 'cherry-markdown/dist/cherry-markdown.css';
@@ -92,7 +91,7 @@ function CherryEditor({
         type: 'primary',
         danger: true
       },
-      onCancel: () => navigate(routes.home)
+      onCancel: () => navigate('/my-blogs')
     });
   };
 

@@ -4,7 +4,6 @@ import useModal from 'antd/es/modal/useModal';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAxios from '../../hooks/useAxios';
-import routes from '../../routes';
 import { getDateString } from '../../utils/dateUtil';
 import styles from './BlogList.module.css';
 
@@ -24,7 +23,7 @@ function ListItem({ item, isPublic, onDelete }) {
       <List.Item.Meta
         title={
           <Link
-            to={`${isPublic ? routes.blogs : routes.preview}/${item._id}`}
+            to={`${isPublic ? '/blogs' : '/my-blogs'}/${item._id}`}
             className={styles.listItemTitle}
           >
             {item.title || 'Untitled'}
@@ -46,7 +45,7 @@ function ListItem({ item, isPublic, onDelete }) {
             text="Edit"
             size={6}
             onClick={() => {
-              navigate(`${routes.edit}/${item._id}`);
+              navigate(`/my-blogs/${item._id}/edit`);
             }}
           />
           <ListFooterItem

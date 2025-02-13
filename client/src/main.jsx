@@ -6,14 +6,13 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
 import AuthProvider from './contexts/AuthProvider';
 import About from './pages/About';
-import Blogs from './pages/Blogs';
 import Create from './pages/Create';
 import Edit from './pages/Edit';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import MyBlogs from './pages/MyBlogs';
 import Preview from './pages/Preview';
 import View from './pages/View';
-import routes from './routes';
 import './index.css';
 
 const router = createBrowserRouter([
@@ -22,35 +21,35 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: routes.home,
+        path: '',
         element: <Home />
       },
       {
-        path: routes.about,
+        path: 'about',
         element: <About />
       },
       {
-        path: routes.login,
+        path: 'login',
         element: <Login />
       },
       {
-        path: routes.blogs,
-        element: <Blogs />
-      },
-      {
-        path: `${routes.blogs}/:blogId`,
+        path: `blogs/:blogId`,
         element: <View />
       },
       {
-        path: routes.create,
+        path: 'my-blogs',
+        element: <MyBlogs />
+      },
+      {
+        path: 'my-blogs/create',
         element: <Create />
       },
       {
-        path: `${routes.edit}/:blogId`,
+        path: `my-blogs/:blogId/edit`,
         element: <Edit />
       },
       {
-        path: `${routes.preview}/:blogId`,
+        path: 'my-blogs/:blogId',
         element: <Preview />
       }
     ]

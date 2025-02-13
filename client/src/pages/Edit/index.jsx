@@ -6,7 +6,6 @@ import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
 import Error from '../../components/Error';
 import useAxios from '../../hooks/useAxios';
 import useFetch from '../../hooks/useFetch';
-import routes from '../../routes';
 import { parseJSON } from '../../utils/jsonUtil';
 
 const localStorageKeyPrefix = 'edit-';
@@ -112,7 +111,7 @@ function Edit() {
           localStorageKey={localStorageKey}
           loadSourceConfirmed={loadSourceConfirmed}
         />
-        <FeedbackModal onSuccess={() => navigate(routes.blogs)} />
+        <FeedbackModal onSuccess={() => navigate('/my-blogs')} />
         {confirmLocalDraftModalContext}
       </>
   );

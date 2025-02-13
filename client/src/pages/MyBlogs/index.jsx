@@ -19,7 +19,7 @@ const options = [
 const url = '/users/me/blogs';
 const initialStatus = 'public';
 
-function Blogs() {
+function MyBlogs() {
   const { data, loading, error, refetch } = useFetch(url);
   const [blogStatus, setBlogStatus] = useState(initialStatus);
   const isFirstRender = useRef(true);
@@ -51,4 +51,4 @@ function Blogs() {
   );
 }
 
-export default Blogs;
+export default MyBlogs;

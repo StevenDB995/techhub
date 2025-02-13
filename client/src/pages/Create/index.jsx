@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import CherryEditor from '../../components/CherryEditor';
 import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
 import useAxios from '../../hooks/useAxios';
-import routes from '../../routes';
 import { parseJSON } from '../../utils/jsonUtil';
 
 const markdownTemplate = `# Heading 1
@@ -63,7 +62,7 @@ function Create() {
         buttonPropsList={buttonPropsList}
         localStorageKey={localStorageKey}
       />
-      <FeedbackModal onSuccess={() => navigate(routes.blogs)} />
+      <FeedbackModal onSuccess={() => navigate('/my-blogs')} />
     </>
   );
 }

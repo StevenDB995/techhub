@@ -2,7 +2,6 @@ import { App as AntdApp, Button, Flex, Form, Input } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import useAxios from '../../hooks/useAxios';
-import routes from '../../routes';
 import styles from './Login.module.css';
 
 function Login() {
@@ -13,7 +12,7 @@ function Login() {
   const navigate = useNavigate();
 
   // Get the previous location the user was trying to access
-  const from = location.state?.from?.pathname || routes.home;
+  const from = location.state?.from?.pathname || '/';
 
   const handleLogin = async (formData) => {
     try {
