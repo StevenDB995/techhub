@@ -5,15 +5,14 @@ import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
 import AuthProvider from './contexts/AuthProvider';
-import About from './pages/About';
-import Blogs from './pages/Blogs';
-import Create from './pages/Create';
-import Edit from './pages/Edit';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Preview from './pages/Preview';
-import View from './pages/View';
-import routes from './routes';
+import AboutPage from './pages/AboutPage';
+import CreateBlogPage from './pages/CreateBlogPage';
+import EditBlogPage from './pages/EditBlogPage';
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import MyBlogsPage from './pages/MyBlogsPage';
+import PreviewBlogPage from './pages/PreviewBlogPage';
+import ViewBlogPage from './pages/ViewBlogPage';
 import './index.css';
 
 const router = createBrowserRouter([
@@ -22,36 +21,36 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: routes.home,
-        element: <Home />
+        path: '',
+        element: <HomePage />
       },
       {
-        path: routes.about,
-        element: <About />
+        path: 'about',
+        element: <AboutPage />
       },
       {
-        path: routes.login,
-        element: <Login />
+        path: 'login',
+        element: <LoginPage />
       },
       {
-        path: routes.blogs,
-        element: <Blogs />
+        path: `blogs/:blogId`,
+        element: <ViewBlogPage />
       },
       {
-        path: `${routes.blogs}/:blogId`,
-        element: <View />
+        path: 'my-blogs',
+        element: <MyBlogsPage />
       },
       {
-        path: routes.create,
-        element: <Create />
+        path: 'my-blogs/create',
+        element: <CreateBlogPage />
       },
       {
-        path: `${routes.edit}/:blogId`,
-        element: <Edit />
+        path: `my-blogs/:blogId/edit`,
+        element: <EditBlogPage />
       },
       {
-        path: `${routes.preview}/:blogId`,
-        element: <Preview />
+        path: 'my-blogs/:blogId',
+        element: <PreviewBlogPage />
       }
     ]
   }

@@ -4,9 +4,9 @@ import Error from '../../components/Error';
 import Loading from '../../components/Loading';
 import useFetch from '../../hooks/useFetch';
 
-function Preview() {
+function ViewBlogPage() {
   const { blogId } = useParams();
-  const { data: blog, loading, error } = useFetch(`/users/me/blogs/${blogId}`);
+  const { data: blog, loading, error } = useFetch(`/blogs/${blogId}`);
 
   if (loading) return <Loading />;
 
@@ -17,4 +17,4 @@ function Preview() {
   );
 }
 
-export default Preview;
+export default ViewBlogPage;

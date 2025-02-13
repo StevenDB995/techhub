@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import BlogList from '../../components/BlogList';
 import Error from '../../components/Error';
 import useFetch from '../../hooks/useFetch';
-import styles from './Blogs.module.css';
+import styles from './MyBlogsPage.module.css';
 
 const options = [
   {
@@ -19,7 +19,7 @@ const options = [
 const url = '/users/me/blogs';
 const initialStatus = 'public';
 
-function Blogs() {
+function MyBlogsPage() {
   const { data, loading, error, refetch } = useFetch(url);
   const [blogStatus, setBlogStatus] = useState(initialStatus);
   const isFirstRender = useRef(true);
@@ -51,4 +51,4 @@ function Blogs() {
   );
 }
 
-export default Blogs;
+export default MyBlogsPage;

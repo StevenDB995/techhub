@@ -3,7 +3,6 @@ import { useContext, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api, { createAxios } from '../api/axios';
 import { AuthContext } from '../contexts/AuthProvider';
-import routes from '../routes';
 
 // create a custom axios hook to allow access to global context states
 
@@ -25,7 +24,7 @@ const useAxios = () => {
           const responseBody = error.response.data;
 
           if (statusCode === 401) {
-            if (location.pathname.startsWith(routes.login)) {
+            if (location.pathname.startsWith('/login')) {
               // propagate failed login
               return Promise.reject(error);
             }
@@ -44,7 +43,7 @@ const useAxios = () => {
             } catch (refreshError) {
               refreshError.message = 'Session expired';
               logout();
-              // navigate(routes.login, { state: { from: location } });
+              // navigate('/login', { state: { from: location } });
               antdMessage.info('Session expired. Please login');
 
               return Promise.reject(refreshError);
@@ -55,7 +54,7 @@ const useAxios = () => {
             // when its session has not expired
             logout();
             antdMessage.error('Illegal user. Signing out');
-            navigate(routes.home);
+            navigate('/');
           }
         }
 

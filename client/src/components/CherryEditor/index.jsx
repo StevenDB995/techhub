@@ -1,9 +1,7 @@
-import { Button, Flex, Input } from 'antd';
-import useModal from 'antd/es/modal/useModal';
+import { App as AntdApp, Button, Flex, Input } from 'antd';
 import Cherry from 'cherry-markdown';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import routes from '../../routes';
 import { extractMetaData } from '../../utils/mdUtil';
 import Loading from '../Loading';
 import 'cherry-markdown/dist/cherry-markdown.css';
@@ -58,7 +56,7 @@ function CherryEditor({
   const [content, setContent] = useState('');
   const [html, setHtml] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [cancelModal, cancelModalContext] = useModal();
+  const { modal: antdModal } = AntdApp.useApp();
   const navigate = useNavigate();
 
   const handleTitleChange = (e) => {
@@ -82,17 +80,13 @@ function CherryEditor({
   };
 
   const handleCancel = () => {
-    cancelModal.confirm({
+    antdModal.confirm({
       title: 'Quit Editing',
       content: 'Are you sure? Don\'t worry, your current progress will be saved locally after quiting.',
       centered: true,
       okText: 'Keep Editing',
       cancelText: 'Quit',
-      cancelButtonProps: {
-        type: 'primary',
-        danger: true
-      },
-      onCancel: () => navigate(routes.home)
+      onCancel: () => navigate('/my-blogs')
     });
   };
 
@@ -139,7 +133,6 @@ function CherryEditor({
         </Flex>
       </div>
       <Loading display={loading || submitting} />
-      {cancelModalContext}
     </div>
   );
 }

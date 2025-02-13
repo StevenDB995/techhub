@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import useAxios from '../../hooks/useAxios';
-import routes from '../../routes';
 import styles from './AppNavbar.module.css';
 
 const { Header } = Layout;
@@ -19,10 +18,10 @@ function AppNavbar({ user }) {
 
   const [isDrawerExpanded, setIsDrawerExpanded] = useState(false);
 
-  const getSelectedKey = (mode) => {
-    if (mode !== 'mobile' &&
-      (location.pathname.startsWith(routes.blogs) || location.pathname === routes.home)) {
-      return routes.home;
+  const getSelectedKey = (isMobile) => {
+    if (!isMobile &&
+      (location.pathname.startsWith('/my-blogs') || location.pathname === '/')) {
+      return '/';
     }
     return location.pathname;
   };
@@ -31,8 +30,8 @@ function AppNavbar({ user }) {
     try {
       await axios.post('/auth/logout');
       logout();
-      navigate(routes.home);
-      void antdMessage.info('You are logged out');
+      navigate('/');
+      antdMessage.info('You are logged out');
     } catch (err) {
       console.error(err.message);
     }
@@ -50,20 +49,20 @@ function AppNavbar({ user }) {
 
   const leftNavItems = [
     {
-      key: routes.home,
-      label: <Link to={routes.home}>Home</Link>
+      key: '/',
+      label: <Link to={'/'}>Home</Link>
     },
     {
-      key: routes.about,
-      label: <Link to={routes.about}>About</Link>
+      key: '/about',
+      label: <Link to={'/about'}>About</Link>
     }
   ];
 
   const createDropdownItems = [
     {
-      key: routes.create,
+      key: '/my-blogs/create',
       label: (
-        <Link to={routes.create}>
+        <Link to={'/my-blogs/create'}>
           <Space>
             <FormOutlined />New Blog
           </Space>
@@ -71,9 +70,9 @@ function AppNavbar({ user }) {
       )
     },
     {
-      key: routes.blogs,
+      key: '/my-blogs',
       label: (
-        <Link to={routes.blogs}>
+        <Link to={'/my-blogs'}>
           <Space>
             <InboxOutlined />My Blogs
           </Space>
@@ -101,7 +100,7 @@ function AppNavbar({ user }) {
         type="primary"
         menu={{ items: createDropdownItems }}
       >
-        <Link to={routes.create}>Create</Link>
+        <Link to={'/my-blogs/create'}>Create</Link>
       </Dropdown.Button>
     },
     {
@@ -131,8 +130,8 @@ function AppNavbar({ user }) {
       ]);
     } else {
       mobileNavItems.push({
-        key: routes.login,
-        label: <Link to={routes.login}>Login</Link>
+        key: '/login',
+        label: <Link to={'/login'}>Login</Link>
       });
     }
     return mobileNavItems;
@@ -148,7 +147,7 @@ function AppNavbar({ user }) {
               className={styles.left}
               theme="dark"
               mode="horizontal"
-              selectedKeys={[getSelectedKey()]}
+              selectedKeys={[getSelectedKey(false)]}
               items={leftNavItems}
             />
             {
@@ -161,7 +160,7 @@ function AppNavbar({ user }) {
                   items={rightNavItems}
                 /> :
                 <Button type="text" className={styles.textItem}>
-                  <Link to={routes.login}>Log In</Link>
+                  <Link to={'/login'}>Log In</Link>
                 </Button>
             }
           </Flex>
@@ -194,7 +193,7 @@ function AppNavbar({ user }) {
             <Menu
               theme="dark"
               mode="inline"
-              selectedKeys={[getSelectedKey('mobile')]}
+              selectedKeys={[getSelectedKey(true)]}
               items={getMobileNavItems()}
             />
           </Drawer>

@@ -1,5 +1,4 @@
 import { Button, Flex, Result } from 'antd';
-import routes from '../../routes';
 import styles from './Error.module.css';
 
 function Error({ status = 'error', title = 'Sorry, something went wrong.', message }) {
@@ -18,7 +17,7 @@ function Error({ status = 'error', title = 'Sorry, something went wrong.', messa
         status={status}
         title={title}
         subTitle={message}
-        extra={<Button type="primary" href={routes.home}>Back Home</Button>}
+        extra={<Button type="primary" href={'/'}>Back Home</Button>}
       />
     </Flex>
   );
