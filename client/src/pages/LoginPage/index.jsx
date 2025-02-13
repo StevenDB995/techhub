@@ -2,9 +2,9 @@ import { App as AntdApp, Button, Flex, Form, Input } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import useAxios from '../../hooks/useAxios';
-import styles from './Login.module.css';
+import styles from './LoginPage.module.css';
 
-function Login() {
+function LoginPage() {
   const axios = useAxios();
   const { message: antdMessage } = AntdApp.useApp();
   const { login } = useAuth();
@@ -76,4 +76,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default LoginPage;

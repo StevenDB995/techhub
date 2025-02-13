@@ -2,7 +2,7 @@ import BlogList from '../../components/BlogList';
 import Error from '../../components/Error';
 import useFetch from '../../hooks/useFetch';
 
-function Home() {
+function HomePage() {
   const { data, loading, error } = useFetch('/blogs');
   return (
     error ?
@@ -11,4 +11,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default HomePage;

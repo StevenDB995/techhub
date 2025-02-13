@@ -13,7 +13,7 @@ If you know, you know ;)`;
 
 const localStorageKey = 'create';
 
-function Create() {
+function CreateBlogPage() {
   const axios = useAxios();
   const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
   const navigate = useNavigate();
@@ -67,4 +67,4 @@ function Create() {
   );
 }
 
-export default Create;
+export default CreateBlogPage;

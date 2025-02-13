@@ -10,7 +10,7 @@ import { parseJSON } from '../../utils/jsonUtil';
 
 const localStorageKeyPrefix = 'edit-';
 
-function Edit() {
+function EditBlogPage() {
   const { blogId } = useParams();
   const { data: blog, loading, error } = useFetch(`/users/me/blogs/${blogId}`);
   const axios = useAxios();
@@ -117,4 +117,4 @@ function Edit() {
   );
 }
 
-export default Edit;
+export default EditBlogPage;
