@@ -30,7 +30,7 @@ jobs:
     runs-on: self-hosted  # Use your self-hosted runner
     needs: build  # Wait for the build stage to complete
 
-    env:
+    env:  # Inject secrets and variables from GitHub Actions
       APP_IMAGE: ${{ vars.APP_IMAGE }}
       APP_VERSION: ${{ vars.APP_VERSION }}
       SERVER_PORT: ${{ vars.SERVER_PORT }}
@@ -40,6 +40,7 @@ jobs:
       DB_NAME: ${{ secrets.DB_NAME }}
       ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
       REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
+      IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
 
     steps:
       - name: Checkout the code on the deployment host
