@@ -1,5 +1,6 @@
 const Blog = require('../models/blogModel');
 const { messageResponse, dataResponse } = require('../utils/response');
+const mongoose = require('mongoose');
 
 // get all public blogs
 exports.getAllBlogs = async (req, res) => {
@@ -109,5 +110,27 @@ exports.deleteBlogById = async (req, res) => {
   } catch (err) {
     console.error(err);
     return messageResponse(res, 500, 'Error deleting blog');
+  }
+};
+
+exports.getImgurClientId = async (req, res) => {
+  return dataResponse(res, 200, {
+    clientId: process.env.IMGUR_CLIENT_ID
+  });
+};
+
+exports.createImageMetadata = async (req, res) => {
+  try {
+    // Use existing model if already compiled
+    const BlogImage = mongoose.models.BlogImage ||
+      mongoose.model('BlogImage', new mongoose.Schema({}, { strict: false }));
+    await BlogImage.create(req.body);
+    const message = 'Blog image metadata added successfully.';
+    console.log(message);
+    return messageResponse(res, 201, message);
+
+  } catch (err) {
+    console.error(err);
+    return messageResponse(res, 500, 'Error creating image metadata');
   }
 };

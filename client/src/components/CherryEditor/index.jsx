@@ -1,7 +1,10 @@
 import { App as AntdApp, Button, Flex, Input } from 'antd';
+import request from 'axios';
 import Cherry from 'cherry-markdown';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useAxios from '../../hooks/useAxios';
+import useFetch from '../../hooks/useFetch';
 import { extractMetaData } from '../../utils/mdUtil';
 import Loading from '../Loading';
 import 'cherry-markdown/dist/cherry-markdown.css';
@@ -26,8 +29,6 @@ const cherryConfig = {
       {
         insert: [
           'image',
-          'audio',
-          'video',
           'link',
           'hr',
           'br',
@@ -43,6 +44,9 @@ const cherryConfig = {
   }
 };
 
+// Supported image type: https://apidocs.imgur.com/#c85c9dfc-7487-4de2-9ecd-66f727cf3139
+const supportedImageFormat = ['jpeg', 'jpg', 'png', 'apng', 'gif', 'tiff'];
+
 function CherryEditor({
   initialTitle = '',
   initialContent,
@@ -56,7 +60,11 @@ function CherryEditor({
   const [content, setContent] = useState('');
   const [html, setHtml] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const { modal: antdModal } = AntdApp.useApp();
+
+  const { data: imgur } = useFetch('/blogs/images/imgur-client-id');
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const axios = useAxios();
+  const { modal: antdModal, message: antdMessage } = AntdApp.useApp();
   const navigate = useNavigate();
 
   const handleTitleChange = (e) => {
@@ -90,12 +98,60 @@ function CherryEditor({
     });
   };
 
+  const uploadFile = useCallback(async (file, callback) => {
+    const [fileType, fileFormat] = file.type.split('/');
+    if (fileType !== 'image') {
+      antdMessage.error('Only image upload is supported!');
+      return;
+    }
+
+    if (!supportedImageFormat.includes(fileFormat.toLowerCase())) {
+      antdMessage.error(`Your image format (${fileFormat}) is not supported!`);
+      return;
+    }
+
+    if (!imgur?.clientId) {
+      antdMessage.error('Network error while uploading image, please try again later.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('type', 'file');
+
+    try {
+      setUploadingImage(true);
+      const response = await request.post('https://api.imgur.com/3/image', formData, {
+        headers: {
+          'Authorization': `Client-ID ${imgur.clientId}`
+        }
+      });
+
+      const imageMetadata = response.data.data;
+      axios.post('/blogs/images', imageMetadata)
+        .catch(err => console.error(err));
+      callback(imageMetadata.link, {
+        width: '80%'
+      });
+
+    } catch (err) {
+      antdMessage.error('Error uploading image: ' + err.response.data.data.error);
+      console.error(err);
+
+    } finally {
+      setUploadingImage(false);
+    }
+  }, [imgur]);
+
   useEffect(() => {
     if (!cherryInstance.current) {
       cherryInstance.current = new Cherry(cherryConfig);
       cherryInstance.current.on('afterChange', handleContentChange);
+    } else {
+      // update the fileUpload callback when the imgur state changes
+      cherryInstance.current.on('fileUpload', uploadFile);
     }
-  }, []);
+  }, [uploadFile]);
 
   // fill the content on page load
   useEffect(() => {
@@ -133,6 +189,7 @@ function CherryEditor({
         </Flex>
       </div>
       <Loading display={loading || submitting} />
+      <Loading display={uploadingImage} text={'Uploading image'} />
     </div>
   );
 }
