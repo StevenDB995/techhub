@@ -1,6 +1,9 @@
 const Blog = require('../models/blogModel');
+const BlogImage = require('../models/blogImageModel');
 const { messageResponse, dataResponse } = require('../utils/response');
-const mongoose = require('mongoose');
+const axios = require('axios');
+
+const { IMGUR_CLIENT_ID, IMGUR_CLIENT_SECRET, IMGUR_REFRESH_TOKEN, IMGUR_OAUTH_URL } = process.env;
 
 // get all public blogs
 exports.getAllBlogs = async (req, res) => {
@@ -113,18 +116,28 @@ exports.deleteBlogById = async (req, res) => {
   }
 };
 
-exports.getImgurClientId = async (req, res) => {
-  return dataResponse(res, 200, {
-    clientId: process.env.IMGUR_CLIENT_ID
-  });
+exports.getImgurAccessToken = async (req, res) => {
+  try {
+    const response = await axios.post(IMGUR_OAUTH_URL, new URLSearchParams({
+      'refresh_token': IMGUR_REFRESH_TOKEN,
+      'client_id': IMGUR_CLIENT_ID,
+      'client_secret': IMGUR_CLIENT_SECRET,
+      'grant_type': 'refresh_token'
+    }));
+    return dataResponse(res, 200, response.data);
+
+  } catch (err) {
+    // catch axios error
+    console.error(err);
+    return messageResponse(res, err.data.status, 'Error requesting Imgur access token');
+  }
 };
 
 exports.createImageMetadata = async (req, res) => {
   try {
-    // Use existing model if already compiled
-    const BlogImage = mongoose.models.BlogImage ||
-      mongoose.model('BlogImage', new mongoose.Schema({}, { strict: false }));
-    await BlogImage.create(req.body);
+    const blogImage = new BlogImage(req.body);
+    blogImage.isAttached = true;
+    await blogImage.save();
     const message = 'Blog image metadata added successfully.';
     console.log(message);
     return messageResponse(res, 201, message);

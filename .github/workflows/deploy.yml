@@ -34,6 +34,7 @@ jobs:
       APP_IMAGE: ${{ vars.APP_IMAGE }}
       APP_VERSION: ${{ vars.APP_VERSION }}
       SERVER_PORT: ${{ vars.SERVER_PORT }}
+      IMGUR_OAUTH_URL: ${{ vars.IMGUR_OAUTH_URL }}
       MONGO_INITDB_ROOT_PASSWORD: ${{ secrets.MONGO_INITDB_ROOT_PASSWORD }}
       DB_USER: ${{ secrets.DB_USER }}
       DB_PASS: ${{ secrets.DB_PASS }}
@@ -41,6 +42,8 @@ jobs:
       ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
       REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
       IMGUR_CLIENT_ID: ${{ secrets.IMGUR_CLIENT_ID }}
+      IMGUR_CLIENT_SECRET: ${{ secrets.IMGUR_CLIENT_SECRET }}
+      IMGUR_REFRESH_TOKEN: ${{ secrets.IMGUR_REFRESH_TOKEN }}
 
     steps:
       - name: Checkout the code on the deployment host
@@ -54,4 +57,3 @@ jobs:
 
       - name: Deploy and run docker compose
         run: docker compose up -d
-
