@@ -45,11 +45,8 @@ exports.getBlogById = async (req, res) => {
 
 exports.createBlog = async (req, res) => {
   try {
-    const blog = {
-      ...req.body,
-      author: req.user
-    };
-    const blogModel = new Blog(blog);
+    const blogModel = new Blog(req.body);
+    blogModel.author = req.user;
     await blogModel.save();
     return messageResponse(res, 201, 'Blog created successfully!');
   } catch (err) {
@@ -135,9 +132,7 @@ exports.getImgurAccessToken = async (req, res) => {
 
 exports.createImageMetadata = async (req, res) => {
   try {
-    const blogImage = new BlogImage(req.body);
-    blogImage.isAttached = true;
-    await blogImage.save();
+    await BlogImage.create(req.body);
     const message = 'Blog image metadata added successfully.';
     console.log(message);
     return messageResponse(res, 201, message);

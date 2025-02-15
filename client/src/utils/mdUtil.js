@@ -1,4 +1,4 @@
-export const extractMetaData = (html) => {
+export const extractMetadata = (html) => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
 
@@ -24,4 +24,15 @@ export const extractMetaData = (html) => {
   }
 
   return { title, previewText };
+};
+
+export const extractImageLinks = (html) => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const imgList = doc.querySelectorAll('img');
+  const links = [];
+  for (let img of imgList) {
+    links.push(img.src);
+  }
+  return links;
 };

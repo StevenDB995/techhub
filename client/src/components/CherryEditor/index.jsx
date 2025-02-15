@@ -4,7 +4,7 @@ import Cherry from 'cherry-markdown';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAxios from '../../hooks/useAxios';
-import { extractMetaData } from '../../utils/mdUtil';
+import { extractImageLinks, extractMetadata } from '../../utils/mdUtil';
 import Loading from '../Loading';
 import 'cherry-markdown/dist/cherry-markdown.css';
 import styles from './CherryEditor.module.css';
@@ -76,11 +76,13 @@ function CherryEditor({
 
   const handleSubmit = async (onSubmit) => {
     setSubmitting(true);
-    const { title: defaultTitle, previewText } = extractMetaData(html);
+    const { title: defaultTitle, previewText } = extractMetadata(html);
+    const imageLinks = extractImageLinks(html);
     await onSubmit({
       title: title || defaultTitle,
       previewText,
-      content
+      content,
+      imageLinks
     });
     setSubmitting(false);
   };
