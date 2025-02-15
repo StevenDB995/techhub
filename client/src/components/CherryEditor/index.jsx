@@ -1,11 +1,10 @@
 import { App as AntdApp, Button, Flex, Input } from 'antd';
 import request from 'axios';
 import Cherry from 'cherry-markdown';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAxios from '../../hooks/useAxios';
-import useFetch from '../../hooks/useFetch';
-import { extractMetaData } from '../../utils/mdUtil';
+import { extractImageLinks, extractMetadata } from '../../utils/mdUtil';
 import Loading from '../Loading';
 import 'cherry-markdown/dist/cherry-markdown.css';
 import styles from './CherryEditor.module.css';
@@ -61,7 +60,6 @@ function CherryEditor({
   const [html, setHtml] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const { data: imgur } = useFetch('/blogs/images/imgur-client-id');
   const [uploadingImage, setUploadingImage] = useState(false);
   const axios = useAxios();
   const { modal: antdModal, message: antdMessage } = AntdApp.useApp();
@@ -78,11 +76,13 @@ function CherryEditor({
 
   const handleSubmit = async (onSubmit) => {
     setSubmitting(true);
-    const { title: defaultTitle, previewText } = extractMetaData(html);
+    const { title: defaultTitle, previewText } = extractMetadata(html);
+    const imageLinks = extractImageLinks(html);
     await onSubmit({
       title: title || defaultTitle,
       previewText,
-      content
+      content,
+      imageLinks
     });
     setSubmitting(false);
   };
@@ -98,7 +98,7 @@ function CherryEditor({
     });
   };
 
-  const uploadFile = useCallback(async (file, callback) => {
+  const uploadFile = async (file, callback) => {
     const [fileType, fileFormat] = file.type.split('/');
     if (fileType !== 'image') {
       antdMessage.error('Only image upload is supported!');
@@ -110,48 +110,77 @@ function CherryEditor({
       return;
     }
 
-    if (!imgur?.clientId) {
-      antdMessage.error('Network error while uploading image, please try again later.');
-      return;
-    }
-
     const formData = new FormData();
     formData.append('image', file);
     formData.append('type', 'file');
 
-    try {
-      setUploadingImage(true);
-      const response = await request.post('https://api.imgur.com/3/image', formData, {
-        headers: {
-          'Authorization': `Client-ID ${imgur.clientId}`
-        }
-      });
+    const reloadImgurAccessToken = async () => {
+      // return true if successfully reloaded
+      try {
+        const response = await axios.get('/blogs/images/token');
+        localStorage.setItem('imgurAccessToken', response.data['access_token']);
+        return true;
+      } catch (err) {
+        // cannot fetch access token from imgur
+        console.error(err);
+        return false;
+      }
+    };
 
-      const imageMetadata = response.data.data;
-      axios.post('/blogs/images', imageMetadata)
-        .catch(err => console.error(err));
-      callback(imageMetadata.link, {
-        width: '80%'
-      });
-
-    } catch (err) {
-      antdMessage.error('Error uploading image: ' + err.response.data.data.error);
-      console.error(err);
-
-    } finally {
-      setUploadingImage(false);
+    // fetch imgur access token if it's not in localStorage
+    if (!localStorage.getItem('imgurAccessToken')) {
+      if (!await reloadImgurAccessToken()) {
+        antdMessage.error('Cannot connect to image host, please try again later.');
+        return;
+      }
     }
-  }, [imgur]);
+
+    let response;
+    let retry = true;
+    setUploadingImage(true);
+
+    while (retry) {
+      try {
+        response = await request.post('https://api.imgur.com/3/image', formData, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('imgurAccessToken')}`
+          }
+        });
+        retry = false;
+
+        // consider looking into the boolean `response.data.success`?
+        const imageMetadata = response.data.data;
+        axios.post('/blogs/images', imageMetadata)
+          .catch(err => console.error(err));
+        callback(imageMetadata.link, {
+          width: '80%'
+        });
+
+      } catch (err) {
+        if (err.response?.status > 400 && err.response?.status < 500) {
+          // retry if the imgur access token expired
+          if (!await reloadImgurAccessToken()) {
+            antdMessage.error('Cannot connect to image host, please try again later.');
+            retry = false;
+          }
+        } else {
+          antdMessage.error('Error uploading image: ' + (err.response?.data.data.error || err.message));
+          console.error(err);
+          retry = false;
+        }
+      }
+    }
+
+    setUploadingImage(false);
+  };
 
   useEffect(() => {
     if (!cherryInstance.current) {
       cherryInstance.current = new Cherry(cherryConfig);
       cherryInstance.current.on('afterChange', handleContentChange);
-    } else {
-      // update the fileUpload callback when the imgur state changes
       cherryInstance.current.on('fileUpload', uploadFile);
     }
-  }, [uploadFile]);
+  });
 
   // fill the content on page load
   useEffect(() => {

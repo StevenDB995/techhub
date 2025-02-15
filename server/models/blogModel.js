@@ -16,7 +16,8 @@ const blogSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
-  }
+  },
+  imageLinks: [{ type: String }]
 });
 
 // Create a model based on the schema

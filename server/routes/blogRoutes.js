@@ -11,7 +11,7 @@ router.post('/', authMiddleware, blogController.createBlog);
 router.put('/:id', authMiddleware, blogController.updateBlogById);
 router.delete('/:id', authMiddleware, blogController.deleteBlogById);
 
-router.get('/images/imgur-client-id', authMiddleware, blogController.getImgurClientId);
+router.get('/images/token', authMiddleware, blogController.getImgurAccessToken);
 router.post('/images', authMiddleware, blogController.createImageMetadata);
 
 module.exports = router;
