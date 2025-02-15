@@ -2,6 +2,7 @@ const Blog = require('../models/blogModel');
 const BlogImage = require('../models/blogImageModel');
 const { messageResponse, dataResponse } = require('../utils/response');
 const axios = require('axios');
+const mongoose = require('mongoose');
 
 const { IMGUR_CLIENT_ID, IMGUR_CLIENT_SECRET, IMGUR_REFRESH_TOKEN, IMGUR_OAUTH_URL } = process.env;
 
@@ -44,21 +45,40 @@ exports.getBlogById = async (req, res) => {
 };
 
 exports.createBlog = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    const blogModel = new Blog(req.body);
-    blogModel.author = req.user;
-    await blogModel.save();
+    const blog = new Blog(req.body);
+    blog.author = req.user;
+    await blog.save({ session });
+
+    await BlogImage.updateMany(
+      { link: { $in: blog.imageLinks } },
+      { $set: { isAttached: true } },
+      { session }
+    );
+
+    await session.commitTransaction();
     return messageResponse(res, 201, 'Blog created successfully!');
+
   } catch (err) {
+    await session.abortTransaction();
     console.error(err);
     return messageResponse(res, 500, 'Error creating blog');
+
+  } finally {
+    await session.endSession();
   }
 };
 
 exports.updateBlogById = async (req, res) => {
   const { id } = req.params;
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    const blog = await Blog.findById(id);
+    const blog = await Blog.findById(id).session(session);
     if (!blog) {
       return messageResponse(res, 404, 'Blog not found');
     }
@@ -68,22 +88,47 @@ exports.updateBlogById = async (req, res) => {
       return messageResponse(res, 403, 'Permission denied');
     }
 
-    const updateData = {
+    const updatedBlog = {
       ...req.body,
       updatedAt: Date.now()
     };
 
+    const oldSet = new Set(blog.imageLinks);
+    const newSet = new Set(updatedBlog.imageLinks);
+    const imageLinksToRemove = blog.imageLinks.filter(x => !newSet.has(x));
+    const imageLinksToAdd = updatedBlog.imageLinks.filter(x => !oldSet.has(x));
+
     // update the createdAt field if the status of the blog changes from 'draft' to 'public'
     if (blog.status === 'draft' && req.body.status === 'public') {
-      updateData.createdAt = Date.now();
+      updatedBlog.createdAt = Date.now();
     }
 
-    await Blog.findByIdAndUpdate(id, updateData, { new: true });
+    await Blog.findByIdAndUpdate(id, updatedBlog, { new: true }).session(session);
+    if (imageLinksToRemove.length > 0) {
+      await BlogImage.updateMany(
+        { link: { $in: imageLinksToRemove }},
+        { $set: { isAttached: false } },
+        { session }
+      );
+    }
+    if (imageLinksToAdd.length > 0) {
+      await BlogImage.updateMany(
+        { link: { $in: imageLinksToAdd }},
+        { $set: { isAttached: true } },
+        { session }
+      );
+    }
+
+    await session.commitTransaction();
     return messageResponse(res, 200, 'Blog updated successfully!');
 
   } catch (err) {
+    await session.abortTransaction();
     console.error(err);
     return messageResponse(res, 500, 'Error updating blog');
+
+  } finally {
+    await session.endSession();
   }
 };
 
@@ -132,7 +177,9 @@ exports.getImgurAccessToken = async (req, res) => {
 
 exports.createImageMetadata = async (req, res) => {
   try {
-    await BlogImage.create(req.body);
+    const blogImage = new BlogImage(req.body);
+    blogImage.isAttached = false;
+    await blogImage.save();
     const message = 'Blog image metadata added successfully.';
     console.log(message);
     return messageResponse(res, 201, message);
