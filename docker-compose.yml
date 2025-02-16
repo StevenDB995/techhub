@@ -5,7 +5,7 @@ services:
     environment:
       - NODE_ENV=production
       - SERVER_PORT=${SERVER_PORT}
-      - DB_URI=mongodb://${DB_USER}:${DB_PASS}@mongodb:27017/${DB_NAME}
+      - DB_URI=mongodb://${DB_USER}:${DB_PASS}@mongodb:27017/${DB_NAME}?replicaSet=rs0  # enable replica set
       - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
       - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
       - IMGUR_OAUTH_URL=${IMGUR_OAUTH_URL}
@@ -15,7 +15,7 @@ services:
     depends_on:
       - mongodb
     ports:
-      - '3000:3000' # host:container
+      - '3000:3000'  # host:container
     networks:
       - app_network
 
@@ -31,9 +31,11 @@ services:
       - DB_PASS=${DB_PASS}
     ports:
       - '27017:27017'
+    # Override the default command to enable replica set mode
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
     volumes:
-      - techhub-db:/data/db # host:container
-      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro # mount init script
+      - techhub-db:/data/db  # host:container
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro  # mount init script
     networks:
       - app_network
 
