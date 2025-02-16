@@ -5,7 +5,7 @@ services:
     environment:
       - NODE_ENV=production
       - SERVER_PORT=${SERVER_PORT}
-      - DB_URI=mongodb://${DB_USER}:${DB_PASS}@mongodb:27017/${DB_NAME}?replicaSet=rs0  # enable replica set
+      - DB_URI=mongodb://${DB_USER}:${DB_PASS}@mongodb:27017/${DB_NAME}  # enable replica set
       - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
       - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
       - IMGUR_OAUTH_URL=${IMGUR_OAUTH_URL}
