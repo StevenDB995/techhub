@@ -93,17 +93,18 @@ exports.updateBlogById = async (req, res) => {
       updatedAt: Date.now()
     };
 
-    const oldSet = new Set(blog.imageLinks);
-    const newSet = new Set(updatedBlog.imageLinks);
-    const imageLinksToRemove = blog.imageLinks.filter(x => !newSet.has(x));
-    const imageLinksToAdd = updatedBlog.imageLinks.filter(x => !oldSet.has(x));
-
     // update the createdAt field if the status of the blog changes from 'draft' to 'public'
     if (blog.status === 'draft' && req.body.status === 'public') {
       updatedBlog.createdAt = Date.now();
     }
 
     await Blog.findByIdAndUpdate(id, updatedBlog, { new: true }).session(session);
+
+    // update isAttached for blogImages
+    const newSet = new Set(updatedBlog.imageLinks);
+    const imageLinksToRemove = blog.imageLinks.filter(x => !newSet.has(x));
+    const imageLinksToAdd = updatedBlog.imageLinks;
+
     if (imageLinksToRemove.length > 0) {
       await BlogImage.updateMany(
         { link: { $in: imageLinksToRemove }},
