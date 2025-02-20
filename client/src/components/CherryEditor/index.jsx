@@ -1,9 +1,9 @@
 import { App as AntdApp, Button, Flex, Input } from 'antd';
-import request from 'axios';
+import axios from 'axios';
 import Cherry from 'cherry-markdown';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useAxios from '../../hooks/useAxios';
+import useApi from '../../hooks/useApi';
 import { extractImageLinks, extractMetadata } from '../../utils/mdUtil';
 import Loading from '../Loading';
 import 'cherry-markdown/dist/cherry-markdown.css';
@@ -61,7 +61,7 @@ function CherryEditor({
   const [submitting, setSubmitting] = useState(false);
 
   const [uploadingImage, setUploadingImage] = useState(false);
-  const axios = useAxios();
+  const api = useApi();
   const { modal: antdModal, message: antdMessage } = AntdApp.useApp();
   const navigate = useNavigate();
 
@@ -98,7 +98,7 @@ function CherryEditor({
     });
   };
 
-  const uploadFile = async (file, callback) => {
+  const uploadFile = useCallback(async (file, callback) => {
     const [fileType, fileFormat] = file.type.split('/');
     if (fileType !== 'image') {
       antdMessage.error('Only image upload is supported!');
@@ -117,7 +117,7 @@ function CherryEditor({
     const reloadImgurAccessToken = async () => {
       // return true if successfully reloaded
       try {
-        const response = await axios.get('/blogs/images/token');
+        const response = await api.get('/blogs/images/token');
         localStorage.setItem('imgurAccessToken', response.data['access_token']);
         return true;
       } catch (err) {
@@ -141,7 +141,7 @@ function CherryEditor({
 
     while (retry) {
       try {
-        response = await request.post('https://api.imgur.com/3/image', formData, {
+        response = await axios.post('https://api.imgur.com/3/image', formData, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('imgurAccessToken')}`
           }
@@ -150,7 +150,7 @@ function CherryEditor({
 
         // consider looking into the boolean `response.data.success`?
         const imageMetadata = response.data.data;
-        axios.post('/blogs/images', imageMetadata)
+        api.post('/blogs/images', imageMetadata)
           .catch(err => console.error(err));
         callback(imageMetadata.link, {
           width: '80%'
@@ -172,7 +172,7 @@ function CherryEditor({
     }
 
     setUploadingImage(false);
-  };
+  }, [antdMessage, api]);
 
   useEffect(() => {
     if (!cherryInstance.current) {
@@ -180,7 +180,7 @@ function CherryEditor({
       cherryInstance.current.on('afterChange', handleContentChange);
       cherryInstance.current.on('fileUpload', uploadFile);
     }
-  });
+  }, [uploadFile]);
 
   // fill the content on page load
   useEffect(() => {

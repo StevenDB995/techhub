@@ -1,12 +1,12 @@
 import { GithubFilled, InstagramFilled, LinkedinFilled } from '@ant-design/icons';
 import { Col, Flex, Layout, Row } from 'antd';
-import request from 'axios';
+import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Outlet, useMatch } from 'react-router-dom';
 import AppNavbar from './components/AppNavbar';
 import NewTabLink from './components/NewTabLink';
+import useApi from './hooks/useApi';
 import useAuth from './hooks/useAuth';
-import useAxios from './hooks/useAxios';
 import './App.css';
 
 const { Content, Footer } = Layout;
@@ -15,7 +15,7 @@ function App() {
   const { isAuthenticated } = useAuth();
   const [user, setUser] = useState(null);
   const [footerData, setFooterData] = useState(null);
-  const axios = useAxios();
+  const api = useApi();
 
   const matchCreate = useMatch('/my-blogs/create');
   const matchEdit = useMatch('/my-blogs/:blogId/edit');
@@ -23,14 +23,14 @@ function App() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      axios.get('/users/me')
+      api.get('/users/me')
         .then(res => setUser(res.data))
         .catch(err => console.error(err.message));
     }
-  }, [isAuthenticated, axios]);
+  }, [isAuthenticated, api]);
 
   useEffect(() => {
-    request.get('/footer.json').then(res => {
+    axios.get('/footer.json').then(res => {
       setFooterData(res.data);
     }).catch(err => console.error(err.message));
   }, []);

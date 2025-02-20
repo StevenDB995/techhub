@@ -1,11 +1,11 @@
 import { App as AntdApp, Button, Flex, Form, Input } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
+import useApi from '../../hooks/useApi';
 import useAuth from '../../hooks/useAuth';
-import useAxios from '../../hooks/useAxios';
 import styles from './LoginPage.module.css';
 
 function LoginPage() {
-  const axios = useAxios();
+  const api = useApi();
   const { message: antdMessage } = AntdApp.useApp();
   const { login } = useAuth();
   const location = useLocation();
@@ -16,7 +16,7 @@ function LoginPage() {
 
   const handleLogin = async (formData) => {
     try {
-      const response = await axios.post('/auth/login', formData);
+      const response = await api.post('/auth/login', formData);
       const { accessToken } = response.data;
       login(accessToken);
       antdMessage.success('Successfully logged in!');

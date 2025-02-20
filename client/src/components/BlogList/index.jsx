@@ -2,7 +2,7 @@ import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { App as AntdApp, Divider, Flex, List, Space, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import useAxios from '../../hooks/useAxios';
+import useApi from '../../hooks/useApi';
 import { getDateString } from '../../utils/dateUtil';
 import styles from './BlogList.module.css';
 
@@ -70,7 +70,7 @@ function ListFooterItem({ icon, text, size, className, onClick }) {
 }
 
 function BlogList({ data, loading, isPublic = true }) {
-  const axios = useAxios();
+  const api = useApi();
   const [blogs, setBlogs] = useState([]);
   const { modal: antdModal } = AntdApp.useApp();
 
@@ -109,7 +109,7 @@ function BlogList({ data, loading, isPublic = true }) {
 
   const handleBlogDelete = async (blogId) => {
     try {
-      await axios.delete(`/blogs/${blogId}`);
+      await api.delete(`/blogs/${blogId}`);
       feedbackDelete(true);
       setBlogs(blogs.filter(blog => blog._id !== blogId));
     } catch (err) {
