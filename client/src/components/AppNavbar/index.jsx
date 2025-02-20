@@ -3,15 +3,15 @@ import { CaretDownFilled, FormOutlined, InboxOutlined, LogoutOutlined, MenuOutli
 import { App as AntdApp, Button, Col, Drawer, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import useApi from '../../hooks/useApi';
 import useAuth from '../../hooks/useAuth';
-import useAxios from '../../hooks/useAxios';
 import styles from './AppNavbar.module.css';
 
 const { Header } = Layout;
 
 function AppNavbar({ user }) {
   const { isAuthenticated, logout } = useAuth();
-  const axios = useAxios();
+  const api = useApi();
   const location = useLocation();
   const navigate = useNavigate();
   const { message: antdMessage } = AntdApp.useApp();
@@ -28,7 +28,7 @@ function AppNavbar({ user }) {
 
   const handleLogout = async () => {
     try {
-      await axios.post('/auth/logout');
+      await api.post('/auth/logout');
       logout();
       navigate('/');
       antdMessage.info('You are logged out');

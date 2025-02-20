@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import CherryEditor from '../../components/CherryEditor';
 import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
 import Error from '../../components/Error';
-import useAxios from '../../hooks/useAxios';
+import useApi from '../../hooks/useApi';
 import useFetch from '../../hooks/useFetch';
 import { parseJSON } from '../../utils/jsonUtil';
 
@@ -13,7 +13,7 @@ const localStorageKeyPrefix = 'edit-';
 function EditBlogPage() {
   const { blogId } = useParams();
   const { data: blog, loading, error } = useFetch(`/users/me/blogs/${blogId}`);
-  const axios = useAxios();
+  const api = useApi();
   const navigate = useNavigate();
 
   // whether to use local draft or not
@@ -48,7 +48,7 @@ function EditBlogPage() {
   const handleSubmit = async (blogData, successMessage) => {
     // blogData.status: the new blog status to be set
     try {
-      await axios.put(`/blogs/${blogId}`, blogData);
+      await api.put(`/blogs/${blogId}`, blogData);
       showFeedbackModal(true, successMessage);
       localStorage.removeItem(localStorageKey);
     } catch (err) {

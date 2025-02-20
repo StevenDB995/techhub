@@ -34,8 +34,12 @@ exports.refreshToken = async (req, res) => {
     if (err.name === 'TokenExpiredError') {
       return messageResponse(res, 401, 'Session expired');
     }
+    // most likely an invalid signature
+    if (err.name === 'JsonWebTokenError') {
+      return messageResponse(res, 401, err.message);
+    }
 
-    console.error(err.message);
+    console.error(err);
     return messageResponse(res, 500, 'Unexpected error');
   }
 };

@@ -25,8 +25,7 @@ function CherryViewer({ value }) {
         ...cherryConfig
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [value]);
 
   // fill the content on page load
   useEffect(() => {
