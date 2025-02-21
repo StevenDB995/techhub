@@ -205,7 +205,7 @@ function CherryEditor({
       <div id={cherryConfig.id} className={styles.cherryEditor}>
         <Flex gap={buttonPropsList.length > 1 ? 'small' : 'middle'} wrap className={styles.buttonGroup}>
           <Button key="cancel" size="large" danger onClick={handleCancel}>Cancel</Button>
-          {buttonPropsList.map(({ type, text, onSxubmit, isDisabled }, index) => (
+          {buttonPropsList.map(({ type, text, onSubmit, isDisabled }, index) => (
             <Button
               key={index}
               size="large"
