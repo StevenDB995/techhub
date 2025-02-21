@@ -17,7 +17,7 @@ function EditBlogPage() {
   const navigate = useNavigate();
 
   // whether to use local draft or not
-  const [usesLocalDraft, setUsesLocalDraft] = useState(false);
+  const [useLocalDraft, setUseLocalDraft] = useState(false);
   // whether the load source (localStorage or database) of the blog is confirmed
   const [loadSourceConfirmed, setLoadSourceConfirmed] = useState(false);
 
@@ -37,13 +37,25 @@ function EditBlogPage() {
         cancelButtonProps: {
           danger: true
         },
-        onOk: () => setUsesLocalDraft(true),
+        onOk: () => setUseLocalDraft(true),
         afterClose: () => setLoadSourceConfirmed(true)
       });
     } else {
       setLoadSourceConfirmed(true);
     }
   }, [antdModal, localStorageKey]);
+
+  // A cleanup effect:
+  // When the edit page is closed, if the edited blog remain the same as when it was loaded,
+  // the draft in the local storage will be removed.
+  useEffect(() => {
+    return () => {
+      const currentDraft = parseJSON(localStorage.getItem(localStorageKey));
+      if (currentDraft?.title === blog?.title && currentDraft?.content === blog?.content) {
+        localStorage.removeItem(localStorageKey);
+      }
+    };
+  }, [blog, localStorageKey]);
 
   const handleSubmit = async (blogData, successMessage) => {
     // blogData.status: the new blog status to be set
@@ -104,8 +116,8 @@ function EditBlogPage() {
       <Error status={error.status} message={error.message} /> :
       <>
         <CherryEditor
-          initialTitle={(usesLocalDraft ? localDraft.current?.title : blog?.title) || ''}
-          initialContent={(usesLocalDraft ? localDraft.current?.content : blog?.content) || ''}
+          initialTitle={(useLocalDraft ? localDraft.current?.title : blog?.title) || ''}
+          initialContent={(useLocalDraft ? localDraft.current?.content : blog?.content) || ''}
           loading={loading}
           buttonPropsList={blog?.status === 'public' ? publicButtons : draftButtons}
           localStorageKey={localStorageKey}
