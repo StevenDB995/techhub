@@ -124,7 +124,7 @@ function EditBlogPage() {
           localStorageKey={localStorageKey}
           loadSourceConfirmed={loadSourceConfirmed}
         />
-        <FeedbackModal onSuccess={() => navigate('/my-blogs')} />
+        <FeedbackModal onSuccess={() => navigate(`/my-blogs/${blogId}`)} />
         {modalContextHolder}
       </>
   );

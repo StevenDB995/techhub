@@ -60,7 +60,7 @@ exports.createBlog = async (req, res) => {
     );
 
     await session.commitTransaction();
-    return messageResponse(res, 201, 'Blog created successfully!');
+    return dataResponse(res, 201, blog);
 
   } catch (err) {
     await session.abortTransaction();
