@@ -1,6 +1,6 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { App as AntdApp, Divider, Flex, List, Space, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useApi from '../../hooks/useApi';
 import { getDateString } from '../../utils/dateUtil';
@@ -78,20 +78,7 @@ function BlogList({ data, loading, isPublic = true }) {
     if (data) setBlogs(data);
   }, [data]);
 
-  const confirmDelete = (blogId) => {
-    antdModal.confirm({
-      title: 'Confirm Delete',
-      content: 'Are you sure?',
-      okText: 'Delete',
-      okButtonProps: {
-        danger: true
-      },
-      autoFocusButton: null,
-      onOk: () => handleBlogDelete(blogId)
-    });
-  };
-
-  const feedbackDelete = (success, errorMessage) => {
+  const feedbackDelete = useCallback((success, errorMessage = undefined) => {
     if (success) {
       antdModal.success({
         title: 'Success',
@@ -105,17 +92,31 @@ function BlogList({ data, loading, isPublic = true }) {
         cancelButtonProps: { style: { display: 'none' } }
       });
     }
-  };
+  }, [antdModal]);
 
-  const handleBlogDelete = async (blogId) => {
+  const handleDelete = useCallback(async (blogId) => {
     try {
       await api.delete(`/blogs/${blogId}`);
       feedbackDelete(true);
       setBlogs(blogs.filter(blog => blog._id !== blogId));
+      localStorage.removeItem(`edit-${blogId}`);
     } catch (err) {
       feedbackDelete(false, err.message);
     }
-  };
+  }, [api, blogs, feedbackDelete]);
+
+  const confirmDelete = useCallback((blogId) => {
+    antdModal.confirm({
+      title: 'Confirm Delete',
+      content: 'Are you sure?',
+      okText: 'Delete',
+      okButtonProps: {
+        danger: true
+      },
+      autoFocusButton: null,
+      onOk: () => handleDelete(blogId)
+    });
+  }, [antdModal, handleDelete]);
 
   return (
     <>
