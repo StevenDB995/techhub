@@ -16,16 +16,16 @@ function EditBlogPage() {
   const api = useApi();
   const navigate = useNavigate();
 
+  const localStorageKey = localStorageKeyPrefix + blogId;
+  const localDraft = useRef(parseJSON(localStorage.getItem(localStorageKey)));
+
   // whether to use local draft or not
-  const [useLocalDraft, setUseLocalDraft] = useState(false);
+  const [useLocalDraft, setUseLocalDraft] = useState(!!localStorage.getItem(localStorageKey));
   // whether the load source (localStorage or database) of the blog is confirmed
   const [loadSourceConfirmed, setLoadSourceConfirmed] = useState(false);
 
   const { modal: antdModal } = AntdApp.useApp();
   const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
-
-  const localStorageKey = localStorageKeyPrefix + blogId;
-  const localDraft = useRef(parseJSON(localStorage.getItem(localStorageKey)));
 
   useEffect(() => {
     if (localStorage.getItem(localStorageKey)) {
@@ -38,6 +38,7 @@ function EditBlogPage() {
           danger: true
         },
         onOk: () => setUseLocalDraft(true),
+        onCancel: () => setUseLocalDraft(false),
         afterClose: () => setLoadSourceConfirmed(true)
       });
     } else {
