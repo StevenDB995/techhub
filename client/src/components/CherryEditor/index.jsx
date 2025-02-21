@@ -153,7 +153,7 @@ function CherryEditor({
         api.post('/blogs/images', imageMetadata)
           .catch(err => console.error(err));
         callback(imageMetadata.link, {
-          width: '80%'
+          width: '600px'
         });
 
       } catch (err) {
