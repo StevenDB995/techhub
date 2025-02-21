@@ -1,5 +1,5 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { App as AntdApp, Divider, Flex, List, Space, Typography } from 'antd';
+import { Divider, Flex, List, Modal, Space, Typography } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useApi from '../../hooks/useApi';
@@ -72,7 +72,7 @@ function ListFooterItem({ icon, text, size, className, onClick }) {
 function BlogList({ data, loading, isPublic = true }) {
   const api = useApi();
   const [blogs, setBlogs] = useState([]);
-  const { modal: antdModal } = AntdApp.useApp();
+  const [modal, modalContextHolder] = Modal.useModal();
 
   useEffect(() => {
     if (data) setBlogs(data);
@@ -80,19 +80,19 @@ function BlogList({ data, loading, isPublic = true }) {
 
   const feedbackDelete = useCallback((success, errorMessage = undefined) => {
     if (success) {
-      antdModal.success({
+      modal.success({
         title: 'Success',
         content: 'Blog deleted',
         cancelButtonProps: { style: { display: 'none' } }
       });
     } else {
-      antdModal.error({
+      modal.error({
         title: 'Error',
         content: errorMessage || 'Error deleting blog',
         cancelButtonProps: { style: { display: 'none' } }
       });
     }
-  }, [antdModal]);
+  }, [modal]);
 
   const handleDelete = useCallback(async (blogId) => {
     try {
@@ -106,7 +106,7 @@ function BlogList({ data, loading, isPublic = true }) {
   }, [api, blogs, feedbackDelete]);
 
   const confirmDelete = useCallback((blogId) => {
-    antdModal.confirm({
+    modal.confirm({
       title: 'Confirm Delete',
       content: 'Are you sure?',
       okText: 'Delete',
@@ -116,7 +116,7 @@ function BlogList({ data, loading, isPublic = true }) {
       autoFocusButton: null,
       onOk: () => handleDelete(blogId)
     });
-  }, [antdModal, handleDelete]);
+  }, [modal, handleDelete]);
 
   return (
     <>
@@ -131,6 +131,7 @@ function BlogList({ data, loading, isPublic = true }) {
         dataSource={blogs}
         renderItem={(item) => <ListItem item={item} isPublic={isPublic} onDelete={confirmDelete} />}
       />
+      {modalContextHolder}
     </>
   );
 }
