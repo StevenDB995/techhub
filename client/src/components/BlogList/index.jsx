@@ -1,6 +1,6 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { App as AntdApp, Divider, Flex, List, Space, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { Divider, Flex, List, Modal, Space, Typography } from 'antd';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useApi from '../../hooks/useApi';
 import { getDateString } from '../../utils/dateUtil';
@@ -72,14 +72,41 @@ function ListFooterItem({ icon, text, size, className, onClick }) {
 function BlogList({ data, loading, isPublic = true }) {
   const api = useApi();
   const [blogs, setBlogs] = useState([]);
-  const { modal: antdModal } = AntdApp.useApp();
+  const [modal, modalContextHolder] = Modal.useModal();
 
   useEffect(() => {
     if (data) setBlogs(data);
   }, [data]);
 
-  const confirmDelete = (blogId) => {
-    antdModal.confirm({
+  const feedbackDelete = useCallback((success, errorMessage = undefined) => {
+    if (success) {
+      modal.success({
+        title: 'Success',
+        content: 'Blog deleted',
+        cancelButtonProps: { style: { display: 'none' } }
+      });
+    } else {
+      modal.error({
+        title: 'Error',
+        content: errorMessage || 'Error deleting blog',
+        cancelButtonProps: { style: { display: 'none' } }
+      });
+    }
+  }, [modal]);
+
+  const handleDelete = useCallback(async (blogId) => {
+    try {
+      await api.delete(`/blogs/${blogId}`);
+      feedbackDelete(true);
+      setBlogs(blogs.filter(blog => blog._id !== blogId));
+      localStorage.removeItem(`edit-${blogId}`);
+    } catch (err) {
+      feedbackDelete(false, err.message);
+    }
+  }, [api, blogs, feedbackDelete]);
+
+  const confirmDelete = useCallback((blogId) => {
+    modal.confirm({
       title: 'Confirm Delete',
       content: 'Are you sure?',
       okText: 'Delete',
@@ -87,35 +114,9 @@ function BlogList({ data, loading, isPublic = true }) {
         danger: true
       },
       autoFocusButton: null,
-      onOk: () => handleBlogDelete(blogId)
+      onOk: () => handleDelete(blogId)
     });
-  };
-
-  const feedbackDelete = (success, errorMessage) => {
-    if (success) {
-      antdModal.success({
-        title: 'Success',
-        content: 'Blog deleted',
-        cancelButtonProps: { style: { display: 'none' } }
-      });
-    } else {
-      antdModal.error({
-        title: 'Error',
-        content: errorMessage || 'Error deleting blog',
-        cancelButtonProps: { style: { display: 'none' } }
-      });
-    }
-  };
-
-  const handleBlogDelete = async (blogId) => {
-    try {
-      await api.delete(`/blogs/${blogId}`);
-      feedbackDelete(true);
-      setBlogs(blogs.filter(blog => blog._id !== blogId));
-    } catch (err) {
-      feedbackDelete(false, err.message);
-    }
-  };
+  }, [modal, handleDelete]);
 
   return (
     <>
@@ -130,6 +131,7 @@ function BlogList({ data, loading, isPublic = true }) {
         dataSource={blogs}
         renderItem={(item) => <ListItem item={item} isPublic={isPublic} onDelete={confirmDelete} />}
       />
+      {modalContextHolder}
     </>
   );
 }

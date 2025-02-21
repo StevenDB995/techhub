@@ -1,4 +1,4 @@
-import { App as AntdApp } from 'antd';
+import { Modal } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import CherryEditor from '../../components/CherryEditor';
@@ -16,20 +16,20 @@ function EditBlogPage() {
   const api = useApi();
   const navigate = useNavigate();
 
-  // whether to use local draft or not
-  const [usesLocalDraft, setUsesLocalDraft] = useState(false);
-  // whether the load source (localStorage or database) of the blog is confirmed
-  const [loadSourceConfirmed, setLoadSourceConfirmed] = useState(false);
-
-  const { modal: antdModal } = AntdApp.useApp();
-  const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
-
   const localStorageKey = localStorageKeyPrefix + blogId;
   const localDraft = useRef(parseJSON(localStorage.getItem(localStorageKey)));
 
+  // whether to use local draft or not
+  const [useLocalDraft, setUseLocalDraft] = useState(!!localStorage.getItem(localStorageKey));
+  // whether the load source (localStorage or database) of the blog is confirmed
+  const [loadSourceConfirmed, setLoadSourceConfirmed] = useState(false);
+
+  const [modal, modalContextHolder] = Modal.useModal();
+  const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
+
   useEffect(() => {
     if (localStorage.getItem(localStorageKey)) {
-      antdModal.confirm({
+      modal.confirm({
         title: 'Unsaved draft found',
         content: 'You have an unsaved draft of this blog. Do you want to continue editing?',
         okText: 'Continue',
@@ -37,13 +37,26 @@ function EditBlogPage() {
         cancelButtonProps: {
           danger: true
         },
-        onOk: () => setUsesLocalDraft(true),
+        onOk: () => setUseLocalDraft(true),
+        onCancel: () => setUseLocalDraft(false),
         afterClose: () => setLoadSourceConfirmed(true)
       });
     } else {
       setLoadSourceConfirmed(true);
     }
-  }, [antdModal, localStorageKey]);
+  }, [modal, localStorageKey]);
+
+  // A cleanup effect:
+  // When the edit page is closed, if the edited blog remain the same as when it was loaded,
+  // the draft in the local storage will be removed.
+  useEffect(() => {
+    return () => {
+      const currentDraft = parseJSON(localStorage.getItem(localStorageKey));
+      if (currentDraft?.title === blog?.title && currentDraft?.content === blog?.content) {
+        localStorage.removeItem(localStorageKey);
+      }
+    };
+  }, [blog, localStorageKey]);
 
   const handleSubmit = async (blogData, successMessage) => {
     // blogData.status: the new blog status to be set
@@ -104,14 +117,15 @@ function EditBlogPage() {
       <Error status={error.status} message={error.message} /> :
       <>
         <CherryEditor
-          initialTitle={(usesLocalDraft ? localDraft.current?.title : blog?.title) || ''}
-          initialContent={(usesLocalDraft ? localDraft.current?.content : blog?.content) || ''}
+          initialTitle={(useLocalDraft ? localDraft.current?.title : blog?.title) || ''}
+          initialContent={(useLocalDraft ? localDraft.current?.content : blog?.content) || ''}
           loading={loading}
           buttonPropsList={blog?.status === 'public' ? publicButtons : draftButtons}
           localStorageKey={localStorageKey}
           loadSourceConfirmed={loadSourceConfirmed}
         />
-        <FeedbackModal onSuccess={() => navigate('/my-blogs')} />
+        <FeedbackModal onSuccess={() => navigate(`/my-blogs/${blogId}`)} />
+        {modalContextHolder}
       </>
   );
 }

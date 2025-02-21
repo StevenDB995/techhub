@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CherryEditor from '../../components/CherryEditor';
 import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
@@ -19,11 +19,13 @@ function CreateBlogPage() {
   const navigate = useNavigate();
 
   const localDraft = useRef(parseJSON(localStorage.getItem(localStorageKey)));
+  const [blogId, setBlogId] = useState(null);
 
   const handleSubmit = async (blogData, successMessage) => {
     // blogData.status: the new blog status to be set
     try {
-      await api.post('/blogs', blogData);
+      const response = await api.post('/blogs', blogData);
+      setBlogId(response.data._id);
       showFeedbackModal(true, successMessage);
       localStorage.removeItem(localStorageKey);
     } catch (err) {
@@ -62,7 +64,7 @@ function CreateBlogPage() {
         buttonPropsList={buttonPropsList}
         localStorageKey={localStorageKey}
       />
-      <FeedbackModal onSuccess={() => navigate('/my-blogs')} />
+      <FeedbackModal onSuccess={() => navigate(`/my-blogs/${blogId}`)} />
     </>
   );
 }

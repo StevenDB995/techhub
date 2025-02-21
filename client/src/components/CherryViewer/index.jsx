@@ -1,11 +1,15 @@
 import Cherry from 'cherry-markdown';
 import { useEffect, useRef } from 'react';
+import styles from './CherryViewer.module.css';
 
 const cherryConfig = {
   id: 'cherry-viewer',
   locale: 'en_US',
   editor: {
     defaultModel: 'previewOnly'
+  },
+  previewer: {
+    enablePreviewerBubble: false
   },
   toolbars: {
     toc: {
@@ -33,7 +37,7 @@ function CherryViewer({ value }) {
   }, [value]);
 
   return (
-    <div id={cherryConfig.id}></div>
+    <div id={cherryConfig.id} className={styles.cherryViewer}></div>
   );
 }
 

@@ -1,4 +1,4 @@
-import { App as AntdApp, Button, Flex, Input } from 'antd';
+import { App as AntdApp, Button, Flex, Input, Modal } from 'antd';
 import axios from 'axios';
 import Cherry from 'cherry-markdown';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -44,7 +44,7 @@ const cherryConfig = {
 };
 
 // Supported image type: https://apidocs.imgur.com/#c85c9dfc-7487-4de2-9ecd-66f727cf3139
-const supportedImageFormat = ['jpeg', 'jpg', 'png', 'apng', 'gif', 'tiff'];
+const supportedImageFormats = ['jpeg', 'jpg', 'png', 'apng', 'gif', 'tiff'];
 
 function CherryEditor({
   initialTitle = '',
@@ -62,7 +62,8 @@ function CherryEditor({
 
   const [uploadingImage, setUploadingImage] = useState(false);
   const api = useApi();
-  const { modal: antdModal, message: antdMessage } = AntdApp.useApp();
+  const { message: antdMessage } = AntdApp.useApp();
+  const [modal, modalContextHolder] = Modal.useModal();
   const navigate = useNavigate();
 
   const handleTitleChange = (e) => {
@@ -88,7 +89,7 @@ function CherryEditor({
   };
 
   const handleCancel = () => {
-    antdModal.confirm({
+    modal.confirm({
       title: 'Quit Editing',
       content: 'Are you sure? Don\'t worry, your current progress will be saved locally after quiting.',
       centered: true,
@@ -105,7 +106,7 @@ function CherryEditor({
       return;
     }
 
-    if (!supportedImageFormat.includes(fileFormat.toLowerCase())) {
+    if (!supportedImageFormats.includes(fileFormat.toLowerCase())) {
       antdMessage.error(`Your image format (${fileFormat}) is not supported!`);
       return;
     }
@@ -153,7 +154,7 @@ function CherryEditor({
         api.post('/blogs/images', imageMetadata)
           .catch(err => console.error(err));
         callback(imageMetadata.link, {
-          width: '80%'
+          width: '600px'
         });
 
       } catch (err) {
@@ -219,6 +220,7 @@ function CherryEditor({
       </div>
       <Loading display={loading || submitting} />
       <Loading display={uploadingImage} text={'Uploading image'} />
+      {modalContextHolder}
     </div>
   );
 }

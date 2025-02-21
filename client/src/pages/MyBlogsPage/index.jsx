@@ -1,5 +1,6 @@
 import { Select } from 'antd';
 import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import BlogList from '../../components/BlogList';
 import Error from '../../components/Error';
 import useFetch from '../../hooks/useFetch';
@@ -16,16 +17,17 @@ const options = [
   }
 ];
 
-const url = '/users/me/blogs';
-const initialStatus = 'public';
-
 function MyBlogsPage() {
-  const { data, loading, error, refetch } = useFetch(url);
-  const [blogStatus, setBlogStatus] = useState(initialStatus);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [blogStatus, setBlogStatus] = useState(searchParams.get('status') || 'public');
+  const { data, loading, error, refetch } = useFetch('/users/me/blogs', {
+    params: { status: blogStatus }
+  });
   const isFirstRender = useRef(true);
 
   useEffect(() => {
     if (!isFirstRender.current) {
+      setSearchParams({ status: blogStatus });
       void refetch({
         params: { status: blogStatus }
       });
@@ -44,7 +46,7 @@ function MyBlogsPage() {
       <Error status={error.status} message={error.message} /> :
       <>
         <div className={styles.selectContainer}>
-          <Select className={styles.select} defaultValue={initialStatus} options={options} onChange={onChange} />
+          <Select className={styles.select} value={blogStatus} options={options} onChange={onChange} />
         </div>
         <BlogList data={data} loading={loading} isPublic={false} />
       </>
