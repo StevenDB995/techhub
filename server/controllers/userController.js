@@ -6,7 +6,7 @@ const { hashPassword } = require('../utils/password');
 
 exports.getCurrentUser = async (req, res) => {
   try {
-    const user = await User.findById(req.user).select('-password');
+    const user = await User.findById(req.user.id).select('-password');
     return dataResponse(res, 200, user);
   } catch (err) {
     console.error(err);
@@ -19,7 +19,7 @@ exports.getMyBlogsByStatus = async (req, res) => {
   try {
     const status = req.query.status || 'public';
     const blogs = await Blog
-      .find({ author: req.user, status })
+      .find({ author: req.user.id, status })
       .select('-content')
       .populate('author', 'username')
       .sort({ createdAt: -1 });
@@ -40,7 +40,7 @@ exports.getMyBlogById = async (req, res) => {
     }
 
     // authorize
-    if (!blog.author.equals(req.user)) {
+    if (!blog.author.equals(req.user.id)) {
       return messageResponse(res, 403, 'Permission denied');
     }
 

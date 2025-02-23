@@ -14,10 +14,12 @@ const authMiddleware = async (req, res, next) => {
   try {
     const decoded = jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
     const userId = decoded.userId;
+    let username = decoded.username;
 
     try {
       // unauthorize if the user is inactive or removed
       const user = await User.findById(userId);
+      username = user.username;
       if (!user?.isActive) {
         // instruct to clear refresh token in browser
         res.clearCookie(constants.REFRESH_TOKEN_NAME, { path: constants.REFRESH_TOKEN_PATH });
@@ -28,7 +30,7 @@ const authMiddleware = async (req, res, next) => {
       return messageResponse(res, 500, 'Unexpected error');
     }
 
-    req.user = userId;
+    req.user = { id: userId, username };
     next();
 
   } catch (jwtError) {

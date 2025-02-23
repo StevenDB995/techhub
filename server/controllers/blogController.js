@@ -50,7 +50,7 @@ exports.createBlog = async (req, res) => {
 
   try {
     const blog = new Blog(req.body);
-    blog.author = req.user;
+    blog.author = req.user.id;
     await blog.save({ session });
 
     await BlogImage.updateMany(
@@ -84,7 +84,7 @@ exports.updateBlogById = async (req, res) => {
     }
 
     // authorize
-    if (!blog.author.equals(req.user)) {
+    if (!blog.author.equals(req.user.id)) {
       return messageResponse(res, 403, 'Permission denied');
     }
 
@@ -142,7 +142,7 @@ exports.deleteBlogById = async (req, res) => {
     }
 
     // authorize
-    if (!blog.author.equals(req.user)) {
+    if (!blog.author.equals(req.user.id)) {
       return messageResponse(res, 403, 'Permission denied');
     }
 

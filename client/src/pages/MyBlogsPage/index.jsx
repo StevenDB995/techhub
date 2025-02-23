@@ -32,7 +32,7 @@ function MyBlogsPage() {
         params: { status: blogStatus }
       });
     }
-  }, [blogStatus, refetch]);
+  }, [blogStatus, refetch, setSearchParams]);
 
   const onChange = (value) => {
     setBlogStatus(value);

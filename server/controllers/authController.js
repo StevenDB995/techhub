@@ -24,7 +24,8 @@ exports.refreshToken = async (req, res) => {
 
   try {
     const { userId } = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
-    const accessToken = signAccessToken(userId);
+    const user = await User.findById(userId);
+    const accessToken = signAccessToken(userId, user.username);
     refreshToken = signRefreshToken(userId);
     res.cookie(constants.REFRESH_TOKEN_NAME, refreshToken, cookieConfig);
     return dataResponse(res, 200, { accessToken });
@@ -95,7 +96,7 @@ exports.login = async (req, res) => {
     user.lastLogin = Date.now();
     await user.save();
 
-    const accessToken = signAccessToken(user._id);
+    const accessToken = signAccessToken(user._id, user.username);
     const refreshToken = signRefreshToken(user._id);
 
     res.cookie(constants.REFRESH_TOKEN_NAME, refreshToken, cookieConfig);
