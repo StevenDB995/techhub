@@ -53,11 +53,12 @@ exports.getMyBlogById = async (req, res) => {
 };
 
 // for public view
-exports.getPublicBlogs = async (req, res) => {
-  const { userId } = req.params;
+exports.getPublicBlogsByUsername = async (req, res) => {
+  const { username } = req.params;
   try {
+    const user = await Blog.findOne({ username });
     const blogs = await Blog.find({
-      author: userId,
+      author: user._id,
       status: 'public'
     }).select('-content')
       .populate('author', 'username')

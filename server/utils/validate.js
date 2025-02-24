@@ -5,13 +5,12 @@ const validator = require('validator');
  * * Be of length between 4-30 characters;
  * * Contains at least one English character;
  * * Contains only English letters, digits, underscores and periods.
- * The username is case-sensitive.
  * @param username
  * @returns {boolean}
  */
 exports.isValidUsername = (username) => {
   const regex = /^(?=.*[a-zA-Z])[a-zA-Z0-9_.]{4,30}$/;
-  return regex.test(username);
+  return username.toLowerCase() !== 'me' && regex.test(username);
 };
 
 /**
