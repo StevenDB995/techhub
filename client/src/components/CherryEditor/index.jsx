@@ -4,6 +4,7 @@ import Cherry from 'cherry-markdown';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useApi from '../../hooks/useApi';
+import useAuth from '../../hooks/useAuth';
 import { extractImageLinks, extractMetadata } from '../../utils/mdUtil';
 import Loading from '../Loading';
 import 'cherry-markdown/dist/cherry-markdown.css';
@@ -61,6 +62,7 @@ function CherryEditor({
   const [submitting, setSubmitting] = useState(false);
 
   const [uploadingImage, setUploadingImage] = useState(false);
+  const { decodedJwt } = useAuth();
   const api = useApi();
   const { message: antdMessage } = AntdApp.useApp();
   const [modal, modalContextHolder] = Modal.useModal();
@@ -95,7 +97,7 @@ function CherryEditor({
       centered: true,
       okText: 'Keep Editing',
       cancelText: 'Quit',
-      onCancel: () => navigate('/my-blogs')
+      onCancel: () => navigate(decodedJwt ? `/${decodedJwt.username}/blogs` : '/')
     });
   };
 

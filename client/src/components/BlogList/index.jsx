@@ -22,7 +22,7 @@ function ListItem({ item, isPublic, onDelete }) {
       <List.Item.Meta
         title={
           <Link
-            to={`${isPublic ? '/blogs' : '/my-blogs'}/${item._id}`}
+            to={`/blogs/${item._id}`}
             className={styles.listItemTitle}
           >
             {item.title || 'Untitled'}
@@ -44,7 +44,7 @@ function ListItem({ item, isPublic, onDelete }) {
             text="Edit"
             size={6}
             onClick={() => {
-              navigate(`/my-blogs/${item._id}/edit`);
+              navigate(`/blogs/${item._id}/edit`);
             }}
           />
           <ListFooterItem

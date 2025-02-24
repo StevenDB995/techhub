@@ -17,8 +17,8 @@ function App() {
   const [footerData, setFooterData] = useState(null);
   const api = useApi();
 
-  const matchCreate = useMatch('/my-blogs/create');
-  const matchEdit = useMatch('/my-blogs/:blogId/edit');
+  const matchCreate = useMatch('/blogs/create');
+  const matchEdit = useMatch('/blogs/:blogId/edit');
   const shouldDisplayHeader = !(matchCreate || matchEdit);
 
   useEffect(() => {

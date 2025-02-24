@@ -17,7 +17,7 @@ const useFetch = (url, config = undefined) => {
       setError(err);
     }
     setLoading(false);
-  }, [api, url]);
+  }, [api, config, url]);
 
   useEffect(() => {
     void fetchData();

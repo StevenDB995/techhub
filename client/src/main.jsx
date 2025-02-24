@@ -11,8 +11,7 @@ import CreateBlogPage from './pages/CreateBlogPage';
 import EditBlogPage from './pages/EditBlogPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
-import MyBlogsPage from './pages/MyBlogsPage';
-import PreviewBlogPage from './pages/PreviewBlogPage';
+import UserBlogsPage from './pages/UserBlogsPage';
 import ViewBlogPage from './pages/ViewBlogPage';
 import './index.css';
 
@@ -42,20 +41,16 @@ const router = createBrowserRouter([
         element: <ViewBlogPage />
       },
       {
-        path: 'my-blogs',
-        element: <MyBlogsPage />
+        path: ':username/blogs',
+        element: <UserBlogsPage />
       },
       {
-        path: 'my-blogs/create',
+        path: 'blogs/create',
         element: <CreateBlogPage />
       },
       {
-        path: `my-blogs/:blogId/edit`,
+        path: `blogs/:blogId/edit`,
         element: <EditBlogPage />
-      },
-      {
-        path: 'my-blogs/:blogId',
-        element: <PreviewBlogPage />
       }
     ]
   }

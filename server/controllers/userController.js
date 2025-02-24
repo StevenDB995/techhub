@@ -32,13 +32,12 @@ exports.getMyBlogsByStatus = async (req, res) => {
 
 exports.getMyBlogById = async (req, res) => {
   const { blogId } = req.params;
+
   try {
     const blog = await Blog.findById(blogId);
-
     if (!blog) {
       return messageResponse(res, 404, 'Blog not found');
     }
-
     // authorize
     if (!blog.author.equals(req.user.id)) {
       return messageResponse(res, 403, 'Permission denied');
@@ -55,8 +54,14 @@ exports.getMyBlogById = async (req, res) => {
 // for public view
 exports.getPublicBlogsByUsername = async (req, res) => {
   const { username } = req.params;
+
   try {
-    const user = await Blog.findOne({ username });
+    const user = await User.findOne({ username })
+      .collation({ locale: 'en', strength: 2 });
+    if (!user) {
+      return messageResponse(res, 404, 'User not found');
+    }
+
     const blogs = await Blog.find({
       author: user._id,
       status: 'public'
@@ -64,6 +69,7 @@ exports.getPublicBlogsByUsername = async (req, res) => {
       .populate('author', 'username')
       .sort({ createdAt: -1 });
     return dataResponse(res, 200, blogs);
+
   } catch (err) {
     console.error(err);
     return messageResponse(res, 500, 'Error fetching blogs');

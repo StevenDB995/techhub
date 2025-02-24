@@ -64,7 +64,7 @@ function CreateBlogPage() {
         buttonPropsList={buttonPropsList}
         localStorageKey={localStorageKey}
       />
-      <FeedbackModal onSuccess={() => navigate(`/my-blogs/${blogId}`)} />
+      <FeedbackModal onSuccess={() => navigate(`/blogs/${blogId}`)} />
     </>
   );
 }
