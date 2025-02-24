@@ -1,13 +1,12 @@
 const User = require('../models/userModel');
-const jwt = require('jsonwebtoken');
-const { messageResponse, dataResponse } = require('../utils/response');
-const { isValidUsername, isValidPassword, isValidEmail } = require('../utils/validate');
-const { hashPassword, comparePassword } = require('../utils/password');
-const { signAccessToken, signRefreshToken } = require('../utils/token');
+const { messageResponse, dataResponse } = require('../utils/responseUtil');
+const { isValidUsername, isValidPassword, isValidEmail } = require('../utils/validateUtil');
+const { hashPassword, comparePassword } = require('../utils/passwordUtil');
+const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../utils/tokenUtil');
 const { clearRefreshToken } = require('../helpers/authHelper');
 const constants = require('../config/constants');
 
-const { NODE_ENV, REFRESH_TOKEN_SECRET } = process.env;
+const { NODE_ENV } = process.env;
 
 const cookieConfig = {
   httpOnly: true,
@@ -24,7 +23,7 @@ exports.refreshToken = async (req, res) => {
   }
 
   try {
-    const { userId } = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
+    const { userId } = verifyRefreshToken(refreshToken);
     const user = await User.findById(userId);
     const accessToken = signAccessToken(userId, user.username);
     refreshToken = signRefreshToken(userId);

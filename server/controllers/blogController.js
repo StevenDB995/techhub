@@ -1,13 +1,12 @@
 const Blog = require('../models/blogModel');
 const BlogImage = require('../models/blogImageModel');
-const { messageResponse, dataResponse } = require('../utils/response');
-const jwt = require('jsonwebtoken');
+const { messageResponse, dataResponse } = require('../utils/responseUtil');
+const { verifyAccessToken, decodeAccessToken } = require('../utils/tokenUtil');
 const axios = require('axios');
 const mongoose = require('mongoose');
 const { validateAccessToken } = require('../helpers/authHelper');
 
 const {
-  ACCESS_TOKEN_SECRET,
   IMGUR_CLIENT_ID,
   IMGUR_CLIENT_SECRET,
   IMGUR_REFRESH_TOKEN,
@@ -47,7 +46,7 @@ exports.getBlogById = async (req, res) => {
 
     // for non-public blog
     const user = blog.author;
-    let decoded = jwt.decode(accessToken);
+    let decoded = decodeAccessToken(accessToken);
 
     // if not the author of the blog
     if (!user._id.equals(decoded?.userId)) {
@@ -56,7 +55,7 @@ exports.getBlogById = async (req, res) => {
 
     // if the user is the author of the blog
     try {
-      const jwtClaims = jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
+      const jwtClaims = verifyAccessToken(accessToken);
       if (!validateAccessToken(res, jwtClaims, user)) {
         return;
       }

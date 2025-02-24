@@ -1,9 +1,7 @@
-const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
-const { messageResponse } = require('../utils/response');
+const { messageResponse } = require('../utils/responseUtil');
+const { verifyAccessToken } = require('../utils/tokenUtil');
 const { validateAccessToken } = require('../helpers/authHelper');
-
-const { ACCESS_TOKEN_SECRET } = process.env;
 
 const authMiddleware = async (req, res, next) => {
   const accessToken = req.header('Authorization')?.split(' ')[1];
@@ -12,7 +10,7 @@ const authMiddleware = async (req, res, next) => {
   }
 
   try {
-    const jwtClaims = jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
+    const jwtClaims = verifyAccessToken(accessToken);
 
     try {
       const user = await User.findById(jwtClaims.userId);

@@ -1,8 +1,8 @@
 const User = require('../models/userModel');
 const Blog = require('../models/blogModel');
-const { dataResponse, messageResponse } = require('../utils/response');
-const { isValidPassword } = require('../utils/validate');
-const { hashPassword } = require('../utils/password');
+const { dataResponse, messageResponse } = require('../utils/responseUtil');
+const { isValidPassword } = require('../utils/validateUtil');
+const { hashPassword } = require('../utils/passwordUtil');
 
 exports.getCurrentUser = async (req, res) => {
   try {

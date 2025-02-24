@@ -24,8 +24,8 @@ exports.isValidUsername = (username) => {
 exports.isValidPassword = (password) => {
   const regex = /^[a-zA-Z0-9._!@#$%^&*()\[\]\-+=]{8,30}$/;
   return regex.test(password);
-}
+};
 
 exports.isValidEmail = (email) => {
   return validator.isEmail(email);
-}
+};

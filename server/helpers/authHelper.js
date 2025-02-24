@@ -1,5 +1,5 @@
 const constants = require('../config/constants');
-const { messageResponse, errorTypes } = require('../utils/response');
+const { messageResponse, errorTypes } = require('../utils/responseUtil');
 
 const clearRefreshToken = (res) => {
   res.clearCookie(constants.REFRESH_TOKEN_NAME, { path: constants.REFRESH_TOKEN_PATH });

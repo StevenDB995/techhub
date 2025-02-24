@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { isValidUsername, isValidEmail } = require('../utils/validate');
+const { isValidUsername, isValidEmail } = require('../utils/validateUtil');
 
 const userSchema = new mongoose.Schema({
   username: { // case-insensitive collation but still preserve the case
