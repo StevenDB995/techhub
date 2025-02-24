@@ -4,6 +4,7 @@ const { messageResponse, dataResponse } = require('../utils/response');
 const { isValidUsername, isValidPassword, isValidEmail } = require('../utils/validate');
 const { hashPassword, comparePassword } = require('../utils/password');
 const { signAccessToken, signRefreshToken } = require('../utils/token');
+const { clearRefreshToken } = require('../helpers/authHelper');
 const constants = require('../config/constants');
 
 const { NODE_ENV, REFRESH_TOKEN_SECRET } = process.env;
@@ -27,16 +28,19 @@ exports.refreshToken = async (req, res) => {
     const user = await User.findById(userId);
     const accessToken = signAccessToken(userId, user.username);
     refreshToken = signRefreshToken(userId);
+
     res.cookie(constants.REFRESH_TOKEN_NAME, refreshToken, cookieConfig);
     return dataResponse(res, 200, { accessToken });
 
   } catch (err) {
     // if the refresh token expired
     if (err.name === 'TokenExpiredError') {
+      clearRefreshToken(res);
       return messageResponse(res, 401, 'Session expired');
     }
     // most likely an invalid signature
     if (err.name === 'JsonWebTokenError') {
+      clearRefreshToken(res);
       return messageResponse(res, 401, err.message);
     }
 

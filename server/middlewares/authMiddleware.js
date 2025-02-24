@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
-const { messageResponse, errorTypes } = require('../utils/response');
-const constants = require('../config/constants');
+const { messageResponse } = require('../utils/response');
+const { validateAccessToken } = require('../helpers/authHelper');
 
 const { ACCESS_TOKEN_SECRET } = process.env;
 
@@ -12,25 +12,19 @@ const authMiddleware = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
-    const userId = decoded.userId;
-    let username = decoded.username;
+    const jwtClaims = jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
 
     try {
-      // unauthorize if the user is inactive or removed
-      const user = await User.findById(userId);
-      username = user.username;
-      if (!user?.isActive) {
-        // instruct to clear refresh token in browser
-        res.clearCookie(constants.REFRESH_TOKEN_NAME, { path: constants.REFRESH_TOKEN_PATH });
-        return messageResponse(res, 403, 'Forbidden', errorTypes.ILLEGAL_USER);
+      const user = await User.findById(jwtClaims.userId);
+      if (!validateAccessToken(res, jwtClaims, user)) {
+        return;
       }
     } catch (dbError) {
       console.error(dbError.message);
       return messageResponse(res, 500, 'Unexpected error');
     }
 
-    req.user = { id: userId, username };
+    req.user = { id: jwtClaims.userId, username: jwtClaims.username };
     next();
 
   } catch (jwtError) {
