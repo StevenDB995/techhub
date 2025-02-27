@@ -41,7 +41,7 @@ function UserBlogsPage() {
         {isMe && <div className={styles.selectContainer}>
           <Select className={styles.select} value={blogStatus || 'public'} options={options} onChange={onChange} />
         </div>}
-        <BlogList data={data} loading={loading} isPublic={false} />
+        <BlogList data={data} loading={loading} showActions={isMe} />
       </>
   );
 }

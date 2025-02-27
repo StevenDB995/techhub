@@ -8,7 +8,7 @@ import styles from './BlogList.module.css';
 
 const { Paragraph } = Typography;
 
-function ListItem({ item, isPublic, onDelete }) {
+function ListItem({ item, showActions, onDelete }) {
   const navigate = useNavigate();
 
   let previewText = item.previewText;
@@ -37,7 +37,7 @@ function ListItem({ item, isPublic, onDelete }) {
           {/*<ListFooterItem icon={LikeOutlined} text={data.likes} />*/}
           {/*<ListFooterItem icon={MessageOutlined} text={data.comments} />*/}
         </Space>
-        {!isPublic && <Space split={<Divider type="vertical" />} size={4}>
+        {showActions && <Space split={<Divider type="vertical" />} size={4}>
           <ListFooterItem
             className={styles.clickable}
             icon={EditOutlined}
@@ -69,7 +69,7 @@ function ListFooterItem({ icon, text, size, className, onClick }) {
   );
 }
 
-function BlogList({ data, loading, isPublic = true }) {
+function BlogList({ data, loading, showActions = false }) {
   const api = useApi();
   const [blogs, setBlogs] = useState([]);
   const [modal, modalContextHolder] = Modal.useModal();
@@ -129,7 +129,7 @@ function BlogList({ data, loading, isPublic = true }) {
         }}
         loading={loading}
         dataSource={blogs}
-        renderItem={(item) => <ListItem item={item} isPublic={isPublic} onDelete={confirmDelete} />}
+        renderItem={(item) => <ListItem item={item} showActions={showActions} onDelete={confirmDelete} />}
       />
       {modalContextHolder}
     </>
