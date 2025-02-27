@@ -1,10 +1,10 @@
 const User = require('../models/userModel');
 const { messageResponse } = require('../utils/responseUtil');
 const { verifyAccessToken } = require('../utils/tokenUtil');
-const { validateAccessToken } = require('../helpers/authHelper');
+const { getAccessToken, validateJwtClaims } = require('../helpers/authHelper');
 
 const authMiddleware = async (req, res, next) => {
-  const accessToken = req.header('Authorization')?.split(' ')[1];
+  const accessToken = getAccessToken(req);
   if (!accessToken) {
     return messageResponse(res, 401, 'No access token provided');
   }
@@ -14,7 +14,7 @@ const authMiddleware = async (req, res, next) => {
 
     try {
       const user = await User.findById(jwtClaims.userId);
-      if (!validateAccessToken(res, jwtClaims, user)) {
+      if (!validateJwtClaims(res, jwtClaims, user)) {
         return;
       }
     } catch (dbError) {

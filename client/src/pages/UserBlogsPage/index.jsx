@@ -1,5 +1,5 @@
 import { Select } from 'antd';
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import BlogList from '../../components/BlogList';
 import Error from '../../components/Error';
@@ -24,21 +24,14 @@ function UserBlogsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [blogStatus, setBlogStatus] = useState(searchParams.get('status'));
-  const isMe = isAuthenticated && username === decodedJwt?.username;
-  const url = isMe ? '/users/me/blogs' : `/users/${username}/blogs`;
-  const config = useMemo(() => isMe ? {
-    params: { status: blogStatus }
-  } : undefined, [blogStatus, isMe]);
-  const { data, loading, error } = useFetch(url, config);
+  const url = `/users/${username}/blogs`;
+  const { data, loading, error } = useFetch(url, { params: { status: blogStatus } });
 
-  useEffect(() => {
-    if (blogStatus) {
-      setSearchParams({ status: blogStatus });
-    }
-  }, [blogStatus, setSearchParams]);
+  const isMe = isAuthenticated && username === decodedJwt?.username;
 
   const onChange = (value) => {
     setBlogStatus(value);
+    setSearchParams({ status: value });
   };
 
   return (

@@ -1,12 +1,16 @@
 const constants = require('../config/constants');
 const { messageResponse, errorTypes } = require('../utils/responseUtil');
 
+const getAccessToken = (req) => {
+  return req.header('Authorization')?.split(' ')[1];
+}
+
 const clearRefreshToken = (res) => {
   res.clearCookie(constants.REFRESH_TOKEN_NAME, { path: constants.REFRESH_TOKEN_PATH });
 };
 
 // Further validate the access token after being verified
-const validateAccessToken = (res, jwtClaims, user) => {
+const validateJwtClaims = (res, jwtClaims, user) => {
   // unauthorize if the user is inactive or removed
   if (!user?.isActive) {
     // instruct to clear refresh token in browser
@@ -24,6 +28,7 @@ const validateAccessToken = (res, jwtClaims, user) => {
 };
 
 module.exports = {
+  getAccessToken,
   clearRefreshToken,
-  validateAccessToken
+  validateJwtClaims
 };

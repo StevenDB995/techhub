@@ -3,6 +3,8 @@ const Blog = require('../models/blogModel');
 const { dataResponse, messageResponse } = require('../utils/responseUtil');
 const { isValidPassword } = require('../utils/validateUtil');
 const { hashPassword } = require('../utils/passwordUtil');
+const { verifyAccessToken, decodeAccessToken } = require('../utils/tokenUtil');
+const { getAccessToken, validateJwtClaims } = require('../helpers/authHelper');
 
 exports.getCurrentUser = async (req, res) => {
   try {
@@ -51,9 +53,9 @@ exports.getMyBlogById = async (req, res) => {
   }
 };
 
-// for public view
-exports.getPublicBlogsByUsername = async (req, res) => {
+exports.getBlogsByUsername = async (req, res) => {
   const { username } = req.params;
+  let status = req.query.status || 'public';
 
   try {
     const user = await User.findOne({ username })
@@ -62,9 +64,25 @@ exports.getPublicBlogsByUsername = async (req, res) => {
       return messageResponse(res, 404, 'User not found');
     }
 
+    const accessToken = getAccessToken(req);
+    const decoded = decodeAccessToken(accessToken);
+    // if the user is checking out his own blogs, authorize and apply the filter
+    // else only fetch the public blogs
+    if (user._id === decoded?.userId) {
+      try {
+        const jwtClaims = verifyAccessToken(accessToken);
+        if (!validateJwtClaims(res, jwtClaims, user)) {
+          return;
+        }
+      } catch (jwtError) {
+        return messageResponse(res, 401, 'Invalid token');
+      }
+    } else {
+      status = 'public';
+    }
+
     const blogs = await Blog.find({
-      author: user._id,
-      status: 'public'
+      author: user._id, status
     }).select('-content')
       .populate('author', 'username')
       .sort({ createdAt: -1 });

@@ -4,7 +4,7 @@ const { messageResponse, dataResponse } = require('../utils/responseUtil');
 const { verifyAccessToken, decodeAccessToken } = require('../utils/tokenUtil');
 const axios = require('axios');
 const mongoose = require('mongoose');
-const { validateAccessToken } = require('../helpers/authHelper');
+const { getAccessToken, validateJwtClaims } = require('../helpers/authHelper');
 
 const {
   IMGUR_CLIENT_ID,
@@ -30,7 +30,7 @@ exports.getAllBlogs = async (req, res) => {
 
 exports.getBlogById = async (req, res) => {
   const { id: blogId } = req.params;
-  const accessToken = req.header('Authorization')?.split(' ')[1];
+  const accessToken = getAccessToken(req);
 
   try {
     const blog = await Blog.findById(blogId).populate('author', 'username isActive');
@@ -46,17 +46,17 @@ exports.getBlogById = async (req, res) => {
 
     // for non-public blog
     const user = blog.author;
-    let decoded = decodeAccessToken(accessToken);
+    const decoded = decodeAccessToken(accessToken);
 
     // if not the author of the blog
     if (!user._id.equals(decoded?.userId)) {
       return messageResponse(res, 403, 'Permission denied');
     }
 
-    // if the user is the author of the blog
+    // if the user is the author of the blog, authorize
     try {
       const jwtClaims = verifyAccessToken(accessToken);
-      if (!validateAccessToken(res, jwtClaims, user)) {
+      if (!validateJwtClaims(res, jwtClaims, user)) {
         return;
       }
     } catch (jwtError) {
