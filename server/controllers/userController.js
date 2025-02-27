@@ -68,7 +68,7 @@ exports.getBlogsByUsername = async (req, res) => {
     const decoded = decodeAccessToken(accessToken);
     // if the user is checking out his own blogs, authorize and apply the filter
     // else only fetch the public blogs
-    if (user._id === decoded?.userId) {
+    if (user._id.equals(decoded?.userId)) {
       try {
         const jwtClaims = verifyAccessToken(accessToken);
         if (!validateJwtClaims(res, jwtClaims, user)) {
