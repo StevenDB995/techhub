@@ -9,12 +9,12 @@ import styles from './AppNavbar.module.css';
 
 const { Header } = Layout;
 
-function AppNavbar({ user }) {
-  const { isAuthenticated, logout } = useAuth();
-  const api = useApi();
+function AppNavbar() {
+  const { isAuthenticated, user, logout } = useAuth();
+  const { api } = useApi();
   const location = useLocation();
   const navigate = useNavigate();
-  const matchUserBlogs = useMatch('/:username/blogs')
+  const matchUserBlogs = useMatch('/:username/blogs');
   const { message: antdMessage } = AntdApp.useApp();
 
   const [isDrawerExpanded, setIsDrawerExpanded] = useState(false);
@@ -29,12 +29,13 @@ function AppNavbar({ user }) {
   const handleLogout = async () => {
     try {
       await api.post('/auth/logout');
-      logout();
-      navigate('/');
-      antdMessage.info('You are logged out');
     } catch (err) {
       console.error(err.message);
     }
+
+    logout();
+    navigate('/');
+    antdMessage.info('You are logged out');
   };
 
   const expandDrawer = () => {

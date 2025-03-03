@@ -19,7 +19,7 @@ const options = [
 ];
 
 function UserBlogsPage() {
-  const { isAuthenticated, decodedJwt } = useAuth();
+  const { user } = useAuth();
   const { username } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -27,7 +27,7 @@ function UserBlogsPage() {
   const url = `/users/${username}/blogs`;
   const { data, loading, error } = useFetch(url, { params: { status: blogStatus } });
 
-  const isMe = isAuthenticated && username === decodedJwt?.username;
+  const isMe = username === user?.username;
 
   const onChange = (value) => {
     setBlogStatus(value);

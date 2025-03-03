@@ -19,9 +19,11 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <ApiProvider>
-        <App />
-      </ApiProvider>
+      <AuthProvider>
+        <ApiProvider>
+          <App />
+        </ApiProvider>
+      </AuthProvider>
     ),
     children: [
       {
@@ -79,9 +81,7 @@ createRoot(document.getElementById('root')).render(
           top: 72
         }}
       >
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
+        <RouterProvider router={router} />
       </AntdApp>
     </ConfigProvider>
   </StrictMode>

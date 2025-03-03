@@ -5,14 +5,15 @@ import useAuth from '../../hooks/useAuth';
 import styles from './LoginPage.module.css';
 
 function LoginPage() {
-  const api = useApi();
+  const { api } = useApi();
   const { message: antdMessage } = AntdApp.useApp();
   const { login } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
   // Get the previous location the user was trying to access
-  const from = location.state?.from?.pathname || '/';
+  const from = location.state?.from;
+  const fromUrl = from ? `${from.pathname}${from.search}` : '/';
 
   const handleLogin = async (formData) => {
     try {
@@ -20,7 +21,7 @@ function LoginPage() {
       const { accessToken } = response.data;
       login(accessToken);
       antdMessage.success('Successfully logged in!');
-      navigate(from, { replace: true });
+      navigate(fromUrl, { replace: true });
     } catch (err) {
       if (err.status === 401) {
         antdMessage.error('Wrong username or password');

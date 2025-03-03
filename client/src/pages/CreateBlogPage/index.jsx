@@ -14,7 +14,7 @@ If you know, you know ;)`;
 const localStorageKey = 'create';
 
 function CreateBlogPage() {
-  const api = useApi();
+  const { api } = useApi();
   const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
   const navigate = useNavigate();
 

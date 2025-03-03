@@ -5,29 +5,15 @@ import { useEffect, useState } from 'react';
 import { Outlet, useMatch } from 'react-router-dom';
 import AppNavbar from './components/AppNavbar';
 import NewTabLink from './components/NewTabLink';
-import useApi from './hooks/useApi';
-import useAuth from './hooks/useAuth';
 import './App.css';
 
 const { Content, Footer } = Layout;
 
 function App() {
-  const { isAuthenticated } = useAuth();
-  const [user, setUser] = useState(null);
   const [footerData, setFooterData] = useState(null);
-  const api = useApi();
-
   const matchCreate = useMatch('/blogs/create');
   const matchEdit = useMatch('/blogs/:blogId/edit');
   const shouldDisplayHeader = !(matchCreate || matchEdit);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      api.get('/users/me')
-        .then(res => setUser(res.data))
-        .catch(err => console.error(err.message));
-    }
-  }, [isAuthenticated, api]);
 
   useEffect(() => {
     axios.get('/footer.json').then(res => {
@@ -37,7 +23,7 @@ function App() {
 
   return (
     <Layout className="app">
-      {shouldDisplayHeader && <AppNavbar user={user} />}
+      {shouldDisplayHeader && <AppNavbar />}
       {shouldDisplayHeader ?
         <Content className="app-content">
           <Row justify="center">

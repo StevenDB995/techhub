@@ -70,7 +70,7 @@ function ListFooterItem({ icon, text, size, className, onClick }) {
 }
 
 function BlogList({ data, loading, showActions = false }) {
-  const api = useApi();
+  const { api, apiErrorHandler } = useApi();
   const [blogs, setBlogs] = useState([]);
   const [modal, modalContextHolder] = Modal.useModal();
 
@@ -101,9 +101,11 @@ function BlogList({ data, loading, showActions = false }) {
       setBlogs(blogs.filter(blog => blog._id !== blogId));
       localStorage.removeItem(`edit-${blogId}`);
     } catch (err) {
-      feedbackDelete(false, err.message);
+      apiErrorHandler(err, () => {
+        feedbackDelete(false, err.message);
+      });
     }
-  }, [api, blogs, feedbackDelete]);
+  }, [api, apiErrorHandler, blogs, feedbackDelete]);
 
   const confirmDelete = useCallback((blogId) => {
     modal.confirm({

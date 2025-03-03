@@ -3,7 +3,7 @@ import useApi from './useApi';
 
 // A custom hook for fetching data on page load using GET method
 const useFetch = (url, config = undefined) => {
-  const api = useApi();
+  const { api, apiErrorHandler } = useApi();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,10 +17,10 @@ const useFetch = (url, config = undefined) => {
       const response = await api.get(url, newConfig);
       setData(response.data);
     } catch (err) {
-      setError(err);
+      apiErrorHandler(err, () => setError(err));
     }
     setLoading(false);
-  }, [api, memoizedConfig, url]);
+  }, [api, apiErrorHandler, memoizedConfig, url]);
 
   useEffect(() => {
     void fetchData();

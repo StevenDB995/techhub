@@ -1,35 +1,36 @@
-import { jwtDecode } from 'jwt-decode';
-import { createContext, useCallback, useState } from 'react';
-
-function decodeJwt(accessToken) {
-  try {
-    return jwtDecode(accessToken);
-    // eslint-disable-next-line no-unused-vars
-  } catch (err) {
-    return null;
-  }
-}
+import { createContext, useCallback, useEffect, useState } from 'react';
+import api from '../config/api';
 
 export const AuthContext = createContext(null);
 
 function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('accessToken'));
-  const [decodedJwt, setDecodedJwt] = useState(decodeJwt(localStorage.getItem('accessToken')));
+  const [user, setUser] = useState(null);
 
   const login = useCallback((accessToken) => {
     localStorage.setItem('accessToken', accessToken);
     setIsAuthenticated(true);
-    setDecodedJwt(decodeJwt(accessToken));
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem('accessToken');
     setIsAuthenticated(false);
-    setDecodedJwt(null);
+    setUser(null);
   }, []);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      api.get('/users/me')
+        .then(res => setUser(res.data))
+        .catch(err => {
+          logout();
+          console.error(err.message);
+        });
+    }
+  }, [isAuthenticated, logout]);
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, decodedJwt, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
