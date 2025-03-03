@@ -25,7 +25,7 @@ exports.refreshToken = async (req, res) => {
   try {
     const { userId } = verifyRefreshToken(refreshToken);
     const user = await User.findById(userId);
-    const accessToken = signAccessToken(userId, user.username);
+    const accessToken = signAccessToken(userId);
     refreshToken = signRefreshToken(userId);
 
     res.cookie(constants.REFRESH_TOKEN_NAME, refreshToken, cookieConfig);
@@ -99,7 +99,7 @@ exports.login = async (req, res) => {
     user.lastLogin = Date.now();
     await user.save();
 
-    const accessToken = signAccessToken(user._id, user.username);
+    const accessToken = signAccessToken(user._id);
     const refreshToken = signRefreshToken(user._id);
 
     res.cookie(constants.REFRESH_TOKEN_NAME, refreshToken, cookieConfig);

@@ -1,7 +1,7 @@
 const User = require('../models/userModel');
 const { messageResponse } = require('../utils/responseUtil');
 const { verifyAccessToken } = require('../utils/tokenUtil');
-const { getAccessToken, validateJwtClaims } = require('../helpers/authHelper');
+const { getAccessToken, validateUser } = require('../helpers/authHelper');
 
 const authMiddleware = async (req, res, next) => {
   const accessToken = getAccessToken(req);
@@ -10,11 +10,11 @@ const authMiddleware = async (req, res, next) => {
   }
 
   try {
-    const jwtClaims = verifyAccessToken(accessToken);
+    const { userId } = verifyAccessToken(accessToken);
 
     try {
-      const user = await User.findById(jwtClaims.userId);
-      if (!validateJwtClaims(res, jwtClaims, user)) {
+      const user = await User.findById(userId);
+      if (!validateUser(res, user)) {
         return;
       }
     } catch (dbError) {
@@ -22,7 +22,7 @@ const authMiddleware = async (req, res, next) => {
       return messageResponse(res, 500, 'Unexpected error');
     }
 
-    req.user = { id: jwtClaims.userId, username: jwtClaims.username };
+    req.userId = userId;
     next();
 
   } catch (jwtError) {

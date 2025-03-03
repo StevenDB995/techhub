@@ -4,52 +4,15 @@ const { dataResponse, messageResponse } = require('../utils/responseUtil');
 const { isValidPassword } = require('../utils/validateUtil');
 const { hashPassword } = require('../utils/passwordUtil');
 const { verifyAccessToken, decodeAccessToken } = require('../utils/tokenUtil');
-const { getAccessToken, validateJwtClaims } = require('../helpers/authHelper');
+const { getAccessToken, validateUser } = require('../helpers/authHelper');
 
 exports.getCurrentUser = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('-password');
+    const user = await User.findById(req.userId).select('-password');
     return dataResponse(res, 200, user);
   } catch (err) {
     console.error(err);
     return messageResponse(res, 500, 'Error fetching user');
-  }
-};
-
-// for self content management
-exports.getMyBlogsByStatus = async (req, res) => {
-  try {
-    const status = req.query.status || 'public';
-    const blogs = await Blog
-      .find({ author: req.user.id, status })
-      .select('-content')
-      .populate('author', 'username')
-      .sort({ createdAt: -1 });
-    return dataResponse(res, 200, blogs);
-  } catch (err) {
-    console.error(err);
-    return messageResponse(res, 500, 'Error fetching blogs');
-  }
-};
-
-exports.getMyBlogById = async (req, res) => {
-  const { blogId } = req.params;
-
-  try {
-    const blog = await Blog.findById(blogId);
-    if (!blog) {
-      return messageResponse(res, 404, 'Blog not found');
-    }
-    // authorize
-    if (!blog.author.equals(req.user.id)) {
-      return messageResponse(res, 403, 'Permission denied');
-    }
-
-    return dataResponse(res, 200, blog);
-
-  } catch (err) {
-    console.error(err);
-    return messageResponse(res, 500, 'Error fetching blog');
   }
 };
 
@@ -70,8 +33,8 @@ exports.getBlogsByUsername = async (req, res) => {
     // else only fetch the public blogs
     if (user._id.equals(decoded?.userId)) {
       try {
-        const jwtClaims = verifyAccessToken(accessToken);
-        if (!validateJwtClaims(res, jwtClaims, user)) {
+        verifyAccessToken(accessToken);
+        if (!validateUser(res, user)) {
           return;
         }
       } catch (jwtError) {
