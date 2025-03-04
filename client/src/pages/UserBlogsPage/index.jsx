@@ -28,7 +28,8 @@ function UserBlogsPage() {
   const params = useMemo(() => ({ status: blogStatus }), [blogStatus]);
   const { data, loading, error } = useFetch(url, params);
 
-  const isMe = username === user?.username;
+  // case-insensitive username
+  const isMe = username.toLowerCase() === user?.username.toLowerCase();
 
   const onChange = (value) => {
     setBlogStatus(value);
