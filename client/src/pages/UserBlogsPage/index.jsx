@@ -1,5 +1,5 @@
 import { Select } from 'antd';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import BlogList from '../../components/BlogList';
 import Error from '../../components/Error';
@@ -25,7 +25,8 @@ function UserBlogsPage() {
 
   const [blogStatus, setBlogStatus] = useState(searchParams.get('status'));
   const url = `/users/${username}/blogs`;
-  const { data, loading, error } = useFetch(url, { params: { status: blogStatus } });
+  const params = useMemo(() => ({ status: blogStatus }), [blogStatus]);
+  const { data, loading, error } = useFetch(url, params);
 
   const isMe = username === user?.username;
 

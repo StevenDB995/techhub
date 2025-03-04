@@ -78,7 +78,7 @@ function BlogList({ data, loading, showActions = false }) {
     if (data) setBlogs(data);
   }, [data]);
 
-  const feedbackDelete = useCallback((success, errorMessage = undefined) => {
+  const feedbackDelete = useCallback((success, errorMessage) => {
     if (success) {
       modal.success({
         title: 'Success',
