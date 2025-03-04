@@ -11,7 +11,7 @@ const useFetch = (url, params) => {
   const fetchData = useCallback(async (newParams = params) => {
     setLoading(true);
     try {
-      const response = await api.get(url, { config: { params: newParams } });
+      const response = await api.get(url, { params: newParams });
       setData(response.data);
     } catch (err) {
       apiErrorHandler(err, () => setError(err));
