@@ -30,7 +30,7 @@ function AppNavbar() {
     try {
       await api.post('/auth/logout');
     } catch (err) {
-      console.error(err.message);
+      console.error(err);
     }
 
     logout();

@@ -23,8 +23,11 @@ function AuthProvider({ children }) {
       api.get('/users/me')
         .then(res => setUser(res.data))
         .catch(err => {
-          logout();
-          console.error(err.message);
+          if (err.response?.status === 401) {
+            logout();
+          } else {
+            console.error(err);
+          }
         });
     }
   }, [isAuthenticated, logout]);

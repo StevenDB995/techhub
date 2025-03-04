@@ -18,7 +18,7 @@ function App() {
   useEffect(() => {
     axios.get('/footer.json').then(res => {
       setFooterData(res.data);
-    }).catch(err => console.error(err.message));
+    }).catch(err => console.error(err));
   }, []);
 
   return (

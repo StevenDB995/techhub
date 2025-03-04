@@ -18,7 +18,7 @@ const authMiddleware = async (req, res, next) => {
         return;
       }
     } catch (dbError) {
-      console.error(dbError.message);
+      console.error(dbError);
       return messageResponse(res, 500, 'Unexpected error');
     }
 
