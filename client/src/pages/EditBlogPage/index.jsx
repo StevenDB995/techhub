@@ -13,7 +13,7 @@ const localStorageKeyPrefix = 'edit-';
 function EditBlogPage() {
   const { blogId } = useParams();
   const { data: blog, loading, error } = useFetch(`/users/me/blogs/${blogId}`);
-  const api = useApi();
+  const { api } = useApi();
   const navigate = useNavigate();
 
   const localStorageKey = localStorageKeyPrefix + blogId;
@@ -124,7 +124,7 @@ function EditBlogPage() {
           localStorageKey={localStorageKey}
           loadSourceConfirmed={loadSourceConfirmed}
         />
-        <FeedbackModal onSuccess={() => navigate(`/my-blogs/${blogId}`)} />
+        <FeedbackModal onSuccess={() => navigate(`/blogs/${blogId}`)} />
         {modalContextHolder}
       </>
   );

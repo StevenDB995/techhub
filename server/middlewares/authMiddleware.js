@@ -1,34 +1,28 @@
-const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
-const { messageResponse, errorTypes } = require('../utils/response');
-const constants = require('../config/constants');
-
-const { ACCESS_TOKEN_SECRET } = process.env;
+const { messageResponse } = require('../utils/responseUtil');
+const { verifyAccessToken } = require('../utils/tokenUtil');
+const { getAccessToken, validateUser } = require('../helpers/authHelper');
 
 const authMiddleware = async (req, res, next) => {
-  const accessToken = req.header('Authorization')?.split(' ')[1];
+  const accessToken = getAccessToken(req);
   if (!accessToken) {
     return messageResponse(res, 401, 'No access token provided');
   }
 
   try {
-    const decoded = jwt.verify(accessToken, ACCESS_TOKEN_SECRET);
-    const userId = decoded.userId;
+    const { userId } = verifyAccessToken(accessToken);
 
     try {
-      // unauthorize if the user is inactive or removed
       const user = await User.findById(userId);
-      if (!user?.isActive) {
-        // instruct to clear refresh token in browser
-        res.clearCookie(constants.REFRESH_TOKEN_NAME, { path: constants.REFRESH_TOKEN_PATH });
-        return messageResponse(res, 403, 'Forbidden', errorTypes.ILLEGAL_USER);
+      if (!validateUser(res, user)) {
+        return;
       }
     } catch (dbError) {
       console.error(dbError.message);
       return messageResponse(res, 500, 'Unexpected error');
     }
 
-    req.user = userId;
+    req.userId = userId;
     next();
 
   } catch (jwtError) {

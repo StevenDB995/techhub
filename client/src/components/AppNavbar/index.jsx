@@ -2,25 +2,25 @@ import { geekblue } from '@ant-design/colors';
 import { CaretDownFilled, FormOutlined, InboxOutlined, LogoutOutlined, MenuOutlined } from '@ant-design/icons';
 import { App as AntdApp, Button, Col, Drawer, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useMatch, useNavigate } from 'react-router-dom';
 import useApi from '../../hooks/useApi';
 import useAuth from '../../hooks/useAuth';
 import styles from './AppNavbar.module.css';
 
 const { Header } = Layout;
 
-function AppNavbar({ user }) {
-  const { isAuthenticated, logout } = useAuth();
-  const api = useApi();
+function AppNavbar() {
+  const { isAuthenticated, user, logout } = useAuth();
+  const { api } = useApi();
   const location = useLocation();
   const navigate = useNavigate();
+  const matchUserBlogs = useMatch('/:username/blogs');
   const { message: antdMessage } = AntdApp.useApp();
 
   const [isDrawerExpanded, setIsDrawerExpanded] = useState(false);
 
   const getSelectedKey = (isMobile) => {
-    if (!isMobile &&
-      (location.pathname.startsWith('/my-blogs') || location.pathname === '/')) {
+    if (!isMobile && matchUserBlogs) {
       return '/';
     }
     return location.pathname;
@@ -29,12 +29,13 @@ function AppNavbar({ user }) {
   const handleLogout = async () => {
     try {
       await api.post('/auth/logout');
-      logout();
-      navigate('/');
-      antdMessage.info('You are logged out');
     } catch (err) {
       console.error(err.message);
     }
+
+    logout();
+    navigate('/');
+    antdMessage.info('You are logged out');
   };
 
   const expandDrawer = () => {
@@ -60,9 +61,9 @@ function AppNavbar({ user }) {
 
   const createDropdownItems = [
     {
-      key: '/my-blogs/create',
+      key: '/blogs/create',
       label: (
-        <Link to={'/my-blogs/create'}>
+        <Link to={'/blogs/create'}>
           <Space>
             <FormOutlined />New Blog
           </Space>
@@ -70,9 +71,9 @@ function AppNavbar({ user }) {
       )
     },
     {
-      key: '/my-blogs',
+      key: `/${user?.username}/blogs`,
       label: (
-        <Link to={'/my-blogs'}>
+        <Link to={`/${user?.username}/blogs`}>
           <Space>
             <InboxOutlined />My Blogs
           </Space>
@@ -100,7 +101,7 @@ function AppNavbar({ user }) {
         type="primary"
         menu={{ items: createDropdownItems }}
       >
-        <Link to={'/my-blogs/create'}>Create</Link>
+        <Link to={'/blogs/create'}>Create</Link>
       </Dropdown.Button>
     },
     {
@@ -160,7 +161,7 @@ function AppNavbar({ user }) {
                   items={rightNavItems}
                 /> :
                 <Button type="text" className={styles.textItem}>
-                  <Link to={'/login'}>Log In</Link>
+                  <Link to={'/login'} state={{ from: location }}>Log In</Link>
                 </Button>
             }
           </Flex>

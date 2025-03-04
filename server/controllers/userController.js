@@ -1,12 +1,14 @@
 const User = require('../models/userModel');
 const Blog = require('../models/blogModel');
-const { dataResponse, messageResponse } = require('../utils/response');
-const { isValidPassword } = require('../utils/validate');
-const { hashPassword } = require('../utils/password');
+const { dataResponse, messageResponse } = require('../utils/responseUtil');
+const { isValidPassword } = require('../utils/validateUtil');
+const { hashPassword } = require('../utils/passwordUtil');
+const { verifyAccessToken, decodeAccessToken } = require('../utils/tokenUtil');
+const { getAccessToken, validateUser } = require('../helpers/authHelper');
 
 exports.getCurrentUser = async (req, res) => {
   try {
-    const user = await User.findById(req.user).select('-password');
+    const user = await User.findById(req.userId).select('-password');
     return dataResponse(res, 200, user);
   } catch (err) {
     console.error(err);
@@ -14,55 +16,41 @@ exports.getCurrentUser = async (req, res) => {
   }
 };
 
-// for self content management
-exports.getMyBlogsByStatus = async (req, res) => {
-  try {
-    const status = req.query.status || 'public';
-    const blogs = await Blog
-      .find({ author: req.user, status })
-      .select('-content')
-      .populate('author', 'username')
-      .sort({ createdAt: -1 });
-    return dataResponse(res, 200, blogs);
-  } catch (err) {
-    console.error(err);
-    return messageResponse(res, 500, 'Error fetching blogs');
-  }
-};
+exports.getBlogsByUsername = async (req, res) => {
+  const { username } = req.params;
+  let status = req.query.status || 'public';
 
-exports.getMyBlogById = async (req, res) => {
-  const { blogId } = req.params;
   try {
-    const blog = await Blog.findById(blogId);
-
-    if (!blog) {
-      return messageResponse(res, 404, 'Blog not found');
+    const user = await User.findOne({ username })
+      .collation({ locale: 'en', strength: 2 });
+    if (!user) {
+      return messageResponse(res, 404, 'User not found');
     }
 
-    // authorize
-    if (!blog.author.equals(req.user)) {
-      return messageResponse(res, 403, 'Permission denied');
+    const accessToken = getAccessToken(req);
+    const decoded = decodeAccessToken(accessToken);
+    // if the user is checking out his own blogs, authorize and apply the filter
+    // else only fetch the public blogs
+    if (user._id.equals(decoded?.userId)) {
+      try {
+        verifyAccessToken(accessToken);
+        if (!validateUser(res, user)) {
+          return;
+        }
+      } catch (jwtError) {
+        return messageResponse(res, 401, 'Invalid token');
+      }
+    } else {
+      status = 'public';
     }
 
-    return dataResponse(res, 200, blog);
-
-  } catch (err) {
-    console.error(err);
-    return messageResponse(res, 500, 'Error fetching blog');
-  }
-};
-
-// for public view
-exports.getPublicBlogs = async (req, res) => {
-  const { userId } = req.params;
-  try {
     const blogs = await Blog.find({
-      author: userId,
-      status: 'public'
+      author: user._id, status
     }).select('-content')
       .populate('author', 'username')
       .sort({ createdAt: -1 });
     return dataResponse(res, 200, blogs);
+
   } catch (err) {
     console.error(err);
     return messageResponse(res, 500, 'Error fetching blogs');

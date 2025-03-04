@@ -1,12 +1,12 @@
 const User = require('../models/userModel');
-const jwt = require('jsonwebtoken');
-const { messageResponse, dataResponse } = require('../utils/response');
-const { isValidUsername, isValidPassword, isValidEmail } = require('../utils/validate');
-const { hashPassword, comparePassword } = require('../utils/password');
-const { signAccessToken, signRefreshToken } = require('../utils/token');
+const { messageResponse, dataResponse } = require('../utils/responseUtil');
+const { isValidUsername, isValidPassword, isValidEmail } = require('../utils/validateUtil');
+const { hashPassword, comparePassword } = require('../utils/passwordUtil');
+const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../utils/tokenUtil');
+const { clearRefreshToken } = require('../helpers/authHelper');
 const constants = require('../config/constants');
 
-const { NODE_ENV, REFRESH_TOKEN_SECRET } = process.env;
+const { NODE_ENV } = process.env;
 
 const cookieConfig = {
   httpOnly: true,
@@ -23,19 +23,23 @@ exports.refreshToken = async (req, res) => {
   }
 
   try {
-    const { userId } = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
+    const { userId } = verifyRefreshToken(refreshToken);
+    const user = await User.findById(userId);
     const accessToken = signAccessToken(userId);
     refreshToken = signRefreshToken(userId);
+
     res.cookie(constants.REFRESH_TOKEN_NAME, refreshToken, cookieConfig);
     return dataResponse(res, 200, { accessToken });
 
   } catch (err) {
     // if the refresh token expired
     if (err.name === 'TokenExpiredError') {
+      clearRefreshToken(res);
       return messageResponse(res, 401, 'Session expired');
     }
     // most likely an invalid signature
     if (err.name === 'JsonWebTokenError') {
+      clearRefreshToken(res);
       return messageResponse(res, 401, err.message);
     }
 
@@ -51,7 +55,7 @@ exports.signup = async (req, res) => {
   }
 
   try {
-    // For now the system can have only one user
+    // For now the system can have only two users
     // Will remove this constraint in future for system functionalities
     if (await User.countDocuments() >= 2) {
       return messageResponse(res, 403, 'Forbidden');

@@ -8,7 +8,7 @@ import styles from './BlogList.module.css';
 
 const { Paragraph } = Typography;
 
-function ListItem({ item, isPublic, onDelete }) {
+function ListItem({ item, showActions, onDelete }) {
   const navigate = useNavigate();
 
   let previewText = item.previewText;
@@ -22,7 +22,7 @@ function ListItem({ item, isPublic, onDelete }) {
       <List.Item.Meta
         title={
           <Link
-            to={`${isPublic ? '/blogs' : '/my-blogs'}/${item._id}`}
+            to={`/blogs/${item._id}`}
             className={styles.listItemTitle}
           >
             {item.title || 'Untitled'}
@@ -37,14 +37,14 @@ function ListItem({ item, isPublic, onDelete }) {
           {/*<ListFooterItem icon={LikeOutlined} text={data.likes} />*/}
           {/*<ListFooterItem icon={MessageOutlined} text={data.comments} />*/}
         </Space>
-        {!isPublic && <Space split={<Divider type="vertical" />} size={4}>
+        {showActions && <Space split={<Divider type="vertical" />} size={4}>
           <ListFooterItem
             className={styles.clickable}
             icon={EditOutlined}
             text="Edit"
             size={6}
             onClick={() => {
-              navigate(`/my-blogs/${item._id}/edit`);
+              navigate(`/blogs/${item._id}/edit`);
             }}
           />
           <ListFooterItem
@@ -69,8 +69,8 @@ function ListFooterItem({ icon, text, size, className, onClick }) {
   );
 }
 
-function BlogList({ data, loading, isPublic = true }) {
-  const api = useApi();
+function BlogList({ data, loading, showActions = false }) {
+  const { api, apiErrorHandler } = useApi();
   const [blogs, setBlogs] = useState([]);
   const [modal, modalContextHolder] = Modal.useModal();
 
@@ -78,7 +78,7 @@ function BlogList({ data, loading, isPublic = true }) {
     if (data) setBlogs(data);
   }, [data]);
 
-  const feedbackDelete = useCallback((success, errorMessage = undefined) => {
+  const feedbackDelete = useCallback((success, errorMessage) => {
     if (success) {
       modal.success({
         title: 'Success',
@@ -101,9 +101,11 @@ function BlogList({ data, loading, isPublic = true }) {
       setBlogs(blogs.filter(blog => blog._id !== blogId));
       localStorage.removeItem(`edit-${blogId}`);
     } catch (err) {
-      feedbackDelete(false, err.message);
+      apiErrorHandler(err, () => {
+        feedbackDelete(false, err.message);
+      });
     }
-  }, [api, blogs, feedbackDelete]);
+  }, [api, apiErrorHandler, blogs, feedbackDelete]);
 
   const confirmDelete = useCallback((blogId) => {
     modal.confirm({
@@ -129,7 +131,7 @@ function BlogList({ data, loading, isPublic = true }) {
         }}
         loading={loading}
         dataSource={blogs}
-        renderItem={(item) => <ListItem item={item} isPublic={isPublic} onDelete={confirmDelete} />}
+        renderItem={(item) => <ListItem item={item} showActions={showActions} onDelete={confirmDelete} />}
       />
       {modalContextHolder}
     </>

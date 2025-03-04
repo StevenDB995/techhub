@@ -5,6 +5,7 @@ const authMiddleware = require('../middlewares/authMiddleware');
 const router = express.Router();
 
 router.get('/', blogController.getAllBlogs);
+// Conditional authorization applies
 router.get('/:id', blogController.getBlogById);
 
 router.post('/', authMiddleware, blogController.createBlog);

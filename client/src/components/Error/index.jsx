@@ -2,7 +2,7 @@ import { Button, Flex, Result } from 'antd';
 import styles from './Error.module.css';
 
 function Error({ status = 'error', title = 'Sorry, something went wrong.', message }) {
-  const statusValues = ['success', 'error', 'info', 'warning', '404', '403', '500'];
+  const statusValues = ['error', '404', '403', '500'];
 
   status = status.toString();
   if (status === '401') {

@@ -14,7 +14,7 @@ If you know, you know ;)`;
 const localStorageKey = 'create';
 
 function CreateBlogPage() {
-  const api = useApi();
+  const { api } = useApi();
   const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
   const navigate = useNavigate();
 
@@ -64,7 +64,7 @@ function CreateBlogPage() {
         buttonPropsList={buttonPropsList}
         localStorageKey={localStorageKey}
       />
-      <FeedbackModal onSuccess={() => navigate(`/my-blogs/${blogId}`)} />
+      <FeedbackModal onSuccess={() => navigate(`/blogs/${blogId}`)} />
     </>
   );
 }

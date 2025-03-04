@@ -1,10 +1,17 @@
 const Blog = require('../models/blogModel');
 const BlogImage = require('../models/blogImageModel');
-const { messageResponse, dataResponse } = require('../utils/response');
+const { messageResponse, dataResponse } = require('../utils/responseUtil');
+const { verifyAccessToken, decodeAccessToken } = require('../utils/tokenUtil');
 const axios = require('axios');
 const mongoose = require('mongoose');
+const { getAccessToken, validateUser } = require('../helpers/authHelper');
 
-const { IMGUR_CLIENT_ID, IMGUR_CLIENT_SECRET, IMGUR_REFRESH_TOKEN, IMGUR_OAUTH_URL } = process.env;
+const {
+  IMGUR_CLIENT_ID,
+  IMGUR_CLIENT_SECRET,
+  IMGUR_REFRESH_TOKEN,
+  IMGUR_OAUTH_URL
+} = process.env;
 
 // get all public blogs
 exports.getAllBlogs = async (req, res) => {
@@ -21,21 +28,41 @@ exports.getAllBlogs = async (req, res) => {
   }
 };
 
-// for public view only
 exports.getBlogById = async (req, res) => {
+  const { id: blogId } = req.params;
+  const accessToken = getAccessToken(req);
+
   try {
-    const { id } = req.params;
-    const blog = await Blog.findById(id).populate('author', 'username');
+    const blog = await Blog.findById(blogId).populate('author', 'username isActive');
 
     if (!blog) {
       return messageResponse(res, 404, 'Blog not found');
     }
 
-    // authorize
-    if (blog.status !== 'public') {
+    // for public blog, no authorization required
+    if (blog.status === 'public') {
+      return dataResponse(res, 200, blog);
+    }
+
+    // for non-public blog
+    const user = blog.author;
+    const decoded = decodeAccessToken(accessToken);
+
+    // if not the author of the blog
+    if (!user._id.equals(decoded?.userId)) {
       return messageResponse(res, 403, 'Permission denied');
     }
 
+    // if the user is the author of the blog, authorize
+    try {
+      verifyAccessToken(accessToken);
+      if (!validateUser(res, user)) {
+        return;
+      }
+    } catch (jwtError) {
+      return messageResponse(res, 401, 'Invalid token');
+    }
+    // on successful authorization
     return dataResponse(res, 200, blog);
 
   } catch (err) {
@@ -50,7 +77,7 @@ exports.createBlog = async (req, res) => {
 
   try {
     const blog = new Blog(req.body);
-    blog.author = req.user;
+    blog.author = req.userId;
     await blog.save({ session });
 
     await BlogImage.updateMany(
@@ -84,7 +111,7 @@ exports.updateBlogById = async (req, res) => {
     }
 
     // authorize
-    if (!blog.author.equals(req.user)) {
+    if (!blog.author.equals(req.userId)) {
       return messageResponse(res, 403, 'Permission denied');
     }
 
@@ -107,14 +134,14 @@ exports.updateBlogById = async (req, res) => {
 
     if (imageLinksToRemove.length > 0) {
       await BlogImage.updateMany(
-        { link: { $in: imageLinksToRemove }},
+        { link: { $in: imageLinksToRemove } },
         { $set: { isAttached: false } },
         { session }
       );
     }
     if (imageLinksToAdd.length > 0) {
       await BlogImage.updateMany(
-        { link: { $in: imageLinksToAdd }},
+        { link: { $in: imageLinksToAdd } },
         { $set: { isAttached: true } },
         { session }
       );
@@ -142,7 +169,7 @@ exports.deleteBlogById = async (req, res) => {
     }
 
     // authorize
-    if (!blog.author.equals(req.user)) {
+    if (!blog.author.equals(req.userId)) {
       return messageResponse(res, 403, 'Permission denied');
     }
 

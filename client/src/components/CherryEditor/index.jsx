@@ -4,6 +4,7 @@ import Cherry from 'cherry-markdown';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useApi from '../../hooks/useApi';
+import useAuth from '../../hooks/useAuth';
 import { extractImageLinks, extractMetadata } from '../../utils/mdUtil';
 import Loading from '../Loading';
 import 'cherry-markdown/dist/cherry-markdown.css';
@@ -61,7 +62,8 @@ function CherryEditor({
   const [submitting, setSubmitting] = useState(false);
 
   const [uploadingImage, setUploadingImage] = useState(false);
-  const api = useApi();
+  const { isAuthenticated, user } = useAuth();
+  const { api } = useApi();
   const { message: antdMessage } = AntdApp.useApp();
   const [modal, modalContextHolder] = Modal.useModal();
   const navigate = useNavigate();
@@ -95,7 +97,7 @@ function CherryEditor({
       centered: true,
       okText: 'Keep Editing',
       cancelText: 'Quit',
-      onCancel: () => navigate('/my-blogs')
+      onCancel: () => navigate(isAuthenticated ? `/${user?.username}/blogs` : '/')
     });
   };
 
@@ -123,6 +125,7 @@ function CherryEditor({
         return true;
       } catch (err) {
         // cannot fetch access token from imgur
+        antdMessage.error(err.message);
         console.error(err);
         return false;
       }
@@ -152,10 +155,13 @@ function CherryEditor({
         // consider looking into the boolean `response.data.success`?
         const imageMetadata = response.data.data;
         api.post('/blogs/images', imageMetadata)
-          .catch(err => console.error(err));
-        callback(imageMetadata.link, {
-          width: '600px'
-        });
+          .then(() => callback(imageMetadata.link, {
+            width: '600px'
+          }))
+          .catch(err => {
+            antdMessage.error(err.message);
+            console.error(err);
+          });
 
       } catch (err) {
         if (err.response?.status > 400 && err.response?.status < 500) {
