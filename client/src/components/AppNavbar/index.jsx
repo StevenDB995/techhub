@@ -161,7 +161,7 @@ function AppNavbar() {
                   items={rightNavItems}
                 /> :
                 <Button type="text" className={styles.textItem}>
-                  <Link to={'/login'}>Log In</Link>
+                  <Link to={'/login'} state={{ from: location }}>Log In</Link>
                 </Button>
             }
           </Flex>
