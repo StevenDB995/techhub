@@ -12,7 +12,7 @@ const localStorageKeyPrefix = 'edit-';
 
 function EditBlogPage() {
   const { blogId } = useParams();
-  const { data: blog, loading, error } = useFetch(`/users/me/blogs/${blogId}`);
+  const { data: blog, loading, error } = useFetch(`/blogs/${blogId}`);
   const { api } = useApi();
   const navigate = useNavigate();
 
