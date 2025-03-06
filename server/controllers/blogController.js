@@ -33,7 +33,8 @@ exports.getBlogById = async (req, res) => {
   const accessToken = getAccessToken(req);
 
   try {
-    const blog = await Blog.findById(blogId).populate('author', 'username isActive');
+    const blog = await Blog.findById(blogId)
+      .populate('author', 'username avatar isActive');
 
     if (!blog) {
       return messageResponse(res, 404, 'Blog not found');

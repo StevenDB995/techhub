@@ -1,0 +1,8 @@
+.blogActions {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.blogActions .clickable:hover {
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.6);
+}

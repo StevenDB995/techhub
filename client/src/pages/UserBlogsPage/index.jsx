@@ -94,7 +94,7 @@ function UserBlogsPage() {
         {isMe && <div className={styles.selectContainer}>
           <Select className={styles.select} value={blogStatus || 'public'} options={selectOptions} onChange={onChange} />
         </div>}
-        <BlogList data={blogs} loading={loading} showActions={isMe} onDelete={confirmDelete} />
+        <BlogList data={blogs} loading={loading} editable={isMe} onDelete={confirmDelete} />
         {modalContextHolder}
       </>
   );

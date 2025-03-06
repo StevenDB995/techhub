@@ -1,0 +1,12 @@
+.author {
+  margin-bottom: 16px;
+}
+
+.author .username {
+  color: black;
+  font-size: 16px;
+}
+
+.author .username:hover {
+  color: rgba(0, 0, 0, 0.45);
+}

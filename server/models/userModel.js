@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
     validate: { validator: isValidEmail }
   },
   isActive: { type: Boolean, default: true },
+  avatar: { type: String },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   lastLogin: { type: Date, default: null },
