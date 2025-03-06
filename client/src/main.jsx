@@ -4,7 +4,6 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
-import ApiProvider from './contexts/ApiProvider';
 import AuthProvider from './contexts/AuthProvider';
 import AboutPage from './pages/AboutPage';
 import CreateBlogPage from './pages/CreateBlogPage';
@@ -20,9 +19,7 @@ const router = createBrowserRouter([
     path: '/',
     element: (
       <AuthProvider>
-        <ApiProvider>
-          <App />
-        </ApiProvider>
+        <App />
       </AuthProvider>
     ),
     children: [

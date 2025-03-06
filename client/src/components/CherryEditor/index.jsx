@@ -3,7 +3,7 @@ import axios from 'axios';
 import Cherry from 'cherry-markdown';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useApi from '../../hooks/useApi';
+import { createImageMetadata, getImgurAccessToken } from '../../api/services/blogService';
 import useAuth from '../../hooks/useAuth';
 import { extractImageLinks, extractMetadata } from '../../utils/mdUtil';
 import Loading from '../Loading';
@@ -63,7 +63,6 @@ function CherryEditor({
 
   const [uploadingImage, setUploadingImage] = useState(false);
   const { isAuthenticated, user } = useAuth();
-  const { api } = useApi();
   const { message: antdMessage } = AntdApp.useApp();
   const [modal, modalContextHolder] = Modal.useModal();
   const navigate = useNavigate();
@@ -120,7 +119,7 @@ function CherryEditor({
     const reloadImgurAccessToken = async () => {
       // return true if successfully reloaded
       try {
-        const response = await api.get('/blogs/images/token');
+        const response = getImgurAccessToken();
         localStorage.setItem('imgurAccessToken', response.data['access_token']);
         return true;
       } catch (err) {
@@ -154,7 +153,7 @@ function CherryEditor({
 
         // consider looking into the boolean `response.data.success`?
         const imageMetadata = response.data.data;
-        api.post('/blogs/images', imageMetadata)
+        createImageMetadata(imageMetadata)
           .then(() => callback(imageMetadata.link, {
             width: '600px'
           }))
@@ -179,7 +178,7 @@ function CherryEditor({
     }
 
     setUploadingImage(false);
-  }, [antdMessage, api]);
+  }, [antdMessage]);
 
   useEffect(() => {
     if (!cherryInstance.current) {

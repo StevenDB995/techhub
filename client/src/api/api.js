@@ -39,7 +39,7 @@ api.interceptors.response.use(
         return api.request(error.config);
 
       } catch (refreshError) {
-        refreshError.message = 'Session expired';
+        refreshError.message = 'Session expired, please log in again.';
         return Promise.reject(refreshError);
       }
 

@@ -1,9 +1,10 @@
 import { Modal, Select } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
+import { deleteBlog } from '../../api/services/blogService';
 import BlogList from '../../components/BlogList';
 import Error from '../../components/Error';
-import useApi from '../../hooks/useApi';
+import useApiErrorHandler from '../../hooks/useApiErrorHandler';
 import useAuth from '../../hooks/useAuth';
 import useConfirm from '../../hooks/useConfirm';
 import useFeedback from '../../hooks/useFeedback';
@@ -23,16 +24,16 @@ const selectOptions = [
 
 function UserBlogsPage() {
   const { user } = useAuth();
-  const { api, apiErrorHandler } = useApi();
   const { username } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [blogStatus, setBlogStatus] = useState(searchParams.get('status'));
   const url = `/users/${username}/blogs`;
   const params = useMemo(() => ({ status: blogStatus }), [blogStatus]);
-
   const { data, loading, error } = useFetch(url, params);
   const [blogs, setBlogs] = useState([]);
+
+  const handleApiError = useApiErrorHandler();
   const [modal, modalContextHolder] = Modal.useModal();
   const { confirmDanger } = useConfirm();
   const { feedbackByModal } = useFeedback();
@@ -59,16 +60,16 @@ function UserBlogsPage() {
 
   const handleDelete = useCallback(async (blogId) => {
     try {
-      await api.delete(`/blogs/${blogId}`);
+      await deleteBlog(blogId);
       feedbackDelete(true);
       setBlogs(blogs.filter(blog => blog._id !== blogId));
       localStorage.removeItem(`edit-${blogId}`);
     } catch (err) {
-      apiErrorHandler(err, () => {
+      handleApiError(err, () => {
         feedbackDelete(false, err.message);
       });
     }
-  }, [api, apiErrorHandler, blogs, feedbackDelete]);
+  }, [handleApiError, blogs, feedbackDelete]);
 
   const confirmDelete = useCallback((blogId) => {
     confirmDanger(modal, {

@@ -1,26 +1,22 @@
-import * as err from 'antd';
 import { App as AntdApp } from 'antd';
-import { createContext, useCallback, useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import api from '../config/api';
-import { AuthContext } from './AuthProvider';
+import { AuthContext } from '../contexts/AuthProvider';
 
-export const ApiContext = createContext(null);
-
-function ApiProvider({ children }) {
-  const { logout } = useContext(AuthContext);
+const useApiErrorHandler = () => {
+  const { clearAuth } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
   const { message: antdMessage } = AntdApp.useApp();
 
-  const apiErrorHandler = useCallback((error, customHandler = null) => {
+  return useCallback((error, customHandler = undefined) => {
     const statusCode = error.response?.status;
 
     if (statusCode === 401) {
       if (error.config.url === '/auth/login') {
         void antdMessage.error('Wrong username or password');
       } else {
-        logout();
+        clearAuth();
         navigate('/login', { state: { from: location } });
         void antdMessage.info('Session expired. Please log in');
       }
@@ -28,7 +24,7 @@ function ApiProvider({ children }) {
     } else if (statusCode === 403 && error.response.data.type === 'ILLEGAL_USER') {
       // sign out the user if it's marked as inactive or removed
       // when its session has not expired
-      logout();
+      clearAuth();
       void antdMessage.error('Illegal user. Signing out');
       navigate('/');
 
@@ -36,17 +32,11 @@ function ApiProvider({ children }) {
       if (customHandler) {
         customHandler();
       } else {
-        void antdMessage.error(err.message);
-        console.error(err);
+        void antdMessage.error(error.message);
+        console.error(error);
       }
     }
-  }, [antdMessage, location, navigate, logout]);
+  }, [antdMessage, location, navigate, clearAuth]);
+};
 
-  return (
-    <ApiContext.Provider value={{ api, apiErrorHandler }}>
-      {children}
-    </ApiContext.Provider>
-  );
-}
-
-export default ApiProvider;
+export default useApiErrorHandler;
