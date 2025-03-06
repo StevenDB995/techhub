@@ -21,7 +21,6 @@ function BlogHeader({ blog, editable, onDelete }) {
             {blog.author.username}
           </Link>
         </Button>
-
       </Flex>
       <BlogActions blog={blog} editable={editable} onDelete={onDelete} />
     </div>
