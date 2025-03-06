@@ -50,12 +50,8 @@ function UserBlogsPage() {
     if (data) setBlogs(data);
   }, [data]);
 
-  const feedbackDelete = useCallback((success, errorMessage = undefined) => {
-    feedbackByModal(modal, success, {
-      content: 'Blog deleted'
-    }, {
-      content: errorMessage || 'Error deleting blog'
-    });
+  const feedbackDelete = useCallback((success) => {
+    feedbackByModal(modal, success, success && 'Blog post deleted.');
   }, [feedbackByModal, modal]);
 
   const handleDelete = useCallback(async (blogId) => {
@@ -66,7 +62,7 @@ function UserBlogsPage() {
       localStorage.removeItem(`edit-${blogId}`);
     } catch (err) {
       handleApiError(err, () => {
-        feedbackDelete(false, err.message);
+        feedbackDelete(false);
       });
     }
   }, [handleApiError, blogs, feedbackDelete]);
@@ -74,7 +70,7 @@ function UserBlogsPage() {
   const confirmDelete = useCallback((blogId) => {
     confirmDanger(modal, {
       title: 'Confirm Delete',
-      content: 'Are you sure?',
+      content: 'Do you want to delete this blog post?',
       okText: 'Delete',
       onOk: () => handleDelete(blogId)
     });

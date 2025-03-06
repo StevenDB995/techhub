@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 
-function useConfirm() {
+const useConfirm = () => {
   const confirmDanger = useCallback((modal, options) => {
     modal.confirm({
       ...options,
