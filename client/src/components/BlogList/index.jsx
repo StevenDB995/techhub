@@ -1,8 +1,7 @@
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { Divider, Flex, List, Modal, Space, Typography } from 'antd';
-import React, { useCallback, useEffect, useState } from 'react';
+import { Divider, Flex, List, Space, Typography } from 'antd';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import useApi from '../../hooks/useApi';
 import { getDateString } from '../../utils/dateUtil';
 import styles from './BlogList.module.css';
 
@@ -33,21 +32,19 @@ function ListItem({ item, showActions, onDelete }) {
       {previewText && <Paragraph className={styles.listItemContent}>{previewText}</Paragraph>}
       <Flex justify="space-between" className={styles.listItemFooter}>
         <Space size="middle">
-          <ListFooterItem text={createdAt} />
-          {/*<ListFooterItem icon={LikeOutlined} text={data.likes} />*/}
-          {/*<ListFooterItem icon={MessageOutlined} text={data.comments} />*/}
+          <Action text={createdAt} />
+          {/*<Action icon={LikeOutlined} text={item.likes} />*/}
+          {/*<Action icon={MessageOutlined} text={item.comments} />*/}
         </Space>
         {showActions && <Space split={<Divider type="vertical" />} size={4}>
-          <ListFooterItem
+          <Action
             className={styles.clickable}
             icon={EditOutlined}
             text="Edit"
             size={6}
-            onClick={() => {
-              navigate(`/blogs/${item._id}/edit`);
-            }}
+            onClick={() => navigate(`/blogs/${item._id}/edit`)}
           />
-          <ListFooterItem
+          <Action
             className={styles.clickable}
             icon={DeleteOutlined}
             text="Delete"
@@ -60,7 +57,7 @@ function ListItem({ item, showActions, onDelete }) {
   );
 }
 
-function ListFooterItem({ icon, text, size, className, onClick }) {
+function Action({ icon, text, size, className, onClick }) {
   return (
     <Space size={size} className={className} onClick={onClick}>
       {icon && React.createElement(icon)}
@@ -69,57 +66,7 @@ function ListFooterItem({ icon, text, size, className, onClick }) {
   );
 }
 
-function BlogList({ data, loading, showActions = false }) {
-  const { api, apiErrorHandler } = useApi();
-  const [blogs, setBlogs] = useState([]);
-  const [modal, modalContextHolder] = Modal.useModal();
-
-  useEffect(() => {
-    if (data) setBlogs(data);
-  }, [data]);
-
-  const feedbackDelete = useCallback((success, errorMessage) => {
-    if (success) {
-      modal.success({
-        title: 'Success',
-        content: 'Blog deleted',
-        cancelButtonProps: { style: { display: 'none' } }
-      });
-    } else {
-      modal.error({
-        title: 'Error',
-        content: errorMessage || 'Error deleting blog',
-        cancelButtonProps: { style: { display: 'none' } }
-      });
-    }
-  }, [modal]);
-
-  const handleDelete = useCallback(async (blogId) => {
-    try {
-      await api.delete(`/blogs/${blogId}`);
-      feedbackDelete(true);
-      setBlogs(blogs.filter(blog => blog._id !== blogId));
-      localStorage.removeItem(`edit-${blogId}`);
-    } catch (err) {
-      apiErrorHandler(err, () => {
-        feedbackDelete(false, err.message);
-      });
-    }
-  }, [api, apiErrorHandler, blogs, feedbackDelete]);
-
-  const confirmDelete = useCallback((blogId) => {
-    modal.confirm({
-      title: 'Confirm Delete',
-      content: 'Are you sure?',
-      okText: 'Delete',
-      okButtonProps: {
-        danger: true
-      },
-      autoFocusButton: null,
-      onOk: () => handleDelete(blogId)
-    });
-  }, [modal, handleDelete]);
-
+function BlogList({ data, loading, showActions = false, onDelete }) {
   return (
     <>
       <List
@@ -130,10 +77,9 @@ function BlogList({ data, loading, showActions = false }) {
           align: 'center'
         }}
         loading={loading}
-        dataSource={blogs}
-        renderItem={(item) => <ListItem item={item} showActions={showActions} onDelete={confirmDelete} />}
+        dataSource={data || []}
+        renderItem={(item) => <ListItem item={item} showActions={showActions} onDelete={onDelete} />}
       />
-      {modalContextHolder}
     </>
   );
 }

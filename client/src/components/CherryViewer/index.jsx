@@ -6,7 +6,8 @@ const cherryConfig = {
   id: 'cherry-viewer',
   locale: 'en_US',
   editor: {
-    defaultModel: 'previewOnly'
+    defaultModel: 'previewOnly',
+    height: 'auto'
   },
   previewer: {
     enablePreviewerBubble: false
