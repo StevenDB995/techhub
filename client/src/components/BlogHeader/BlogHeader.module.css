@@ -3,10 +3,6 @@
 }
 
 .author .username {
-  color: black;
   font-size: 16px;
-}
-
-.author .username:hover {
-  color: rgba(0, 0, 0, 0.45);
+  padding: 0;
 }

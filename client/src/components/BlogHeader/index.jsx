@@ -1,5 +1,5 @@
 import { UserOutlined } from '@ant-design/icons';
-import { Avatar, Flex, Typography } from 'antd';
+import { Avatar, Button, Flex, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 import BlogActions from '../BlogActions';
 import styles from './BlogHeader.module.css';
@@ -16,9 +16,12 @@ function BlogHeader({ blog, editable, onDelete }) {
         <Link to={authorPage}>
           <Avatar src={blog.author.avatar} icon={<UserOutlined />} />
         </Link>
-        <Link to={authorPage} className={styles.username}>
-          {blog.author.username}
-        </Link>
+        <Button variant="link" color="default" className={styles.username}>
+          <Link to={authorPage}>
+            {blog.author.username}
+          </Link>
+        </Button>
+
       </Flex>
       <BlogActions blog={blog} editable={editable} onDelete={onDelete} />
     </div>

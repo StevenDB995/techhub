@@ -159,7 +159,7 @@ function AppNavbar() {
                   selectable={false}
                   items={rightNavItems}
                 /> :
-                <Button type="text" className={styles.textItem}>
+                <Button type="link" className={styles.textItem}>
                   <Link to={'/login'} state={{ from: location }}>Log In</Link>
                 </Button>
             }
