@@ -5,6 +5,8 @@ import BlogList from '../../components/BlogList';
 import Error from '../../components/Error';
 import useApi from '../../hooks/useApi';
 import useAuth from '../../hooks/useAuth';
+import useConfirm from '../../hooks/useConfirm';
+import useFeedback from '../../hooks/useFeedback';
 import useFetch from '../../hooks/useFetch';
 import styles from './UserBlogsPage.module.css';
 
@@ -32,6 +34,8 @@ function UserBlogsPage() {
   const { data, loading, error } = useFetch(url, params);
   const [blogs, setBlogs] = useState([]);
   const [modal, modalContextHolder] = Modal.useModal();
+  const { confirmDanger } = useConfirm();
+  const { feedbackByModal } = useFeedback();
 
   // case-insensitive username
   const isMe = username.toLowerCase() === user?.username.toLowerCase();
@@ -46,20 +50,12 @@ function UserBlogsPage() {
   }, [data]);
 
   const feedbackDelete = useCallback((success, errorMessage = undefined) => {
-    if (success) {
-      modal.success({
-        title: 'Success',
-        content: 'Blog deleted',
-        cancelButtonProps: { style: { display: 'none' } }
-      });
-    } else {
-      modal.error({
-        title: 'Error',
-        content: errorMessage || 'Error deleting blog',
-        cancelButtonProps: { style: { display: 'none' } }
-      });
-    }
-  }, [modal]);
+    feedbackByModal(modal, success, {
+      content: 'Blog deleted'
+    }, {
+      content: errorMessage || 'Error deleting blog'
+    });
+  }, [feedbackByModal, modal]);
 
   const handleDelete = useCallback(async (blogId) => {
     try {
@@ -75,24 +71,25 @@ function UserBlogsPage() {
   }, [api, apiErrorHandler, blogs, feedbackDelete]);
 
   const confirmDelete = useCallback((blogId) => {
-    modal.confirm({
+    confirmDanger(modal, {
       title: 'Confirm Delete',
       content: 'Are you sure?',
       okText: 'Delete',
-      okButtonProps: {
-        danger: true
-      },
-      autoFocusButton: null,
       onOk: () => handleDelete(blogId)
     });
-  }, [modal, handleDelete]);
+  }, [confirmDanger, modal, handleDelete]);
 
   return (
     error ?
       <Error status={error.status} message={error.message} /> :
       <>
         {isMe && <div className={styles.selectContainer}>
-          <Select className={styles.select} value={blogStatus || 'public'} options={selectOptions} onChange={onChange} />
+          <Select
+            className={styles.select}
+            value={blogStatus || 'public'}
+            options={selectOptions}
+            onChange={onChange}
+          />
         </div>}
         <BlogList data={blogs} loading={loading} editable={isMe} onDelete={confirmDelete} />
         {modalContextHolder}
