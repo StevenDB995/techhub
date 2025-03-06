@@ -131,7 +131,7 @@ function AppNavbar() {
     } else {
       mobileNavItems.push({
         key: '/login',
-        label: <Link to={'/login'}>Login</Link>
+        label: <Link to={'/login'} state={{ from: location }}>Login</Link>
       });
     }
     return mobileNavItems;

@@ -10,17 +10,14 @@ function LoginPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Get the previous location the user was trying to access
-  const from = location.state?.from;
-  const fromUrl = from ? `${from.pathname}${from.search}` : '/';
-
   const handleLogin = async (formData) => {
     try {
       const response = await login(formData);
       const { accessToken } = response.data;
       setAuth(accessToken);
       antdMessage.success('Successfully logged in!');
-      navigate(fromUrl, { replace: true });
+      // Navigate to the previous location before the user logged in
+      navigate(location.state?.from || '/', { replace: true });
     } catch (err) {
       if (err.status === 401) {
         antdMessage.error('Wrong username or password');

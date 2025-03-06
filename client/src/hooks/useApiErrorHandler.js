@@ -1,12 +1,11 @@
 import { App as AntdApp } from 'antd';
 import { useCallback, useContext } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthProvider';
 
 const useApiErrorHandler = () => {
   const { clearAuth } = useContext(AuthContext);
   const navigate = useNavigate();
-  const location = useLocation();
   const { message: antdMessage } = AntdApp.useApp();
 
   return useCallback((error, customHandler = undefined) => {
@@ -17,7 +16,7 @@ const useApiErrorHandler = () => {
         void antdMessage.error('Wrong username or password');
       } else {
         clearAuth();
-        navigate('/login', { state: { from: location } });
+        navigate('/login');
         void antdMessage.info('Session expired. Please log in');
       }
 
@@ -36,7 +35,7 @@ const useApiErrorHandler = () => {
         console.error(error);
       }
     }
-  }, [antdMessage, location, navigate, clearAuth]);
+  }, [antdMessage, navigate, clearAuth]);
 };
 
 export default useApiErrorHandler;
