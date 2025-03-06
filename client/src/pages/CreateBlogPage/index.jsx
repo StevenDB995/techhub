@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createBlog } from '../../api/services/blogService';
 import CherryEditor from '../../components/CherryEditor';
 import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
-import useApi from '../../hooks/useApi';
 import { parseJSON } from '../../utils/jsonUtil';
 
 const markdownTemplate = `# Heading 1
@@ -14,7 +14,6 @@ If you know, you know ;)`;
 const localStorageKey = 'create';
 
 function CreateBlogPage() {
-  const { api } = useApi();
   const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
   const navigate = useNavigate();
 
@@ -24,7 +23,7 @@ function CreateBlogPage() {
   const handleSubmit = async (blogData, successMessage) => {
     // blogData.status: the new blog status to be set
     try {
-      const response = await api.post('/blogs', blogData);
+      const response = await createBlog(blogData);
       setBlogId(response.data._id);
       showFeedbackModal(true, successMessage);
       localStorage.removeItem(localStorageKey);

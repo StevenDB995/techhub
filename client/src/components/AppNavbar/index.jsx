@@ -3,15 +3,14 @@ import { CaretDownFilled, FormOutlined, InboxOutlined, LogoutOutlined, MenuOutli
 import { App as AntdApp, Button, Col, Drawer, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
 import { useState } from 'react';
 import { Link, useLocation, useMatch, useNavigate } from 'react-router-dom';
-import useApi from '../../hooks/useApi';
+import { logout } from '../../api/services/authService';
 import useAuth from '../../hooks/useAuth';
 import styles from './AppNavbar.module.css';
 
 const { Header } = Layout;
 
 function AppNavbar() {
-  const { isAuthenticated, user, logout } = useAuth();
-  const { api } = useApi();
+  const { isAuthenticated, user, clearAuth } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const matchUserBlogs = useMatch('/:username/blogs');
@@ -28,12 +27,12 @@ function AppNavbar() {
 
   const handleLogout = async () => {
     try {
-      await api.post('/auth/logout');
+      await logout();
     } catch (err) {
       console.error(err);
     }
 
-    logout();
+    clearAuth();
     navigate('/');
     antdMessage.info('You are logged out');
   };
@@ -160,7 +159,7 @@ function AppNavbar() {
                   selectable={false}
                   items={rightNavItems}
                 /> :
-                <Button type="text" className={styles.textItem}>
+                <Button type="link" className={styles.textItem}>
                   <Link to={'/login'} state={{ from: location }}>Log In</Link>
                 </Button>
             }

@@ -1,10 +1,10 @@
 import { Modal } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { updateBlog } from '../../api/services/blogService';
 import CherryEditor from '../../components/CherryEditor';
 import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
 import Error from '../../components/Error';
-import useApi from '../../hooks/useApi';
 import useFetch from '../../hooks/useFetch';
 import { parseJSON } from '../../utils/jsonUtil';
 
@@ -13,7 +13,6 @@ const localStorageKeyPrefix = 'edit-';
 function EditBlogPage() {
   const { blogId } = useParams();
   const { data: blog, loading, error } = useFetch(`/blogs/${blogId}`);
-  const { api } = useApi();
   const navigate = useNavigate();
 
   const localStorageKey = localStorageKeyPrefix + blogId;
@@ -61,7 +60,7 @@ function EditBlogPage() {
   const handleSubmit = async (blogData, successMessage) => {
     // blogData.status: the new blog status to be set
     try {
-      await api.put(`/blogs/${blogId}`, blogData);
+      await updateBlog(blogId, blogData);
       showFeedbackModal(true, successMessage);
       localStorage.removeItem(localStorageKey);
     } catch (err) {

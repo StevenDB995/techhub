@@ -1,0 +1,8 @@
+.author {
+  margin-bottom: 16px;
+}
+
+.author .username {
+  font-size: 16px;
+  padding: 0;
+}

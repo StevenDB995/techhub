@@ -7,12 +7,3 @@
   font-size: 16px;
   color: dimgray;
 }
-
-.listItemFooter {
-  color: rgba(0, 0, 0, 0.45);
-}
-
-.listItemFooter .clickable:hover {
-  cursor: pointer;
-  color: rgba(0, 0, 0, 0.6);
-}

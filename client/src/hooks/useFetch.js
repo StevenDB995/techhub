@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
-import useApi from './useApi';
+import api from '../api/api';
+import useApiErrorHandler from './useApiErrorHandler';
 
 // A custom hook for fetching data on page load using GET method
 const useFetch = (url, params) => {
-  const { api, apiErrorHandler } = useApi();
+  const handleApiError = useApiErrorHandler();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,10 +15,10 @@ const useFetch = (url, params) => {
       const response = await api.get(url, { params: newParams });
       setData(response.data);
     } catch (err) {
-      apiErrorHandler(err, () => setError(err));
+      handleApiError(err, () => setError(err));
     }
     setLoading(false);
-  }, [api, apiErrorHandler, params, url]);
+  }, [handleApiError, params, url]);
 
   useEffect(() => {
     void fetchData();
