@@ -1,7 +1,7 @@
+import { AuthContext } from '@/contexts/AuthProvider';
 import { App as AntdApp } from 'antd';
 import { useCallback, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthProvider';
 
 const useApiErrorHandler = () => {
   const { clearAuth } = useContext(AuthContext);

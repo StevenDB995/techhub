@@ -1,8 +1,8 @@
+import { getDateString } from '@/utils/dateUtil';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Divider, Flex, Space } from 'antd';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getDateString } from '../../utils/dateUtil';
 import styles from './BlogActions.module.css';
 
 function Action({ icon, text, size, className, onClick }) {

@@ -1,7 +1,7 @@
+import { login } from '@/api/services/authService';
+import useAuth from '@/hooks/useAuth';
 import { App as AntdApp, Button, Flex, Form, Input } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { login } from '../../../api/services/authService';
-import useAuth from '../../../hooks/useAuth';
 import styles from './LoginPage.module.css';
 
 function LoginPage() {

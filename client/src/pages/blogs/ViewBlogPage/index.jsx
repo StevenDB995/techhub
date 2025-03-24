@@ -1,16 +1,16 @@
+import { deleteBlog } from '@/api/services/blogService';
+import BlogHeader from '@/components/BlogHeader';
+import CherryViewer from '@/components/CherryViewer';
+import Error from '@/components/Error';
+import Loading from '@/components/Loading';
+import useApiErrorHandler from '@/hooks/useApiErrorHandler';
+import useAuth from '@/hooks/useAuth';
+import useConfirm from '@/hooks/useConfirm';
+import useFeedback from '@/hooks/useFeedback';
+import useFetch from '@/hooks/useFetch';
 import { Divider, Modal } from 'antd';
 import { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { deleteBlog } from '../../../api/services/blogService';
-import BlogHeader from '../../../components/BlogHeader';
-import CherryViewer from '../../../components/CherryViewer';
-import Error from '../../../components/Error';
-import Loading from '../../../components/Loading';
-import useApiErrorHandler from '../../../hooks/useApiErrorHandler';
-import useAuth from '../../../hooks/useAuth';
-import useConfirm from '../../../hooks/useConfirm';
-import useFeedback from '../../../hooks/useFeedback';
-import useFetch from '../../../hooks/useFetch';
 import styles from './ViewBlogPage.module.css';
 
 function ViewBlogPage() {

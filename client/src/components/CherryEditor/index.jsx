@@ -1,12 +1,12 @@
+import { createImageMetadata, getImgurAccessToken } from '@/api/services/blogService';
+import Loading from '@/components/Loading';
+import useAuth from '@/hooks/useAuth';
+import { extractImageLinks, extractMetadata } from '@/utils/mdUtil';
 import { App as AntdApp, Button, Flex, Input, Modal } from 'antd';
 import axios from 'axios';
 import Cherry from 'cherry-markdown';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createImageMetadata, getImgurAccessToken } from '../../api/services/blogService';
-import useAuth from '../../hooks/useAuth';
-import { extractImageLinks, extractMetadata } from '../../utils/mdUtil';
-import Loading from '../Loading';
 import 'cherry-markdown/dist/cherry-markdown.css';
 import styles from './CherryEditor.module.css';
 

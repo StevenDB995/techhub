@@ -1,10 +1,10 @@
+import { logout } from '@/api/services/authService';
+import useAuth from '@/hooks/useAuth';
 import { geekblue } from '@ant-design/colors';
 import { CaretDownFilled, FormOutlined, InboxOutlined, LogoutOutlined, MenuOutlined } from '@ant-design/icons';
 import { App as AntdApp, Button, Col, Drawer, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
 import { useState } from 'react';
 import { Link, useLocation, useMatch, useNavigate } from 'react-router-dom';
-import { logout } from '../../api/services/authService';
-import useAuth from '../../hooks/useAuth';
 import styles from './AppNavbar.module.css';
 
 const { Header } = Layout;
