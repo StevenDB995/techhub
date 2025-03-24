@@ -27,7 +27,7 @@ function UserBlogsPage() {
   const { username } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [blogStatus, setBlogStatus] = useState(searchParams.get('status'));
+  const blogStatus = searchParams.get('status') || 'public';
   const url = `/users/${username}/blogs`;
   const params = useMemo(() => ({ status: blogStatus }), [blogStatus]);
   const { data, loading, error } = useFetch(url, params);
@@ -42,7 +42,6 @@ function UserBlogsPage() {
   const isMe = username.toLowerCase() === user?.username.toLowerCase();
 
   const onChange = (value) => {
-    setBlogStatus(value);
     setSearchParams({ status: value });
   };
 
@@ -83,7 +82,7 @@ function UserBlogsPage() {
         {isMe && <div className={styles.selectContainer}>
           <Select
             className={styles.select}
-            value={blogStatus || 'public'}
+            value={blogStatus}
             options={selectOptions}
             onChange={onChange}
           />
