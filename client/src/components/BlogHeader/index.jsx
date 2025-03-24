@@ -1,7 +1,7 @@
+import BlogActions from '@/components/BlogActions';
 import { UserOutlined } from '@ant-design/icons';
 import { Avatar, Button, Flex, Typography } from 'antd';
 import { Link } from 'react-router-dom';
-import BlogActions from '../BlogActions';
 import styles from './BlogHeader.module.css';
 
 const { Title } = Typography;

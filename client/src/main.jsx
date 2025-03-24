@@ -1,17 +1,17 @@
+import App from '@/App';
+import AuthProvider from '@/contexts/AuthProvider';
+import LoginPage from '@/pages/auth/LoginPage';
+import CreateBlogPage from '@/pages/blogs/CreateBlogPage';
+import EditBlogPage from '@/pages/blogs/EditBlogPage';
+import ViewBlogPage from '@/pages/blogs/ViewBlogPage';
+import AboutPage from '@/pages/home/AboutPage';
+import HomePage from '@/pages/home/HomePage';
+import UserBlogsPage from '@/pages/user/UserBlogsPage';
 import { geekblue } from '@ant-design/colors';
 import { App as AntdApp, ConfigProvider } from 'antd';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import App from './App';
-import AuthProvider from './contexts/AuthProvider';
-import AboutPage from './pages/AboutPage';
-import CreateBlogPage from './pages/CreateBlogPage';
-import EditBlogPage from './pages/EditBlogPage';
-import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import UserBlogsPage from './pages/UserBlogsPage';
-import ViewBlogPage from './pages/ViewBlogPage';
 import './index.css';
 
 const router = createBrowserRouter([

@@ -1,9 +1,9 @@
+import { createBlog } from '@/api/services/blogService';
+import CherryEditor from '@/components/CherryEditor';
+import useFeedbackModal from '@/components/CherryEditor/useFeedbackModal';
+import { parseJSON } from '@/utils/jsonUtil';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createBlog } from '../../api/services/blogService';
-import CherryEditor from '../../components/CherryEditor';
-import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
-import { parseJSON } from '../../utils/jsonUtil';
 
 const markdownTemplate = `# Heading 1
 ## Heading 2

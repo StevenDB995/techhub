@@ -1,6 +1,6 @@
-import BlogList from '../../components/BlogList';
-import Error from '../../components/Error';
-import useFetch from '../../hooks/useFetch';
+import BlogList from '@/components/BlogList';
+import Error from '@/components/Error';
+import useFetch from '@/hooks/useFetch';
 
 function HomePage() {
   const { data, loading, error } = useFetch('/blogs');

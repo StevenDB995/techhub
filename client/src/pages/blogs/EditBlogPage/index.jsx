@@ -1,12 +1,12 @@
+import { updateBlog } from '@/api/services/blogService';
+import CherryEditor from '@/components/CherryEditor';
+import useFeedbackModal from '@/components/CherryEditor/useFeedbackModal';
+import Error from '@/components/Error';
+import useFetch from '@/hooks/useFetch';
+import { parseJSON } from '@/utils/jsonUtil';
 import { Modal } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { updateBlog } from '../../api/services/blogService';
-import CherryEditor from '../../components/CherryEditor';
-import useFeedbackModal from '../../components/CherryEditor/useFeedbackModal';
-import Error from '../../components/Error';
-import useFetch from '../../hooks/useFetch';
-import { parseJSON } from '../../utils/jsonUtil';
 
 const localStorageKeyPrefix = 'edit-';
 

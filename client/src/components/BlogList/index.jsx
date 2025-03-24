@@ -1,6 +1,6 @@
+import BlogActions from '@/components/BlogActions';
 import { List, Typography } from 'antd';
 import { Link } from 'react-router-dom';
-import BlogActions from '../BlogActions';
 import styles from './BlogList.module.css';
 
 const { Paragraph } = Typography;

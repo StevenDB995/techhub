@@ -1,6 +1,6 @@
+import api from '@/api/api';
+import useApiErrorHandler from '@/hooks/useApiErrorHandler';
 import { useCallback, useEffect, useState } from 'react';
-import api from '../api/api';
-import useApiErrorHandler from './useApiErrorHandler';
 
 // A custom hook for fetching data on page load using GET method
 const useFetch = (url, params) => {
