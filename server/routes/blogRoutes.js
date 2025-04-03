@@ -1,18 +1,17 @@
 const express = require('express');
 const blogController = require('../controllers/blogController');
-const authMiddleware = require('../middlewares/authMiddleware');
+const { auth, optionalAuth } = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
 router.get('/', blogController.getAllBlogs);
-// Conditional authorization applies
-router.get('/:id', blogController.getBlogById);
+router.get('/:id', optionalAuth, blogController.getBlogById);
 
-router.post('/', authMiddleware, blogController.createBlog);
-router.put('/:id', authMiddleware, blogController.updateBlogById);
-router.delete('/:id', authMiddleware, blogController.deleteBlogById);
+router.post('/', auth, blogController.createBlog);
+router.put('/:id', auth, blogController.updateBlogById);
+router.delete('/:id', auth, blogController.deleteBlogById);
 
-router.get('/images/token', authMiddleware, blogController.getImgurAccessToken);
-router.post('/images', authMiddleware, blogController.createImageMetadata);
+router.get('/images/token', auth, blogController.getImgurAccessToken);
+router.post('/images', auth, blogController.createImageMetadata);
 
 module.exports = router;

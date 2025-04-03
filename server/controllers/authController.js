@@ -3,43 +3,30 @@ const { messageResponse, dataResponse } = require('../utils/responseUtil');
 const { isValidUsername, isValidPassword, isValidEmail } = require('../utils/validateUtil');
 const { hashPassword, comparePassword } = require('../utils/passwordUtil');
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../utils/tokenUtil');
-const { clearRefreshToken } = require('../helpers/authHelper');
-const constants = require('../config/constants');
-
-const { NODE_ENV } = process.env;
-
-const cookieConfig = {
-  httpOnly: true,
-  secure: NODE_ENV === 'production',
-  path: constants.REFRESH_TOKEN_PATH,
-  sameSite: 'Strict',
-  maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-};
+const { getRefreshToken, setRefreshToken, clearRefreshToken } = require('../helpers/authHelper');
 
 exports.refreshToken = async (req, res) => {
-  let refreshToken = req.cookies[constants.REFRESH_TOKEN_NAME];
+  let refreshToken = getRefreshToken(req);
   if (!refreshToken) {
     return messageResponse(res, 401, 'No refresh token provided');
   }
 
   try {
     const { userId } = verifyRefreshToken(refreshToken);
-    const user = await User.findById(userId);
     const accessToken = signAccessToken(userId);
     refreshToken = signRefreshToken(userId);
-
-    res.cookie(constants.REFRESH_TOKEN_NAME, refreshToken, cookieConfig);
+    setRefreshToken(res, refreshToken);
     return dataResponse(res, 200, { accessToken });
 
   } catch (err) {
+    // clear the refresh token in cookies anyway on error
+    clearRefreshToken(res);
     // if the refresh token expired
     if (err.name === 'TokenExpiredError') {
-      clearRefreshToken(res);
       return messageResponse(res, 401, 'Session expired');
     }
     // most likely an invalid signature
     if (err.name === 'JsonWebTokenError') {
-      clearRefreshToken(res);
       return messageResponse(res, 401, err.message);
     }
 
@@ -101,13 +88,9 @@ exports.login = async (req, res) => {
 
     const accessToken = signAccessToken(user._id);
     const refreshToken = signRefreshToken(user._id);
+    setRefreshToken(res, refreshToken);
 
-    res.cookie(constants.REFRESH_TOKEN_NAME, refreshToken, cookieConfig);
-
-    return dataResponse(res, 200, {
-      accessToken,
-      username: user.username
-    });
+    return dataResponse(res, 200, { accessToken });
 
   } catch (err) {
     console.error(err);
@@ -116,6 +99,6 @@ exports.login = async (req, res) => {
 };
 
 exports.logout = async (req, res) => {
-  res.clearCookie(constants.REFRESH_TOKEN_NAME, { path: constants.REFRESH_TOKEN_PATH });
+  clearRefreshToken(res);
   return messageResponse(res, 200, 'Logged out');
 };

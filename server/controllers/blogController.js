@@ -1,10 +1,8 @@
 const Blog = require('../models/blogModel');
 const BlogImage = require('../models/blogImageModel');
 const { messageResponse, dataResponse } = require('../utils/responseUtil');
-const { verifyAccessToken, decodeAccessToken } = require('../utils/tokenUtil');
 const axios = require('axios');
 const mongoose = require('mongoose');
-const { getAccessToken, validateUser } = require('../helpers/authHelper');
 
 const {
   IMGUR_CLIENT_ID,
@@ -30,7 +28,6 @@ exports.getAllBlogs = async (req, res) => {
 
 exports.getBlogById = async (req, res) => {
   const { id: blogId } = req.params;
-  const accessToken = getAccessToken(req);
 
   try {
     const blog = await Blog.findById(blogId)
@@ -46,23 +43,19 @@ exports.getBlogById = async (req, res) => {
     }
 
     // for non-public blog
-    const user = blog.author;
-    const decoded = decodeAccessToken(accessToken);
+    const currentUser = req.user;
+    const author = blog.author;
+
+    // if not authenticated (need to refresh token)
+    if (!currentUser) {
+      return messageResponse(res, 401, 'Invalid token');
+    }
 
     // if not the author of the blog
-    if (!user._id.equals(decoded?.userId)) {
+    if (!author._id.equals(currentUser._id)) {
       return messageResponse(res, 403, 'Permission denied');
     }
 
-    // if the user is the author of the blog, authorize
-    try {
-      verifyAccessToken(accessToken);
-      if (!validateUser(res, user)) {
-        return;
-      }
-    } catch (jwtError) {
-      return messageResponse(res, 401, 'Invalid token');
-    }
     // on successful authorization
     return dataResponse(res, 200, blog);
 
@@ -78,7 +71,8 @@ exports.createBlog = async (req, res) => {
 
   try {
     const blog = new Blog(req.body);
-    blog.author = req.userId;
+    // save the reference of the user
+    blog.author = req.user._id;
     await blog.save({ session });
 
     await BlogImage.updateMany(
@@ -112,7 +106,7 @@ exports.updateBlogById = async (req, res) => {
     }
 
     // authorize
-    if (!blog.author.equals(req.userId)) {
+    if (!blog.author.equals(req.user._id)) {
       return messageResponse(res, 403, 'Permission denied');
     }
 
@@ -163,6 +157,7 @@ exports.updateBlogById = async (req, res) => {
 
 exports.deleteBlogById = async (req, res) => {
   const { id } = req.params;
+
   try {
     const blog = await Blog.findById(id);
     if (!blog) {
@@ -170,7 +165,7 @@ exports.deleteBlogById = async (req, res) => {
     }
 
     // authorize
-    if (!blog.author.equals(req.userId)) {
+    if (!blog.author.equals(req.user._id)) {
       return messageResponse(res, 403, 'Permission denied');
     }
 
