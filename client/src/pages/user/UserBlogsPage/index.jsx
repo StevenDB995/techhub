@@ -7,7 +7,7 @@ import useConfirm from '@/hooks/useConfirm';
 import useFeedback from '@/hooks/useFeedback';
 import useFetch from '@/hooks/useFetch';
 import { Modal, Select } from 'antd';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import styles from './UserBlogsPage.module.css';
 
@@ -29,7 +29,7 @@ function UserBlogsPage() {
 
   const blogStatus = searchParams.get('status') || 'public';
   const url = `/users/${username}/blogs`;
-  const params = useMemo(() => ({ status: blogStatus }), [blogStatus]);
+  const params = { status: blogStatus };
   const { data, loading, error } = useFetch(url, params);
   const [blogs, setBlogs] = useState([]);
 

@@ -15,6 +15,7 @@
     "antd": "^5.24.3",
     "axios": "^1.7.7",
     "cherry-markdown": "^0.8.47",
+    "deep-equal": "^2.2.3",
     "dompurify": "^3.2.4",
     "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
