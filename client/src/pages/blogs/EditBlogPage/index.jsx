@@ -2,10 +2,11 @@ import { updateBlog } from '@/api/services/blogService';
 import CherryEditor from '@/components/CherryEditor';
 import useFeedbackModal from '@/components/CherryEditor/useFeedbackModal';
 import Error from '@/components/Error';
+import useApiErrorHandler from '@/hooks/useApiErrorHandler';
 import useFetch from '@/hooks/useFetch';
 import { parseJSON } from '@/utils/jsonUtil';
 import { Modal } from 'antd';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const localStorageKeyPrefix = 'edit-';
@@ -13,6 +14,7 @@ const localStorageKeyPrefix = 'edit-';
 function EditBlogPage() {
   const { blogId } = useParams();
   const { data: blog, loading, error } = useFetch(`/blogs/${blogId}`);
+  const handleApiError = useApiErrorHandler();
   const navigate = useNavigate();
 
   const localStorageKey = localStorageKeyPrefix + blogId;
@@ -24,7 +26,7 @@ function EditBlogPage() {
   const [loadSourceConfirmed, setLoadSourceConfirmed] = useState(false);
 
   const [modal, modalContextHolder] = Modal.useModal();
-  const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
+  const [showFeedbackModal, feedbackModal] = useFeedbackModal();
 
   useEffect(() => {
     if (localStorage.getItem(localStorageKey)) {
@@ -50,23 +52,25 @@ function EditBlogPage() {
   // the draft in the local storage will be removed.
   useEffect(() => {
     return () => {
-      const currentDraft = parseJSON(localStorage.getItem(localStorageKey));
-      if (currentDraft?.title === blog?.title && currentDraft?.content === blog?.content) {
-        localStorage.removeItem(localStorageKey);
+      if (localStorage.getItem(localStorageKey)) {
+        const currentDraft = parseJSON(localStorage.getItem(localStorageKey));
+        if (currentDraft?.title === blog?.title && currentDraft?.content === blog?.content) {
+          localStorage.removeItem(localStorageKey);
+        }
       }
     };
   }, [blog, localStorageKey]);
 
-  const handleSubmit = async (blogData, successMessage) => {
+  const handleSubmit = useCallback(async (blogData, successMessage) => {
     // blogData.status: the new blog status to be set
     try {
       await updateBlog(blogId, blogData);
-      showFeedbackModal(true, successMessage);
+      showFeedbackModal(true, successMessage, () => navigate(`/blogs/${blogId}`));
       localStorage.removeItem(localStorageKey);
     } catch (err) {
-      showFeedbackModal(false, err.message);
+      showFeedbackModal(false, err.message, () => handleApiError(err));
     }
-  };
+  }, [handleApiError, blogId, localStorageKey, navigate, showFeedbackModal]);
 
   const handleSave = async (blogData) => {
     blogData.status = 'public';
@@ -94,7 +98,7 @@ function EditBlogPage() {
       text: 'Save',
       type: 'primary',
       onSubmit: handleSave,
-      isDisabled: isDisabled
+      isDisabled
     }
   ];
 
@@ -102,7 +106,7 @@ function EditBlogPage() {
     {
       text: 'Save As Draft',
       onSubmit: handleSaveAsDraft,
-      isDisabled: isDisabled
+      isDisabled
     },
     {
       text: 'Post',
@@ -123,7 +127,7 @@ function EditBlogPage() {
           localStorageKey={localStorageKey}
           loadSourceConfirmed={loadSourceConfirmed}
         />
-        <FeedbackModal onSuccess={() => navigate(`/blogs/${blogId}`)} />
+        {feedbackModal}
         {modalContextHolder}
       </>
   );

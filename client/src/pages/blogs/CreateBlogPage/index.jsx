@@ -1,8 +1,9 @@
 import { createBlog } from '@/api/services/blogService';
 import CherryEditor from '@/components/CherryEditor';
 import useFeedbackModal from '@/components/CherryEditor/useFeedbackModal';
+import useApiErrorHandler from '@/hooks/useApiErrorHandler';
 import { parseJSON } from '@/utils/jsonUtil';
-import { useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const markdownTemplate = `# Heading 1
@@ -14,23 +15,21 @@ If you know, you know ;)`;
 const localStorageKey = 'create';
 
 function CreateBlogPage() {
-  const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
+  const [showFeedbackModal, feedbackModal] = useFeedbackModal();
+  const handleApiError = useApiErrorHandler();
   const navigate = useNavigate();
-
   const localDraft = useRef(parseJSON(localStorage.getItem(localStorageKey)));
-  const [blogId, setBlogId] = useState(null);
 
-  const handleSubmit = async (blogData, successMessage) => {
+  const handleSubmit = useCallback(async (blogData, successMessage) => {
     // blogData.status: the new blog status to be set
     try {
       const response = await createBlog(blogData);
-      setBlogId(response.data._id);
-      showFeedbackModal(true, successMessage);
+      showFeedbackModal(true, successMessage, () => navigate(`/blogs/${response.data._id}`));
       localStorage.removeItem(localStorageKey);
     } catch (err) {
-      showFeedbackModal(false, err.message);
+      showFeedbackModal(false, err.message, () => handleApiError(err));
     }
-  };
+  }, [handleApiError, navigate, showFeedbackModal]);
 
   const handlePost = async (blogData) => {
     blogData.status = 'public';
@@ -51,7 +50,7 @@ function CreateBlogPage() {
       text: 'Post',
       type: 'primary',
       onSubmit: handlePost,
-      isDisabled: (_, content) => content.trim() === ''
+      isDisabled: (title, content) => content.trim() === ''
     }
   ];
 
@@ -63,7 +62,7 @@ function CreateBlogPage() {
         buttonPropsList={buttonPropsList}
         localStorageKey={localStorageKey}
       />
-      <FeedbackModal onSuccess={() => navigate(`/blogs/${blogId}`)} />
+      {feedbackModal}
     </>
   );
 }

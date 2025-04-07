@@ -1,39 +1,37 @@
 import { Modal, Result } from 'antd';
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 const useFeedbackModal = () => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [success, setSuccess] = useState(null);
+  const callbackRef = useRef(null); // callback after the OK is clicked
 
-  const showFeedbackModal = (success, message) => {
+  const showFeedbackModal = useCallback((success, message, callback) => {
     setSuccess(success);
     setMessage(message);
+    callbackRef.current = callback;
     setOpen(true);
-  };
+  }, []);
 
-  const handleClose = (onSuccess, onError) => {
+  const handleClose = useCallback(() => {
     setOpen(false);
-    if (success) {
-      onSuccess && onSuccess();
-    } else {
-      onError && onError();
-    }
-  };
+    callbackRef.current && callbackRef.current();
+  }, []);
 
-  const FeedbackModal = ({ onSuccess, onError }) => (
+  const feedbackModal = (
     <Modal
       open={open}
       centered={true}
       closable={false}
-      onOk={() => handleClose(onSuccess, onError)}
+      onOk={handleClose}
       cancelButtonProps={{ style: { display: 'none' } }}
     >
       <Result status={success ? 'success' : 'error'} title={message} />
     </Modal>
   );
 
-  return [showFeedbackModal, FeedbackModal];
+  return [showFeedbackModal, feedbackModal];
 };
 
 export default useFeedbackModal;
