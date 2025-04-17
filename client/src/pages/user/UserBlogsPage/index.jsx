@@ -19,6 +19,10 @@ const selectOptions = [
   {
     label: 'Drafts',
     value: 'draft'
+  },
+  {
+    label: 'Private',
+    value: 'private'
   }
 ];
 

@@ -1,14 +1,20 @@
 import { createImageMetadata, getImgurAccessToken } from '@/api/services/blogService';
 import Loading from '@/components/Loading';
-import useAuth from '@/hooks/useAuth';
+import { parseJSON } from '@/utils/jsonUtil';
 import { extractImageLinks, extractMetadata } from '@/utils/mdUtil';
-import { App as AntdApp, Button, Flex, Input, Modal } from 'antd';
+import { DoubleLeftOutlined } from '@ant-design/icons';
+import { App as AntdApp, Button, Flex, Form, Input, Modal, Radio, Switch } from 'antd';
 import axios from 'axios';
 import Cherry from 'cherry-markdown';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import 'cherry-markdown/dist/cherry-markdown.css';
 import styles from './CherryEditor.module.css';
+
+const markdownTemplate = `# Heading 1
+## Heading 2
+Paragraph here
+### Heading 3
+If you know, you know ;)`;
 
 const cherryConfig = {
   id: 'cherry-editor',
@@ -48,24 +54,31 @@ const cherryConfig = {
 const supportedImageFormats = ['jpeg', 'jpg', 'png', 'apng', 'gif', 'tiff'];
 
 function CherryEditor({
-  initialTitle = '',
-  initialContent,
+  page,
+  blog,
   loading = false,
-  buttonPropsList,
   localStorageKey,
-  loadSourceConfirmed = true  // whether the load source (localStorage or database) of the blog is confirmed
+  useLocalDraft,  // only applicable when the page is 'edit'
+  loadSourceConfirmed = true,  // whether the load source (localStorage or database) of the blog is confirmed
+  submitCallback
 }) {
+  if (!['create', 'edit'].includes(page)) {
+    throw new Error(`page prop can be either 'create' or 'edit'`);
+  }
+
   const cherryInstance = useRef(null);
+  const localDraft = useRef(parseJSON(localStorage.getItem(localStorageKey)));
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [html, setHtml] = useState('');
-  const [submitting, setSubmitting] = useState(false);
 
   const [uploadingImage, setUploadingImage] = useState(false);
-  const { isAuthenticated, user } = useAuth();
   const { message: antdMessage } = AntdApp.useApp();
-  const [modal, modalContextHolder] = Modal.useModal();
-  const navigate = useNavigate();
+
+  const [submitModalOpen, setSubmitModalOpen] = useState(false);
+  const [submitForm] = Form.useForm();
+  const [saveDraft, setSaveDraft] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
@@ -76,29 +89,22 @@ function CherryEditor({
     setHtml(html);
   };
 
-  const handleSubmit = async (onSubmit) => {
+  const handleSubmit = useCallback(async () => {
     setSubmitting(true);
     const { title: defaultTitle, previewText } = extractMetadata(html);
     const imageLinks = extractImageLinks(html);
-    await onSubmit({
+    const formData = submitForm.getFieldsValue();
+
+    await submitCallback({
       title: title || defaultTitle,
       previewText,
       content,
-      imageLinks
+      imageLinks,
+      status: formData.saveDraft ? 'draft' : formData.visibility
     });
-    setSubmitting(false);
-  };
 
-  const handleCancel = () => {
-    modal.confirm({
-      title: 'Quit Editing',
-      content: 'Are you sure? Don\'t worry, your current progress will be saved locally after quiting.',
-      centered: true,
-      okText: 'Keep Editing',
-      cancelText: 'Quit',
-      onCancel: () => navigate(isAuthenticated ? `/${user?.username}/blogs` : '/')
-    });
-  };
+    setSubmitting(false);
+  }, [title, content, html, submitForm, submitCallback]);
 
   const uploadFile = useCallback(async (file, callback) => {
     const [fileType, fileFormat] = file.type.split('/');
@@ -190,10 +196,16 @@ function CherryEditor({
 
   // fill the content on page load
   useEffect(() => {
-    cherryInstance.current.setMarkdown(initialContent);
-    setContent(initialContent);
-    setTitle(initialTitle);
-  }, [initialTitle, initialContent]);
+    if (page === 'create') {
+      cherryInstance.current.setMarkdown(localDraft.current?.content || markdownTemplate);
+      setContent(cherryInstance.current.getMarkdown());
+      setTitle(localDraft.current?.title || '');
+    } else {
+      cherryInstance.current.setMarkdown((useLocalDraft ? localDraft.current?.content : blog?.content) || '');
+      setContent(cherryInstance.current.getMarkdown());
+      setTitle((useLocalDraft ? localDraft.current?.title : blog?.title) || '');
+    }
+  }, [page, useLocalDraft, blog]);
 
   // auto-save using localStorage
   useEffect(() => {
@@ -202,30 +214,74 @@ function CherryEditor({
     }
   }, [title, content, loading, loadSourceConfirmed, localStorageKey]);
 
+  // initialise the submit form
+  useEffect(() => {
+    if (page === 'create') {
+      submitForm.setFieldsValue({
+        saveDraft: false,
+        visibility: 'public'
+      });
+    } else {
+      setSaveDraft(blog?.status === 'draft');
+      submitForm.setFieldsValue({
+        saveDraft: blog?.status === 'draft',
+        visibility: blog?.status === 'draft' ? 'public' : blog?.status
+      });
+    }
+  }, [page, submitForm, blog]);
+
   return (
     <div className={styles.contentWrapper}>
-      <Flex align="center" className={styles.titleContainer}>
+      <Flex align="center" gap="middle" className={styles.titleContainer}>
+        <Button
+          variant="link"
+          color="primary"
+          icon={<DoubleLeftOutlined className={styles.backButtonIcon} />}
+          href={`/${blog?.author.username}/blogs?status=${blog?.status}`}
+          className={styles.backButton}
+        >
+          My Blogs
+        </Button>
         <Input placeholder="Title" value={title} onChange={handleTitleChange} className={styles.titleInput} />
+        <Button
+          type="primary"
+          size="large"
+          shape="round"
+          onClick={() => setSubmitModalOpen(true)}
+          disabled={content.trim() === ''}
+        >
+          Post
+        </Button>
       </Flex>
-      <div id={cherryConfig.id} className={styles.cherryEditor}>
-        <Flex gap={buttonPropsList.length > 1 ? 'small' : 'middle'} wrap className={styles.buttonGroup}>
-          <Button key="cancel" size="large" danger onClick={handleCancel}>Cancel</Button>
-          {buttonPropsList.map(({ type, text, onSubmit, isDisabled }, index) => (
-            <Button
-              key={index}
-              size="large"
-              type={type}
-              onClick={() => handleSubmit(onSubmit)}
-              disabled={isDisabled && isDisabled(title, content)}
-            >
-              {text}
-            </Button>
-          ))}
-        </Flex>
-      </div>
-      <Loading display={loading || submitting} />
+      <div id={cherryConfig.id} className={styles.cherryEditor}></div>
+      <Loading display={loading} />
       <Loading display={uploadingImage} text={'Uploading image'} />
-      {modalContextHolder}
+      <Modal
+        open={submitModalOpen}
+        forceRender
+        closable={false}
+        maskClosable={false}
+        centered={true}
+        title={'Post Blog'}
+        onCancel={() => setSubmitModalOpen(false)}
+        okText={(saveDraft || page === 'edit' && blog?.status !== 'draft') ? 'Save' : 'Post'}
+        okButtonProps={{ loading: submitting }}
+        onOk={handleSubmit}
+      >
+        <Form form={submitForm} autoComplete="off">
+          {(page === 'create' || blog?.status === 'draft') &&
+            <Form.Item name="saveDraft" label="Save draft">
+              <Switch onChange={checked => setSaveDraft(checked)} />
+            </Form.Item>}
+          {!saveDraft &&
+            <Form.Item name="visibility" label="Set visibility">
+              <Radio.Group buttonStyle="solid">
+                <Radio.Button value="public">Public</Radio.Button>
+                <Radio.Button value="private">Private</Radio.Button>
+              </Radio.Group>
+            </Form.Item>}
+        </Form>
+      </Modal>
     </div>
   );
 }

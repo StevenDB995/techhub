@@ -18,10 +18,11 @@
   height: calc(100vh - var(--title-container-height)) !important;
 }
 
-.buttonGroup {
-  z-index: 99;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  padding: 24px;
+.backButton {
+  font-size: 18px;
+  padding: 0;
+}
+
+.backButtonIcon {
+  font-size: 16px;
 }
