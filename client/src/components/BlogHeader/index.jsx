@@ -7,7 +7,7 @@ import styles from './BlogHeader.module.css';
 const { Title } = Typography;
 
 function BlogHeader({ blog, loading, editable, onDelete }) {
-  const authorPage = `/${blog?.author.username}/blogs`;
+  const authorPage = blog && `/${blog.author.username}/blogs`;
 
   return !loading && (
     <div>

@@ -1,6 +1,7 @@
 import { createBlog } from '@/api/services/blogService';
 import CherryEditor from '@/components/CherryEditor';
 import useApiErrorHandler from '@/hooks/useApiErrorHandler';
+import useAuth from '@/hooks/useAuth';
 import { App as AntdApp } from 'antd';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +10,7 @@ const localStorageKey = 'create';
 
 function CreateBlogPage() {
   const handleApiError = useApiErrorHandler();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { message: antdMessage } = AntdApp.useApp();
 
@@ -32,6 +34,7 @@ function CreateBlogPage() {
   return (
     <CherryEditor
       page="create"
+      username={user?.username}
       localStorageKey={localStorageKey}
       submitCallback={submit}
     />
