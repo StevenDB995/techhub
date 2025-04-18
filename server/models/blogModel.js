@@ -10,7 +10,7 @@ const blogSchema = new mongoose.Schema({
   deletedAt: { type: Date  },
   status: {
     type: String,
-    enum: ['public', 'draft', 'deleted'],
+    enum: ['public', 'draft', 'private', 'deleted'],
     required: true
   },
   author: {

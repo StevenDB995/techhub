@@ -6,6 +6,17 @@ import styles from './BlogList.module.css';
 const { Paragraph } = Typography;
 
 function ListItem({ item, editable, onDelete }) {
+  const getPreviewText = () => {
+    const { abstract, previewText } = item;
+    if (abstract) {
+      return abstract;
+    } else if (previewText) {
+      return previewText.endsWith('.') ? previewText : `${previewText} ...`;
+    } else {
+      return null;
+    }
+  };
+
   return (
     <List.Item>
       <List.Item.Meta
@@ -20,7 +31,7 @@ function ListItem({ item, editable, onDelete }) {
         description={item.author.username}
       />
       <Paragraph className={styles.listItemContent}>
-        {item.abstract || (item.previewText?.endsWith('.') ? item.previewText : `${item.previewText} ...`)}
+        {getPreviewText()}
       </Paragraph>
       <BlogActions blog={item} editable={editable} onDelete={onDelete} />
     </List.Item>

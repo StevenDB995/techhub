@@ -56,6 +56,7 @@ const supportedImageFormats = ['jpeg', 'jpg', 'png', 'apng', 'gif', 'tiff'];
 function CherryEditor({
   page,
   blog,
+  username,
   loading = false,
   localStorageKey,
   useLocalDraft,  // only applicable when the page is 'edit'
@@ -240,7 +241,9 @@ function CherryEditor({
           variant="link"
           color="primary"
           icon={<DoubleLeftOutlined className={styles.backButtonIcon} />}
-          href={`/${blog?.author.username}/blogs?status=${blog?.status}`}
+          href={page === 'create' ?
+            (username && `/${username}/blogs`) :
+            (blog && `/${blog.author.username}/blogs?status=${blog.status}`)}
           className={styles.backButton}
         >
           My Blogs
