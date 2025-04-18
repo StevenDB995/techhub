@@ -21,15 +21,11 @@ const useFeedback = () => {
     }
   }, []);
 
-  const feedback = useCallback((modal, success, content = undefined) => {
+  const feedback = useCallback((success, content = undefined) => {
     if (success) {
       void antdMessage.success(content || 'Operation success');
     } else {
-      modal.error({
-        title: 'Error',
-        content: content || 'An unexpected error occurred. Please try again later.',
-        cancelButtonProps: { style: { display: 'none' } }
-      });
+      void antdMessage.error(content || 'An unexpected error occurred. Please try again later.');
     }
   }, [antdMessage]);
 

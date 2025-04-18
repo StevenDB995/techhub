@@ -1,70 +1,40 @@
 import { createBlog } from '@/api/services/blogService';
 import CherryEditor from '@/components/CherryEditor';
-import useFeedbackModal from '@/components/CherryEditor/useFeedbackModal';
-import { parseJSON } from '@/utils/jsonUtil';
-import { useRef, useState } from 'react';
+import useApiErrorHandler from '@/hooks/useApiErrorHandler';
+import { App as AntdApp } from 'antd';
+import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const markdownTemplate = `# Heading 1
-## Heading 2
-Paragraph here
-### Heading 3
-If you know, you know ;)`;
 
 const localStorageKey = 'create';
 
 function CreateBlogPage() {
-  const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
+  const handleApiError = useApiErrorHandler();
   const navigate = useNavigate();
+  const { message: antdMessage } = AntdApp.useApp();
 
-  const localDraft = useRef(parseJSON(localStorage.getItem(localStorageKey)));
-  const [blogId, setBlogId] = useState(null);
-
-  const handleSubmit = async (blogData, successMessage) => {
-    // blogData.status: the new blog status to be set
+  const submit = useCallback(async (blogData) => {
     try {
       const response = await createBlog(blogData);
-      setBlogId(response.data._id);
-      showFeedbackModal(true, successMessage);
       localStorage.removeItem(localStorageKey);
+      if (blogData.status === 'draft') {
+        antdMessage.success('Draft saved!');
+      } else {
+        antdMessage.success('Blog posted successfully!');
+      }
+      navigate(`/blogs/${response.data._id}`);
+
     } catch (err) {
-      showFeedbackModal(false, err.message);
+      handleApiError(err);
     }
-  };
+  }, [handleApiError, navigate, antdMessage]);
 
-  const handlePost = async (blogData) => {
-    blogData.status = 'public';
-    await handleSubmit(blogData, 'Blog published successfully!');
-  };
-
-  const handleSaveAsDraft = async (blogData) => {
-    blogData.status = 'draft';
-    await handleSubmit(blogData, 'Draft saved!');
-  };
-
-  const buttonPropsList = [
-    {
-      text: 'Save As Draft',
-      onSubmit: handleSaveAsDraft
-    },
-    {
-      text: 'Post',
-      type: 'primary',
-      onSubmit: handlePost,
-      isDisabled: (_, content) => content.trim() === ''
-    }
-  ];
 
   return (
-    <>
-      <CherryEditor
-        initialTitle={localDraft.current?.title || ''}
-        initialContent={localDraft.current?.content || markdownTemplate}
-        buttonPropsList={buttonPropsList}
-        localStorageKey={localStorageKey}
-      />
-      <FeedbackModal onSuccess={() => navigate(`/blogs/${blogId}`)} />
-    </>
+    <CherryEditor
+      page="create"
+      localStorageKey={localStorageKey}
+      submitCallback={submit}
+    />
   );
 }
 

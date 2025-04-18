@@ -26,8 +26,8 @@ function ViewBlogPage() {
   const navigate = useNavigate();
 
   const feedbackDelete = useCallback((success) => {
-    feedback(modal, success, success && 'Blog post deleted.');
-  }, [feedback, modal]);
+    feedback(success, success && 'Blog post deleted.');
+  }, [feedback]);
 
   const handleDelete = useCallback(async () => {
     try {
@@ -57,9 +57,9 @@ function ViewBlogPage() {
     error ?
       <Error status={error.status} message={error.message} /> :
       <>
-        <BlogHeader blog={blog} editable={isMe} onDelete={confirmDelete} />
+        <BlogHeader blog={blog} loading={loading} editable={isMe} onDelete={confirmDelete} />
         <Divider className={styles.divider} />
-        <CherryViewer value={blog.content} />
+        <CherryViewer value={blog?.content} />
         {modalContextHolder}
       </>
   );

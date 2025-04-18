@@ -7,7 +7,7 @@ import useConfirm from '@/hooks/useConfirm';
 import useFeedback from '@/hooks/useFeedback';
 import useFetch from '@/hooks/useFetch';
 import { Modal, Select } from 'antd';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import styles from './UserBlogsPage.module.css';
 
@@ -19,6 +19,10 @@ const selectOptions = [
   {
     label: 'Drafts',
     value: 'draft'
+  },
+  {
+    label: 'Private',
+    value: 'private'
   }
 ];
 
@@ -27,9 +31,9 @@ function UserBlogsPage() {
   const { username } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [blogStatus, setBlogStatus] = useState(searchParams.get('status'));
+  const blogStatus = searchParams.get('status') || 'public';
   const url = `/users/${username}/blogs`;
-  const params = useMemo(() => ({ status: blogStatus }), [blogStatus]);
+  const params = { status: blogStatus };
   const { data, loading, error } = useFetch(url, params);
   const [blogs, setBlogs] = useState([]);
 
@@ -42,7 +46,6 @@ function UserBlogsPage() {
   const isMe = username.toLowerCase() === user?.username.toLowerCase();
 
   const onChange = (value) => {
-    setBlogStatus(value);
     setSearchParams({ status: value });
   };
 
@@ -83,7 +86,7 @@ function UserBlogsPage() {
         {isMe && <div className={styles.selectContainer}>
           <Select
             className={styles.select}
-            value={blogStatus || 'public'}
+            value={blogStatus}
             options={selectOptions}
             onChange={onChange}
           />

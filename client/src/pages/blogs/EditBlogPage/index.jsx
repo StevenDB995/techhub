@@ -1,11 +1,11 @@
 import { updateBlog } from '@/api/services/blogService';
 import CherryEditor from '@/components/CherryEditor';
-import useFeedbackModal from '@/components/CherryEditor/useFeedbackModal';
 import Error from '@/components/Error';
+import useApiErrorHandler from '@/hooks/useApiErrorHandler';
 import useFetch from '@/hooks/useFetch';
 import { parseJSON } from '@/utils/jsonUtil';
-import { Modal } from 'antd';
-import { useEffect, useRef, useState } from 'react';
+import { App as AntdApp, Modal } from 'antd';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const localStorageKeyPrefix = 'edit-';
@@ -13,18 +13,17 @@ const localStorageKeyPrefix = 'edit-';
 function EditBlogPage() {
   const { blogId } = useParams();
   const { data: blog, loading, error } = useFetch(`/blogs/${blogId}`);
+  const handleApiError = useApiErrorHandler();
   const navigate = useNavigate();
+  const { message: antdMessage } = AntdApp.useApp();
+  const [modal, modalContextHolder] = Modal.useModal();
 
   const localStorageKey = localStorageKeyPrefix + blogId;
-  const localDraft = useRef(parseJSON(localStorage.getItem(localStorageKey)));
-
   // whether to use local draft or not
   const [useLocalDraft, setUseLocalDraft] = useState(!!localStorage.getItem(localStorageKey));
   // whether the load source (localStorage or database) of the blog is confirmed
   const [loadSourceConfirmed, setLoadSourceConfirmed] = useState(false);
 
-  const [modal, modalContextHolder] = Modal.useModal();
-  const [showFeedbackModal, FeedbackModal] = useFeedbackModal();
 
   useEffect(() => {
     if (localStorage.getItem(localStorageKey)) {
@@ -49,81 +48,52 @@ function EditBlogPage() {
   // When the edit page is closed, if the edited blog remain the same as when it was loaded,
   // the draft in the local storage will be removed.
   useEffect(() => {
-    return () => {
-      const currentDraft = parseJSON(localStorage.getItem(localStorageKey));
-      if (currentDraft?.title === blog?.title && currentDraft?.content === blog?.content) {
-        localStorage.removeItem(localStorageKey);
+    const handleBeforeUnload = () => {
+      if (localStorage.getItem(localStorageKey)) {
+        const currentDraft = parseJSON(localStorage.getItem(localStorageKey));
+        if (currentDraft?.title === blog?.title && currentDraft?.content === blog?.content) {
+          localStorage.removeItem(localStorageKey);
+        }
       }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      handleBeforeUnload();
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [blog, localStorageKey]);
 
-  const handleSubmit = async (blogData, successMessage) => {
-    // blogData.status: the new blog status to be set
+  const submit = useCallback(async (blogData) => {
     try {
       await updateBlog(blogId, blogData);
-      showFeedbackModal(true, successMessage);
       localStorage.removeItem(localStorageKey);
+      if (blogData.status === 'draft') {
+        antdMessage.success('Draft saved!');
+      } else {
+        antdMessage.success('Blog saved!');
+      }
+      navigate(`/blogs/${blogId}`);
+
     } catch (err) {
-      showFeedbackModal(false, err.message);
+      handleApiError(err);
     }
-  };
-
-  const handleSave = async (blogData) => {
-    blogData.status = 'public';
-    await handleSubmit(blogData, 'All update saved!');
-  };
-
-  const handleSaveAsDraft = async (blogData) => {
-    blogData.status = 'draft';
-    await handleSubmit(blogData, 'Draft saved!');
-  };
-
-  const handlePost = async (blogData) => {
-    blogData.status = 'public';
-    await handleSubmit(blogData, 'Blog published successfully!');
-  };
-
-  const isDisabled = (title, content) => (
-    !blog ||
-    content.trim() === '' ||
-    content === blog.content && title === blog.title
-  );
-
-  const publicButtons = [
-    {
-      text: 'Save',
-      type: 'primary',
-      onSubmit: handleSave,
-      isDisabled: isDisabled
-    }
-  ];
-
-  const draftButtons = [
-    {
-      text: 'Save As Draft',
-      onSubmit: handleSaveAsDraft,
-      isDisabled: isDisabled
-    },
-    {
-      text: 'Post',
-      type: 'primary',
-      onSubmit: handlePost
-    }
-  ];
+  }, [handleApiError, blogId, localStorageKey, navigate, antdMessage]);
 
   return (
     error ?
       <Error status={error.status} message={error.message} /> :
       <>
         <CherryEditor
-          initialTitle={(useLocalDraft ? localDraft.current?.title : blog?.title) || ''}
-          initialContent={(useLocalDraft ? localDraft.current?.content : blog?.content) || ''}
+          page="edit"
+          blog={blog}
           loading={loading}
-          buttonPropsList={blog?.status === 'public' ? publicButtons : draftButtons}
           localStorageKey={localStorageKey}
+          useLocalDraft={useLocalDraft}
           loadSourceConfirmed={loadSourceConfirmed}
+          submitCallback={submit}
         />
-        <FeedbackModal onSuccess={() => navigate(`/blogs/${blogId}`)} />
         {modalContextHolder}
       </>
   );

@@ -21,8 +21,6 @@ function BlogActions({ blog, editable, onDelete }) {
     <Flex justify="space-between" className={styles.blogActions}>
       <Space size="middle">
         <Action text={getDateString(blog.createdAt)} />
-        {/*<Action icon={LikeOutlined} text={blog.likes} />*/}
-        {/*<Action icon={MessageOutlined} text={blog.comments} />*/}
       </Space>
       {editable && <Space split={<Divider type="vertical" />} size={4}>
         <Action

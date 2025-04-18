@@ -6,19 +6,19 @@ import styles from './BlogHeader.module.css';
 
 const { Title } = Typography;
 
-function BlogHeader({ blog, editable, onDelete }) {
-  const authorPage = `/${blog.author.username}/blogs`;
+function BlogHeader({ blog, loading, editable, onDelete }) {
+  const authorPage = `/${blog?.author.username}/blogs`;
 
-  return (
+  return !loading && (
     <div>
-      <Title level={2}>{blog.title}</Title>
+      <Title level={2}>{blog?.title}</Title>
       <Flex align="center" gap="small" className={styles.author}>
         <Link to={authorPage}>
-          <Avatar src={blog.author.avatar} icon={<UserOutlined />} />
+          <Avatar src={blog?.author.avatar} icon={<UserOutlined />} />
         </Link>
         <Button variant="link" color="default" className={styles.username}>
           <Link to={authorPage}>
-            {blog.author.username}
+            {blog?.author.username}
           </Link>
         </Button>
       </Flex>
