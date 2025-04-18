@@ -31,11 +31,9 @@ function LoginPage() {
     <Flex justify="center" align="center" className={styles.loginContainer}>
       <Form
         className={styles.loginForm}
+        layout="vertical"
         autoComplete="off"
         onFinish={handleLogin}
-        labelCol={{
-          span: 24
-        }}
       >
         <Form.Item
           className={styles.formItem}

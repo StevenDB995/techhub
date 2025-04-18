@@ -1,20 +1,18 @@
 import DOMPurify from 'dompurify';
 
-export const extractMetadata = (html) => {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(DOMPurify.sanitize(html), 'text/html');
+const MAX_TITLE_LENGTH = 70;
+const MAX_PREVIEW_LENGTH = 280;
 
+const extractTitle = (doc) => {
   // Select the first <h1> and first <p> element that is not from toc
   const h1 = doc.querySelector('h1');
+  return h1?.innerText.trim().slice(0, MAX_TITLE_LENGTH);
+};
+
+const extractPreviewText = (doc) => {
   const p = doc.querySelector('p:not(.toc-title)');
-  let title = null;
   let previewText = null;
 
-  if (h1) {
-    title = h1.innerText.trim();
-  }
-
-  let maxLength = 280;
   if (p) {
     // Only retrieve the content before the first line break of the first <p> element for preview text
     const pHtml = p.innerHTML;
@@ -31,23 +29,34 @@ export const extractMetadata = (html) => {
       }
     }
 
-    while (maxLength < pText.length && pText[maxLength] !== ' ') {
-      maxLength++;
+    if (pText.length > MAX_PREVIEW_LENGTH) {
+      let previewTextLength = MAX_PREVIEW_LENGTH;
+      while (previewTextLength > 0 && pText[previewTextLength] !== ' ') {
+        previewTextLength--;
+      }
+      previewText = pText.slice(0, previewTextLength);
+    } else {
+      previewText = pText;
     }
-
-    previewText = pText.slice(0, maxLength);
   }
 
-  return { title, previewText };
+  return previewText;
 };
 
-export const extractImageLinks = (html) => {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(DOMPurify.sanitize(html), 'text/html');
+const extractImageLinks = (doc) => {
   const imgList = doc.querySelectorAll('img');
   const links = [];
   for (let img of imgList) {
     links.push(img.src);
   }
   return links;
+};
+
+export const extractMetadata = (html) => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(DOMPurify.sanitize(html), 'text/html');
+  const title = extractTitle(doc);
+  const previewText = extractPreviewText(doc);
+  const imageLinks = extractImageLinks(doc);
+  return { title, previewText, imageLinks };
 };

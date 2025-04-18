@@ -1,9 +1,9 @@
 import { createImageMetadata, getImgurAccessToken } from '@/api/services/blogService';
 import Loading from '@/components/Loading';
 import { parseJSON } from '@/utils/jsonUtil';
-import { extractImageLinks, extractMetadata } from '@/utils/mdUtil';
+import { extractMetadata } from '@/utils/mdUtil';
 import { DoubleLeftOutlined } from '@ant-design/icons';
-import { App as AntdApp, Button, Flex, Form, Input, Modal, Radio, Switch } from 'antd';
+import { App as AntdApp, Button, ConfigProvider, Flex, Form, Input, Modal, Radio, Switch } from 'antd';
 import axios from 'axios';
 import Cherry from 'cherry-markdown';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -77,7 +77,7 @@ function CherryEditor({
 
   const [submitModalOpen, setSubmitModalOpen] = useState(false);
   const [submitForm] = Form.useForm();
-  const [saveDraft, setSaveDraft] = useState(false);
+  const saveDraft = Form.useWatch('saveDraft', submitForm);
   const [submitting, setSubmitting] = useState(false);
 
   const handleTitleChange = (e) => {
@@ -91,12 +91,12 @@ function CherryEditor({
 
   const handleSubmit = useCallback(async () => {
     setSubmitting(true);
-    const { title: defaultTitle, previewText } = extractMetadata(html);
-    const imageLinks = extractImageLinks(html);
+    const { title: defaultTitle, previewText, imageLinks } = extractMetadata(html);
     const formData = submitForm.getFieldsValue();
 
     await submitCallback({
       title: title || defaultTitle,
+      abstract: formData.abstract,
       previewText,
       content,
       imageLinks,
@@ -216,13 +216,16 @@ function CherryEditor({
 
   // initialise the submit form
   useEffect(() => {
+    submitForm.setFieldsValue({
+      'abstract': blog?.abstract
+    });
+
     if (page === 'create') {
       submitForm.setFieldsValue({
         saveDraft: false,
         visibility: 'public'
       });
     } else {
-      setSaveDraft(blog?.status === 'draft');
       submitForm.setFieldsValue({
         saveDraft: blog?.status === 'draft',
         visibility: blog?.status === 'draft' ? 'public' : blog?.status
@@ -242,7 +245,14 @@ function CherryEditor({
         >
           My Blogs
         </Button>
-        <Input placeholder="Title" value={title} onChange={handleTitleChange} className={styles.titleInput} />
+        <Input
+          placeholder="Title"
+          maxLength={70}
+          showCount={true}
+          className={styles.titleInput}
+          value={title}
+          onChange={handleTitleChange}
+        />
         <Button
           type="primary"
           size="large"
@@ -259,28 +269,59 @@ function CherryEditor({
       <Modal
         open={submitModalOpen}
         forceRender
+        centered
         closable={false}
         maskClosable={false}
-        centered={true}
         title={'Post Blog'}
         onCancel={() => setSubmitModalOpen(false)}
         okText={(saveDraft || page === 'edit' && blog?.status !== 'draft') ? 'Save' : 'Post'}
         okButtonProps={{ loading: submitting }}
         onOk={handleSubmit}
+        width={768}
+        styles={{
+          header: {
+            marginBottom: 24
+          },
+          body: {
+            minHeight: 256
+          }
+        }}
       >
-        <Form form={submitForm} autoComplete="off">
-          {(page === 'create' || blog?.status === 'draft') &&
-            <Form.Item name="saveDraft" label="Save draft">
-              <Switch onChange={checked => setSaveDraft(checked)} />
-            </Form.Item>}
-          {!saveDraft &&
-            <Form.Item name="visibility" label="Set visibility">
-              <Radio.Group buttonStyle="solid">
-                <Radio.Button value="public">Public</Radio.Button>
-                <Radio.Button value="private">Private</Radio.Button>
-              </Radio.Group>
-            </Form.Item>}
-        </Form>
+        <ConfigProvider
+          theme={{
+            components: {
+              Form: {
+                labelColonMarginInlineEnd: 16
+              }
+            }
+          }}
+        >
+          <Form
+            form={submitForm}
+            autoComplete="off"
+            labelCol={{ span: 4 }}
+          >
+            <Form.Item name="abstract" label="Abstract">
+              <Input.TextArea
+                maxLength={280}
+                showCount={true}
+                rows={4}
+                placeholder={'Wanna engage more readers? Write something here!'}
+              />
+            </Form.Item>
+            {(page === 'create' || blog?.status === 'draft') &&
+              <Form.Item name="saveDraft" label="Save draft">
+                <Switch />
+              </Form.Item>}
+            {!saveDraft &&
+              <Form.Item name="visibility" label="Set visibility">
+                <Radio.Group buttonStyle="solid">
+                  <Radio.Button value="public">Public</Radio.Button>
+                  <Radio.Button value="private">Private</Radio.Button>
+                </Radio.Group>
+              </Form.Item>}
+          </Form>
+        </ConfigProvider>
       </Modal>
     </div>
   );
