@@ -6,7 +6,7 @@ const MAX_PREVIEW_LENGTH = 280;
 const extractTitle = (doc) => {
   // Select the first <h1> and first <p> element that is not from toc
   const h1 = doc.querySelector('h1');
-  return h1?.innerText.trim().slice(0, MAX_TITLE_LENGTH);
+  return h1?.innerText.slice(0, MAX_TITLE_LENGTH).trim();
 };
 
 const extractPreviewText = (doc) => {
@@ -34,7 +34,8 @@ const extractPreviewText = (doc) => {
       while (previewTextLength > 0 && pText[previewTextLength] !== ' ') {
         previewTextLength--;
       }
-      previewText = pText.slice(0, previewTextLength);
+      // remove the last broken word and the preceding spaces
+      previewText = pText.slice(0, previewTextLength).trim();
     } else {
       previewText = pText;
     }
