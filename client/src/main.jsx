@@ -1,12 +1,12 @@
 import App from '@/App';
 import AuthProvider from '@/contexts/AuthProvider';
-import LoginPage from '@/pages/auth/LoginPage';
+import AboutPage from '@/pages/AboutPage';
 import CreateBlogPage from '@/pages/blogs/CreateBlogPage';
 import EditBlogPage from '@/pages/blogs/EditBlogPage';
 import ViewBlogPage from '@/pages/blogs/ViewBlogPage';
-import AboutPage from '@/pages/home/AboutPage';
-import HomePage from '@/pages/home/HomePage';
-import UserBlogsPage from '@/pages/user/UserBlogsPage';
+import HomePage from '@/pages/HomePage';
+import LoginPage from '@/pages/LoginPage';
+import UserBlogsPage from '@/pages/profile/UserBlogsPage';
 import { geekblue } from '@ant-design/colors';
 import { App as AntdApp, ConfigProvider } from 'antd';
 import { StrictMode } from 'react';
@@ -40,16 +40,16 @@ const router = createBrowserRouter([
         element: <ViewBlogPage />
       },
       {
-        path: ':username/blogs',
-        element: <UserBlogsPage />
-      },
-      {
         path: 'blogs/create',
         element: <CreateBlogPage />
       },
       {
         path: `blogs/:blogId/edit`,
         element: <EditBlogPage />
+      },
+      {
+        path: ':username/blogs',
+        element: <UserBlogsPage />
       }
     ]
   }

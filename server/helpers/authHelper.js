@@ -1,25 +1,25 @@
-const constants = require('../config/constants');
+const { REFRESH_TOKEN_NAME, REFRESH_TOKEN_PATH } = require('../config/constants');
 
 const getAccessToken = (req) => {
   return req.header('Authorization')?.split(' ')[1];
 };
 
 const getRefreshToken = (req) => {
-  return req.cookies[constants.REFRESH_TOKEN_NAME];
+  return req.cookies[REFRESH_TOKEN_NAME];
 };
 
 const setRefreshToken = (res, refreshToken) => {
-  res.cookie(constants.REFRESH_TOKEN_NAME, refreshToken, {
+  res.cookie(REFRESH_TOKEN_NAME, refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    path: constants.REFRESH_TOKEN_PATH,
+    path: REFRESH_TOKEN_PATH,
     sameSite: 'Strict',
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
   });
 };
 
 const clearRefreshToken = (res) => {
-  res.clearCookie(constants.REFRESH_TOKEN_NAME, { path: constants.REFRESH_TOKEN_PATH });
+  res.clearCookie(REFRESH_TOKEN_NAME, { path: REFRESH_TOKEN_PATH });
 };
 
 // Reject authentication of inactive users

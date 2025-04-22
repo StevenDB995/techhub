@@ -1,4 +1,5 @@
 const validator = require('validator');
+const { reservedUsernames } = require('../config/constants');
 
 /**
  * The provided username must:
@@ -10,7 +11,7 @@ const validator = require('validator');
  */
 exports.isValidUsername = (username) => {
   const regex = /^(?=.*[a-zA-Z])[a-zA-Z0-9_.]{4,30}$/;
-  return username.toLowerCase() !== 'me' && regex.test(username);
+  return !reservedUsernames.has(username.toLowerCase()) && regex.test(username);
 };
 
 /**
