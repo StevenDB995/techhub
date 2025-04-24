@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
   },
   isActive: { type: Boolean, default: true },
   avatar: { type: String },
+  bio: { type: String, maxLength: 280 },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   lastLogin: { type: Date, default: null },

@@ -7,6 +7,7 @@ import ViewBlogPage from '@/pages/blogs/ViewBlogPage';
 import HomePage from '@/pages/HomePage';
 import LoginPage from '@/pages/LoginPage';
 import UserBlogsPage from '@/pages/profile/UserBlogsPage';
+import SettingsPage from '@/pages/SettingsPage';
 import { geekblue } from '@ant-design/colors';
 import { App as AntdApp, ConfigProvider } from 'antd';
 import { StrictMode } from 'react';
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: 'login',
         element: <LoginPage />
+      },
+      {
+        path: 'settings',
+        element: <SettingsPage />
       },
       {
         path: `blogs/:blogId`,
