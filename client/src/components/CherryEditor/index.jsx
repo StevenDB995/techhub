@@ -1,10 +1,10 @@
-import { createImageMetadata, getImgurAccessToken } from '@/api/services/blogService';
+import { uploadImage } from '@/api/external/imgur';
+import { createImageMetadata } from '@/api/services/blogService';
 import Loading from '@/components/Loading';
 import { parseJSON } from '@/utils/jsonUtil';
 import { extractMetadata } from '@/utils/mdUtil';
 import { DoubleLeftOutlined } from '@ant-design/icons';
 import { App as AntdApp, Button, ConfigProvider, Flex, Form, Input, Modal, Radio, Switch } from 'antd';
-import axios from 'axios';
 import Cherry from 'cherry-markdown';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import 'cherry-markdown/dist/cherry-markdown.css';
@@ -119,69 +119,19 @@ function CherryEditor({
       return;
     }
 
-    const formData = new FormData();
-    formData.append('image', file);
-    formData.append('type', 'file');
-
-    const reloadImgurAccessToken = async () => {
-      // return true if successfully reloaded
-      try {
-        const response = getImgurAccessToken();
-        localStorage.setItem('imgurAccessToken', response.data['access_token']);
-        return true;
-      } catch (err) {
-        // cannot fetch access token from imgur
-        antdMessage.error(err.message);
-        console.error(err);
-        return false;
-      }
-    };
-
-    // fetch imgur access token if it's not in localStorage
-    if (!localStorage.getItem('imgurAccessToken')) {
-      if (!await reloadImgurAccessToken()) {
-        antdMessage.error('Cannot connect to image host, please try again later.');
-        return;
-      }
-    }
-
-    let response;
-    let retry = true;
-    setUploadingImage(true);
-
-    while (retry) {
-      try {
-        response = await axios.post('https://api.imgur.com/3/image', formData, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('imgurAccessToken')}`
-          }
-        });
-        retry = false;
-
-        // consider looking into the boolean `response.data.success`?
-        const imageMetadata = response.data.data;
-        createImageMetadata(imageMetadata)
-          .then(() => callback(imageMetadata.link, {
-            width: '600px'
-          }))
-          .catch(err => {
-            antdMessage.error(err.message);
-            console.error(err);
-          });
-
-      } catch (err) {
-        if (err.response?.status > 400 && err.response?.status < 500) {
-          // retry if the imgur access token expired
-          if (!await reloadImgurAccessToken()) {
-            antdMessage.error('Cannot connect to image host, please try again later.');
-            retry = false;
-          }
-        } else {
-          antdMessage.error('Error uploading image: ' + (err.response?.data.data.error || err.message));
+    try {
+      const imageMetadata = await uploadImage(file);
+      createImageMetadata(imageMetadata)
+        .then(() => callback(imageMetadata.link, {
+          width: '600px'
+        }))
+        .catch(err => {
+          antdMessage.error(err.message);
           console.error(err);
-          retry = false;
-        }
-      }
+        });
+    } catch (err) {
+      antdMessage.error('Cannot connect to image host, please try again later.');
+      console.error(err);
     }
 
     setUploadingImage(false);

@@ -1,15 +1,7 @@
 const Blog = require('../models/blogModel');
 const BlogImage = require('../models/blogImageModel');
 const { messageResponse, dataResponse } = require('../utils/responseUtil');
-const axios = require('axios');
 const mongoose = require('mongoose');
-
-const {
-  IMGUR_CLIENT_ID,
-  IMGUR_CLIENT_SECRET,
-  IMGUR_REFRESH_TOKEN,
-  IMGUR_OAUTH_URL
-} = process.env;
 
 // get all public blogs
 exports.getAllBlogs = async (req, res) => {
@@ -179,23 +171,6 @@ exports.deleteBlogById = async (req, res) => {
   } catch (err) {
     console.error(err);
     return messageResponse(res, 500, 'Error deleting blog');
-  }
-};
-
-exports.getImgurAccessToken = async (req, res) => {
-  try {
-    const response = await axios.post(IMGUR_OAUTH_URL, new URLSearchParams({
-      'refresh_token': IMGUR_REFRESH_TOKEN,
-      'client_id': IMGUR_CLIENT_ID,
-      'client_secret': IMGUR_CLIENT_SECRET,
-      'grant_type': 'refresh_token'
-    }));
-    return dataResponse(res, 200, response.data);
-
-  } catch (err) {
-    // catch axios error
-    console.error(err);
-    return messageResponse(res, err.data.status, 'Error requesting Imgur access token');
   }
 };
 

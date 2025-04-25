@@ -12,10 +12,6 @@ export const deleteBlog = async (blogId) => {
   return await api.delete(`/blogs/${blogId}`);
 };
 
-export const getImgurAccessToken = async () => {
-  return await api.get('/blogs/images/token');
-};
-
 export const createImageMetadata = async (imageMetadata) => {
   return await api.post('blogs/images', imageMetadata);
 };
