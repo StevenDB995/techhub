@@ -6,7 +6,7 @@ function HomePage() {
   const { data, loading, error } = useFetch('/blogs');
   return (
     error ?
-      <Error status={error.status} message={error.message} /> :
+      <Error error={error} /> :
       <BlogList data={data} loading={loading} />
   );
 }

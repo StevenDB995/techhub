@@ -55,7 +55,7 @@ function ViewBlogPage() {
 
   return (
     error ?
-      <Error status={error.status} message={error.message} /> :
+      <Error error={error} /> :
       <>
         <BlogHeader blog={blog} loading={loading} editable={isMe} onDelete={confirmDelete} />
         <Divider className={styles.divider} />

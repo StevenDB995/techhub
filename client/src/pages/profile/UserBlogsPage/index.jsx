@@ -81,7 +81,7 @@ function UserBlogsPage() {
 
   return (
     error ?
-      <Error status={error.status} message={error.message} /> :
+      <Error error={error} /> :
       <>
         {isMe && <div className={styles.selectContainer}>
           <Select

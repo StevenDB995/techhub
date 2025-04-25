@@ -83,7 +83,7 @@ function EditBlogPage() {
 
   return (
     error ?
-      <Error status={error.status} message={error.message} /> :
+      <Error error={error} /> :
       <>
         <CherryEditor
           page="edit"

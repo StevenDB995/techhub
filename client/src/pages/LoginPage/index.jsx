@@ -19,10 +19,10 @@ function LoginPage() {
       // Navigate to the previous location before the user logged in
       navigate(location.state?.from || '/', { replace: true });
     } catch (err) {
-      if (err.status === 401) {
+      if (err.response?.status === 401) {
         antdMessage.error('Wrong username or password');
       } else {
-        antdMessage.error(err.message);
+        antdMessage.error('Unexpected error. Please try again later.');
       }
     }
   };

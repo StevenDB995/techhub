@@ -126,7 +126,7 @@ function CherryEditor({
           width: '600px'
         }))
         .catch(err => {
-          antdMessage.error(err.message);
+          antdMessage.error('Unexpected error. Please try again later.');
           console.error(err);
         });
     } catch (err) {
