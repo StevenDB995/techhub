@@ -32,7 +32,7 @@ const useApiErrorHandler = () => {
       if (customHandler) {
         customHandler();
       } else {
-        void antdMessage.error(error.message);
+        void antdMessage.error('Unexpected error. Please try again later.');
         console.error(error);
       }
     }

@@ -6,6 +6,12 @@ const reloadImgurAccessToken = async () => {
   localStorage.setItem('imgurAccessToken', response.data['access_token']);
 };
 
+/**
+ * Upload image to the Imgur server
+ * @param file The image file to be uploaded
+ * @returns {Object} Imgur metadata
+ * @throws Error App 401 error, app server error or Imgur API error
+ */
 export const uploadImage = async (file) => {
   const formData = new FormData();
   formData.append('image', file);
@@ -29,10 +35,12 @@ export const uploadImage = async (file) => {
       return response.data.data;
 
     } catch (err) {
+      // Handle imgur API error
       if (err.response?.status === 401 && attempts > 0) {
-        // retry if the imgur access token expired
+        // Retry if the imgur access token expired
         await reloadImgurAccessToken();
       } else {
+        err.source = 'imgur';
         err.message = err.response?.data.data.error || err.message;
         throw err;
       }

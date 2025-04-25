@@ -1,6 +1,7 @@
 import { uploadImage } from '@/api/external/imgur';
 import { createImageMetadata } from '@/api/services/blogService';
 import Loading from '@/components/Loading';
+import useApiErrorHandler from '@/hooks/useApiErrorHandler';
 import { parseJSON } from '@/utils/jsonUtil';
 import { extractMetadata } from '@/utils/mdUtil';
 import { DoubleLeftOutlined } from '@ant-design/icons';
@@ -75,6 +76,7 @@ function CherryEditor({
 
   const [uploadingImage, setUploadingImage] = useState(false);
   const { message: antdMessage } = AntdApp.useApp();
+  const handleApiError = useApiErrorHandler();
 
   const [submitModalOpen, setSubmitModalOpen] = useState(false);
   const [submitForm] = Form.useForm();
@@ -130,12 +132,16 @@ function CherryEditor({
           console.error(err);
         });
     } catch (err) {
-      antdMessage.error('Cannot connect to image host, please try again later.');
-      console.error(err);
+      if (err.source === 'imgur') {
+        antdMessage.error('Cannot connect to image host, please try again later.');
+        console.error(err);
+      } else {
+        handleApiError(err);
+      }
     }
 
     setUploadingImage(false);
-  }, [antdMessage]);
+  }, [antdMessage, handleApiError]);
 
   useEffect(() => {
     if (!cherryInstance.current) {
