@@ -14,7 +14,7 @@ function BlogHeader({ blog, loading, editable, onDelete }) {
       <Title level={2}>{blog?.title}</Title>
       <Flex align="center" gap="small" className={styles.author}>
         <Link to={authorPage}>
-          <Avatar src={blog?.author.avatar} icon={<UserOutlined />} />
+          <Avatar src={blog?.author.avatar?.link} icon={<UserOutlined />} />
         </Link>
         <Button variant="link" color="default" className={styles.username}>
           <Link to={authorPage}>

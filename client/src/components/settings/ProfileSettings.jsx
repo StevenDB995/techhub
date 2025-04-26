@@ -1,18 +1,27 @@
+import FormActionButtons from '@/components/settings/FormActionButtons';
 import { EditOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Button, Flex, Form, Input, Upload } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 const avatarSize = 128;
 
 function ProfileSettings({ user }) {
-  const [hovering, setHovering] = useState(false);
   const [form] = Form.useForm();
+  const [hovering, setHovering] = useState(false);
+  const [isEdited, setIsEdited] = useState(false);
+
+  const initialValues = useMemo(() => ({
+    bio: user?.bio
+  }), [user]);
 
   useEffect(() => {
-    form.setFieldsValue({
-      bio: user?.bio
-    });
-  }, [user, form]);
+    form.setFieldsValue(initialValues);
+  }, [initialValues, form]);
+
+  const onCancel = () => {
+    form.setFieldsValue(initialValues);
+    setIsEdited(false);
+  };
 
   return (
     <>
@@ -26,7 +35,7 @@ function ProfileSettings({ user }) {
           marginBottom: 24
         }}
       >
-        <Avatar src={user?.avatar} size={avatarSize} icon={<UserOutlined />} />
+        <Avatar src={user?.avatar?.link} size={avatarSize} icon={<UserOutlined />} />
         {hovering && <Flex
           align="center"
           justify="center"
@@ -58,10 +67,14 @@ function ProfileSettings({ user }) {
       <Form
         form={form}
         layout="vertical"
+        onValuesChange={() => setIsEdited(true)}
       >
         <Form.Item name="bio" label="Bio" wrapperCol={{ span: 24, md: 18 }}>
           <Input.TextArea maxLength={280} showCount={true} rows={4} />
         </Form.Item>
+        {isEdited && <Form.Item>
+          <FormActionButtons onCancel={onCancel} />
+        </Form.Item>}
       </Form>
     </>
   );

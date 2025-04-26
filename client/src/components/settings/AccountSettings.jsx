@@ -1,4 +1,5 @@
-import { Button, Flex, Form, Input, Typography } from 'antd';
+import FormActionButtons from '@/components/settings/FormActionButtons';
+import { Form, Input, Typography } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 
 const { Title } = Typography;
@@ -38,14 +39,7 @@ function PersonalDetailsForm({ user }) {
           <Input />
         </Form.Item>
         {isEdited && <Form.Item>
-          <Flex gap="small">
-            <Button type="primary" htmlType="submit">
-              Save
-            </Button>
-            <Button onClick={onCancel}>
-              Cancel
-            </Button>
-          </Flex>
+          <FormActionButtons onCancel={onCancel} />
         </Form.Item>}
       </Form>
     </>
@@ -76,14 +70,7 @@ function ResetPasswordForm() {
           <Input.Password />
         </Form.Item>
         {isEdited && <Form.Item>
-          <Flex gap="small">
-            <Button type="primary" htmlType="submit">
-              Save
-            </Button>
-            <Button onClick={onCancel}>
-              Cancel
-            </Button>
-          </Flex>
+          <FormActionButtons onCancel={onCancel} />
         </Form.Item>}
       </Form>
     </>
