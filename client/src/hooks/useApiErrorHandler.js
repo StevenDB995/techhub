@@ -29,12 +29,15 @@ const useApiErrorHandler = () => {
       navigate('/');
 
     } else {
+      // Handle unexpected errors such as 400 and 500.
+      // 400 Bad Request is considered unexpected since the input validation should have been conducted from the
+      // frontend, and it is handled here for the debugging purpose.
       if (customHandler) {
         customHandler();
       } else {
         void antdMessage.error('Unexpected error. Please try again later.');
-        console.error(error);
       }
+      console.error(error);
     }
     // location is the only dependency that may change
   }, [location, navigate, antdMessage, clearAuth]);

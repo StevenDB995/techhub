@@ -42,12 +42,12 @@ const titleMap = {
 
 const { Title } = Typography;
 
-function SettingsPanel({ currentTab, user }) {
+function SettingsPanel({ currentTab, user, reloadUser }) {
   let content;
   if (currentTab === 'account') {
     content = <AccountSettings user={user} />;
   } else {
-    content = <ProfileSettings user={user} />;
+    content = <ProfileSettings user={user} reloadUser={reloadUser} />;
   }
 
   return (
@@ -59,7 +59,7 @@ function SettingsPanel({ currentTab, user }) {
 }
 
 function SettingsPage() {
-  const { user } = useAuth();
+  const { user, reloadUser } = useAuth();
   const [currentTab, setCurrentTab] = useState('profile');
 
   return (
@@ -77,7 +77,7 @@ function SettingsPage() {
           </ConfigProvider>
         </Col>
         <Col span={24} md={18}>
-          <SettingsPanel currentTab={currentTab} user={user} />
+          <SettingsPanel currentTab={currentTab} user={user} reloadUser={reloadUser} />
         </Col>
       </Row>
     </>

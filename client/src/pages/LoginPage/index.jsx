@@ -13,8 +13,8 @@ function LoginPage() {
   const handleLogin = async (formData) => {
     try {
       const response = await login(formData);
-      const { accessToken } = response.data;
-      setAuth(accessToken);
+      const { accessToken, user } = response.data;
+      setAuth(accessToken, user);
       antdMessage.success('Successfully logged in!');
       // Navigate to the previous location before the user logged in
       navigate(location.state?.from || '/', { replace: true });

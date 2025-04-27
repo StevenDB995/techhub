@@ -2,6 +2,7 @@ import { uploadImage } from '@/api/external/imgur';
 import { createImageMetadata } from '@/api/services/blogService';
 import Loading from '@/components/Loading';
 import useApiErrorHandler from '@/hooks/useApiErrorHandler';
+import { validateFileType } from '@/utils/fileUploadUtil';
 import { parseJSON } from '@/utils/jsonUtil';
 import { extractMetadata } from '@/utils/mdUtil';
 import { DoubleLeftOutlined } from '@ant-design/icons';
@@ -16,6 +17,9 @@ const markdownTemplate = `# Heading 1
 Paragraph here
 ### Heading 3
 If you know, you know ;)`;
+
+const allowedFileTypes = ['image/jpg', 'image/jpeg', 'image/png'];
+const allowedFileExtensions = ['.jpg', '.jpeg', '.png'];
 
 const cherryConfig = {
   id: 'cherry-editor',
@@ -48,11 +52,11 @@ const cherryConfig = {
       'graph'
     ],
     toc: true
+  },
+  fileTypeLimitMap: {
+    image: allowedFileExtensions.join(',')
   }
 };
-
-// Supported image type: https://apidocs.imgur.com/#c85c9dfc-7487-4de2-9ecd-66f727cf3139
-const supportedImageFormats = ['jpeg', 'jpg', 'png', 'apng', 'gif', 'tiff'];
 
 function CherryEditor({
   page,
@@ -110,27 +114,24 @@ function CherryEditor({
   }, [title, content, html, submitForm, submitCallback]);
 
   const uploadFile = useCallback(async (file, callback) => {
-    const [fileType, fileFormat] = file.type.split('/');
-    if (fileType !== 'image') {
-      antdMessage.error('Only image upload is supported!');
-      return;
-    }
-
-    if (!supportedImageFormats.includes(fileFormat.toLowerCase())) {
-      antdMessage.error(`Your image format (${fileFormat}) is not supported!`);
+    if (!validateFileType(file, allowedFileTypes)) {
+      antdMessage.error(`Unsupported file type. 
+      Please upload an image of valid format (${allowedFileExtensions.join(', ')}).`, 5);
       return;
     }
 
     try {
-      const imageMetadata = await uploadImage(file);
+      const response = await uploadImage(file);
+      const { data: imageMetadata } = response.data;
+
       createImageMetadata(imageMetadata)
         .then(() => callback(imageMetadata.link, {
           width: '600px'
         }))
         .catch(err => {
-          antdMessage.error('Unexpected error. Please try again later.');
-          console.error(err);
+          handleApiError(err);
         });
+
     } catch (err) {
       if (err.source === 'imgur') {
         antdMessage.error('Cannot connect to image host, please try again later.');

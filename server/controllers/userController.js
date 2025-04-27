@@ -3,6 +3,7 @@ const Blog = require('../models/blogModel');
 const { dataResponse, messageResponse } = require('../utils/responseUtil');
 const { isValidPassword } = require('../utils/validateUtil');
 const { hashPassword } = require('../utils/passwordUtil');
+const { deleteImage } = require('../helpers/imgurHelper');
 
 exports.getCurrentUser = async (req, res) => {
   return dataResponse(res, 200, req.user);
@@ -46,28 +47,34 @@ exports.getBlogsByUsername = async (req, res) => {
   }
 };
 
-// admin only
-exports.updateUser = async (req, res) => {
-  const { userId } = req.params;
-
-  // TODO: authorize
-
+exports.updateCurrentUser = async (req, res) => {
   // TODO: validate username and email
 
-  const updateData = req.body;
-  if (!isValidPassword(updateData.password)) {
+  const user = req.body;
+  if (!isValidPassword(user.password)) {
     return messageResponse(res, 400, 'Invalid password');
   }
 
   // TODO: check whether the username and email exists
 
   try {
-    if (updateData.password) {
-      updateData.password = await hashPassword(updateData.password);
+    if (user.password) {
+      user.password = await hashPassword(user.password);
     }
-    updateData.updatedAt = Date.now();
-    await User.findByIdAndUpdate(userId, updateData, { new: true });
-    return messageResponse(res, 200, 'User updated successfully!');
+    user.updatedAt = Date.now();
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      user,
+      { new: true }
+    ).select('-password');
+
+    if (user.avatar && req.user.avatar) {
+      deleteImage(req.user.avatar.deletehash)
+        .catch(err => console.error(err));
+    }
+
+    return dataResponse(res, 200, updatedUser);
+
   } catch (err) {
     console.error(err);
     return messageResponse(res, 500, 'Error updating user');

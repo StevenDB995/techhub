@@ -26,13 +26,11 @@ export const uploadImage = async (file) => {
 
   while (attempts-- > 0) {
     try {
-      const response = await axios.post('https://api.imgur.com/3/image', formData, {
+      return await axios.post('https://api.imgur.com/3/image', formData, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('imgurAccessToken')}`
         }
       });
-
-      return response.data.data;
 
     } catch (err) {
       // Handle imgur API error

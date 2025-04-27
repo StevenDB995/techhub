@@ -7,9 +7,12 @@ function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('accessToken'));
   const [user, setUser] = useState(null);
 
-  const setAuth = useCallback((accessToken) => {
+  const setAuth = useCallback((accessToken, userData = undefined) => {
     localStorage.setItem('accessToken', accessToken);
     setIsAuthenticated(true);
+    if (userData) {
+      setUser(userData);
+    }
   }, []);
 
   const clearAuth = useCallback(() => {
@@ -18,8 +21,10 @@ function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
-  useEffect(() => {
-    if (isAuthenticated) {
+  const reloadUser = useCallback((userData = undefined) => {
+    if (userData) {
+      setUser(userData);
+    } else {
       getCurrentUser()
         .then(res => setUser(res.data))
         .catch(err => {
@@ -30,10 +35,16 @@ function AuthProvider({ children }) {
           }
         });
     }
-  }, [isAuthenticated, clearAuth]);
+  }, [clearAuth]);
+
+  useEffect(() => {
+    if (isAuthenticated && !user) {
+      reloadUser();
+    }
+  }, [isAuthenticated, user, reloadUser]);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, setAuth, clearAuth }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, setAuth, clearAuth, reloadUser }}>
       {children}
     </AuthContext.Provider>
   );

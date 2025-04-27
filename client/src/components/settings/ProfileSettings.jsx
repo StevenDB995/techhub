@@ -1,14 +1,24 @@
+import { uploadImage } from '@/api/external/imgur';
+import { updateCurrentUser } from '@/api/services/userService';
 import FormActionButtons from '@/components/settings/FormActionButtons';
+import useApiErrorHandler from '@/hooks/useApiErrorHandler';
+import { validateFileType } from '@/utils/fileUploadUtil';
 import { EditOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Button, Flex, Form, Input, Upload } from 'antd';
+import { App as AntdApp, Avatar, Button, Flex, Form, Input, Upload } from 'antd';
+import ImgCrop from 'antd-img-crop';
 import { useEffect, useMemo, useState } from 'react';
 
 const avatarSize = 128;
+const allowedFileTypes = ['image/jpg', 'image/jpeg', 'image/png'];
+const allowedFileExtensions = ['.jpg', '.jpeg', '.png'];
 
-function ProfileSettings({ user }) {
+function ProfileSettings({ user, reloadUser }) {
   const [form] = Form.useForm();
   const [hovering, setHovering] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
+
+  const { message: antdMessage } = AntdApp.useApp();
+  const handleApiError = useApiErrorHandler();
 
   const initialValues = useMemo(() => ({
     bio: user?.bio
@@ -18,9 +28,42 @@ function ProfileSettings({ user }) {
     form.setFieldsValue(initialValues);
   }, [initialValues, form]);
 
-  const onCancel = () => {
+  const onFormCancel = () => {
     form.setFieldsValue(initialValues);
     setIsEdited(false);
+  };
+
+  const handleBeforeCrop = (file) => {
+    return validateFileType(file, allowedFileTypes);
+  };
+
+  const handleBeforeUpload = (file) => {
+    // Validate file type again to prevent uploading
+    if (!validateFileType(file, allowedFileTypes)) {
+      void antdMessage.error(`Unsupported file type. 
+      Please upload an image of valid format (${allowedFileExtensions.join(', ')}).`, 5);
+      return Upload.LIST_IGNORE;
+    }
+    return true;
+  };
+
+  const handleUpload = async ({ file }) => {
+    try {
+      // Upload image to Imgur
+      let response = await uploadImage(file);
+      const { data: imageMetadata } = response.data;
+      // Update avatar of the user
+      response = await updateCurrentUser({ avatar: imageMetadata });
+      reloadUser(response.data);
+
+    } catch (err) {
+      if (err.source === 'imgur') {
+        antdMessage.error('Cannot connect to image host, please try again later.');
+        console.error(err);
+      } else {
+        handleApiError(err);
+      }
+    }
   };
 
   return (
@@ -36,10 +79,11 @@ function ProfileSettings({ user }) {
         }}
       >
         <Avatar src={user?.avatar?.link} size={avatarSize} icon={<UserOutlined />} />
-        {hovering && <Flex
+        <Flex
           align="center"
           justify="center"
           style={{
+            display: hovering ? 'flex' : 'none',
             position: 'absolute',
             left: 0,
             top: 0,
@@ -49,20 +93,34 @@ function ProfileSettings({ user }) {
             backgroundColor: 'rgba(255, 255, 255, 0.6)'
           }}
         >
-          <Upload>
-            <Button
-              variant="link"
-              color="default"
-              shape="circle"
-              icon={<EditOutlined />}
-              style={{
-                width: avatarSize,
-                height: avatarSize,
-                fontSize: 24
-              }}
-            />
-          </Upload>
-        </Flex>}
+          <ImgCrop
+            quality={0.8}
+            cropShape="round"
+            modalTitle="Upload Avatar"
+            beforeCrop={handleBeforeCrop}
+            onModalOk={() => setHovering(false)}
+            onModalCancel={() => setHovering(false)}
+          >
+            <Upload
+              accept={allowedFileExtensions.join(',')}
+              showUploadList={false}
+              beforeUpload={handleBeforeUpload}
+              customRequest={handleUpload}
+            >
+              <Button
+                variant="link"
+                color="default"
+                shape="circle"
+                icon={<EditOutlined />}
+                style={{
+                  width: avatarSize,
+                  height: avatarSize,
+                  fontSize: 24
+                }}
+              />
+            </Upload>
+          </ImgCrop>
+        </Flex>
       </div>
       <Form
         form={form}
@@ -73,7 +131,7 @@ function ProfileSettings({ user }) {
           <Input.TextArea maxLength={280} showCount={true} rows={4} />
         </Form.Item>
         {isEdited && <Form.Item>
-          <FormActionButtons onCancel={onCancel} />
+          <FormActionButtons onCancel={onFormCancel} />
         </Form.Item>}
       </Form>
     </>

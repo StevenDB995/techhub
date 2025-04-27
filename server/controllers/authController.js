@@ -84,13 +84,14 @@ exports.login = async (req, res) => {
     }
 
     user.lastLogin = Date.now();
-    await user.save();
+    const savedUser = await user.save();
+    savedUser.password = undefined;
 
     const accessToken = signAccessToken(user._id);
     const refreshToken = signRefreshToken(user._id);
     setRefreshToken(res, refreshToken);
 
-    return dataResponse(res, 200, { accessToken });
+    return dataResponse(res, 200, { accessToken, user: savedUser });
 
   } catch (err) {
     console.error(err);
