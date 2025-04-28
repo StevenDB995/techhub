@@ -4,6 +4,7 @@ import useAuth from '@/hooks/useAuth';
 import { SecurityScanOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { Col, ConfigProvider, Menu, Row, Typography } from 'antd';
 import { useState } from 'react';
+import styles from './SettingsPage.module.css';
 
 const menuTheme = {
   components: {
@@ -51,7 +52,7 @@ function SettingsPanel({ currentTab, user, reloadUser }) {
   }
 
   return (
-    <div style={{ padding: '0 12px' }}>
+    <div className={styles.settingsPanel}>
       <Title level={4}>{titleMap[currentTab]}</Title>
       {content}
     </div>

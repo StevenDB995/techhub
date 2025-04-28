@@ -7,14 +7,13 @@ import { EditOutlined, UserOutlined } from '@ant-design/icons';
 import { App as AntdApp, Avatar, Button, Flex, Form, Input, Upload } from 'antd';
 import ImgCrop from 'antd-img-crop';
 import { useEffect, useMemo, useState } from 'react';
+import styles from './ProfileSettings.module.css';
 
-const avatarSize = 128;
 const allowedFileTypes = ['image/jpg', 'image/jpeg', 'image/png'];
 const allowedFileExtensions = ['.jpg', '.jpeg', '.png'];
 
 function ProfileSettings({ user, reloadUser }) {
   const [form] = Form.useForm();
-  const [hovering, setHovering] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
 
   const { message: antdMessage } = AntdApp.useApp();
@@ -67,39 +66,19 @@ function ProfileSettings({ user, reloadUser }) {
   };
 
   return (
-    <>
-      <div
-        onMouseEnter={() => setHovering(true)}
-        onMouseLeave={() => setHovering(false)}
-        style={{
-          position: 'relative',
-          width: avatarSize,
-          height: avatarSize,
-          marginBottom: 24
-        }}
-      >
-        <Avatar src={user?.avatar?.link} size={avatarSize} icon={<UserOutlined />} />
+    <div className={styles.profileSettings}>
+      <div className={styles.avatarContainer}>
+        <Avatar src={user?.avatar?.link} size={128} icon={<UserOutlined />} />
         <Flex
           align="center"
           justify="center"
-          style={{
-            display: hovering ? 'flex' : 'none',
-            position: 'absolute',
-            left: 0,
-            top: 0,
-            width: '100%',
-            height: '100%',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(255, 255, 255, 0.6)'
-          }}
+          className={`${styles.avatarMask}`}
         >
           <ImgCrop
             quality={0.8}
             cropShape="round"
             modalTitle="Upload Avatar"
             beforeCrop={handleBeforeCrop}
-            onModalOk={() => setHovering(false)}
-            onModalCancel={() => setHovering(false)}
           >
             <Upload
               accept={allowedFileExtensions.join(',')}
@@ -112,11 +91,7 @@ function ProfileSettings({ user, reloadUser }) {
                 color="default"
                 shape="circle"
                 icon={<EditOutlined />}
-                style={{
-                  width: avatarSize,
-                  height: avatarSize,
-                  fontSize: 24
-                }}
+                className={styles.uploadButton}
               />
             </Upload>
           </ImgCrop>
@@ -134,7 +109,7 @@ function ProfileSettings({ user, reloadUser }) {
           <FormActionButtons onCancel={onFormCancel} />
         </Form.Item>}
       </Form>
-    </>
+    </div>
   );
 }
 
