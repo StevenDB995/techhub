@@ -1,7 +1,14 @@
 import { logout } from '@/api/services/authService';
 import useAuth from '@/hooks/useAuth';
 import { geekblue } from '@ant-design/colors';
-import { CaretDownFilled, FormOutlined, InboxOutlined, LogoutOutlined, MenuOutlined } from '@ant-design/icons';
+import {
+  CaretDownFilled,
+  FormOutlined,
+  InboxOutlined,
+  LogoutOutlined,
+  MenuOutlined,
+  SettingOutlined
+} from '@ant-design/icons';
 import { App as AntdApp, Button, Col, Drawer, Dropdown, Flex, Layout, Menu, Row, Space } from 'antd';
 import { useState } from 'react';
 import { Link, useLocation, useMatch, useNavigate } from 'react-router-dom';
@@ -82,6 +89,17 @@ function AppNavbar() {
   ];
 
   const userDropdownItems = [
+    {
+      key: 'settings',
+      label: (
+        <Link to={'/settings'}>
+          <Space>
+            <SettingOutlined />Settings
+          </Space>
+        </Link>
+      )
+    },
+    { type: 'divider' },
     {
       key: 'logout',
       label: (
