@@ -20,6 +20,7 @@ If you know, you know ;)`;
 
 const allowedFileTypes = ['image/jpg', 'image/jpeg', 'image/png'];
 const allowedFileExtensions = ['.jpg', '.jpeg', '.png'];
+const maxImageWidth = 600;
 
 const cherryConfig = {
   id: 'cherry-editor',
@@ -120,14 +121,28 @@ function CherryEditor({
       return;
     }
 
+    setUploadingImage(true);
+
     try {
       const response = await uploadImage(file);
       const { data: imageMetadata } = response.data;
 
       createImageMetadata(imageMetadata)
-        .then(() => callback(imageMetadata.link, {
-          width: '600px'
-        }))
+        .then(() => {
+          const { link, width, height } = imageMetadata;
+          let displayWidth;
+
+          if (width <= maxImageWidth) {
+            displayWidth = width;
+          } else if (height / width < 4 / 3) {
+            displayWidth = maxImageWidth;
+          } else {
+            displayWidth = maxImageWidth / 2;
+          }
+
+          callback(link, { width: `${displayWidth}px` });
+
+        })
         .catch(err => {
           handleApiError(err);
         });
