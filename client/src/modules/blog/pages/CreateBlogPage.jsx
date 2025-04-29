@@ -1,7 +1,7 @@
 import { createBlog } from '@/api/services/blogService';
-import CherryEditor from '@/components/CherryEditor';
 import useApiErrorHandler from '@/hooks/useApiErrorHandler';
 import useAuth from '@/hooks/useAuth';
+import CherryEditor from '@/modules/blog/components/CherryEditor';
 import { App as AntdApp } from 'antd';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';

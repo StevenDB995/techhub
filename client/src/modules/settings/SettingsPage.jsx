@@ -1,6 +1,6 @@
-import AccountSettings from '@/components/settings/AccountSettings';
-import ProfileSettings from '@/components/settings/ProfileSettings';
 import useAuth from '@/hooks/useAuth';
+import AccountSettings from '@/modules/settings/components/AccountSettings';
+import ProfileSettings from '@/modules/settings/components/ProfileSettings';
 import { SecurityScanOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { Col, ConfigProvider, Menu, Row, Typography } from 'antd';
 import { useState } from 'react';

@@ -1,12 +1,12 @@
 import { deleteBlog } from '@/api/services/blogService';
-import BlogHeader from '@/components/BlogHeader';
-import CherryViewer from '@/components/CherryViewer';
 import Error from '@/components/Error';
 import Loading from '@/components/Loading';
 import useApiErrorHandler from '@/hooks/useApiErrorHandler';
 import useAuth from '@/hooks/useAuth';
 import useConfirm from '@/hooks/useConfirm';
 import useFetch from '@/hooks/useFetch';
+import BlogHeader from '@/modules/blog/components/BlogHeader';
+import CherryViewer from '@/modules/blog/components/CherryViewer';
 import { App as AntdApp, Divider, Modal } from 'antd';
 import { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';

@@ -1,5 +1,5 @@
-import FormActionButtons from '@/components/settings/FormActionButtons';
-import useSettingsForm from '@/hooks/useSettingsForm';
+import FormActionButtons from '@/modules/settings/components/FormActionButtons';
+import useSettingsForm from '@/modules/settings/hooks/useSettingsForm';
 import { isValidPassword } from '@/utils/validateUtil';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Form, Input, Typography } from 'antd';

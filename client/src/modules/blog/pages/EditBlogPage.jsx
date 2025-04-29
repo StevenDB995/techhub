@@ -1,8 +1,8 @@
 import { updateBlog } from '@/api/services/blogService';
-import CherryEditor from '@/components/CherryEditor';
 import Error from '@/components/Error';
 import useApiErrorHandler from '@/hooks/useApiErrorHandler';
 import useFetch from '@/hooks/useFetch';
+import CherryEditor from '@/modules/blog/components/CherryEditor';
 import { parseJSON } from '@/utils/jsonUtil';
 import { App as AntdApp, Modal } from 'antd';
 import { useCallback, useEffect, useState } from 'react';

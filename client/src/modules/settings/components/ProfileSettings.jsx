@@ -1,8 +1,8 @@
 import { uploadImage } from '@/api/external/imgur';
 import { updateCurrentUser } from '@/api/services/userService';
-import FormActionButtons from '@/components/settings/FormActionButtons';
 import useApiErrorHandler from '@/hooks/useApiErrorHandler';
-import useSettingsForm from '@/hooks/useSettingsForm';
+import FormActionButtons from '@/modules/settings/components/FormActionButtons';
+import useSettingsForm from '@/modules/settings/hooks/useSettingsForm';
 import { validateFileType } from '@/utils/fileUploadUtil';
 import { EditOutlined, UserOutlined } from '@ant-design/icons';
 import { App as AntdApp, Avatar, Button, Flex, Form, Input, Upload } from 'antd';
