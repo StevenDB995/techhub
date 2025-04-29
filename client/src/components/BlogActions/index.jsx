@@ -20,7 +20,7 @@ function BlogActions({ blog, editable, onDelete }) {
   return (
     <Flex justify="space-between" className={styles.blogActions}>
       <Space size="middle">
-        <Action text={getDateString(blog.createdAt)} />
+        <Action text={blog && getDateString(blog.createdAt)} />
       </Space>
       {editable && <Space split={<Divider type="vertical" />} size={4}>
         <Action
@@ -28,14 +28,14 @@ function BlogActions({ blog, editable, onDelete }) {
           icon={EditOutlined}
           text="Edit"
           size={6}
-          onClick={() => navigate(`/blogs/${blog._id}/edit`)}
+          onClick={blog && (() => navigate(`/blogs/${blog._id}/edit`))}
         />
         <Action
           className={styles.clickable}
           icon={DeleteOutlined}
           text="Delete"
           size={6}
-          onClick={() => onDelete(blog._id)}
+          onClick={blog && (() => onDelete(blog._id))}
         />
       </Space>}
     </Flex>

@@ -1,6 +1,5 @@
 import { deleteBlog } from '@/api/services/blogService';
 import Error from '@/components/Error';
-import Loading from '@/components/Loading';
 import useApiErrorHandler from '@/hooks/useApiErrorHandler';
 import useAuth from '@/hooks/useAuth';
 import useConfirm from '@/hooks/useConfirm';
@@ -44,15 +43,13 @@ function ViewBlogPage() {
     });
   }, [confirmDanger, handleDelete, modal]);
 
-  if (loading) return <Loading />;
-
   return (
     error ?
       <Error error={error} /> :
       <>
-        <BlogHeader blog={blog} loading={loading} editable={isMe} onDelete={confirmDelete} />
+        <BlogHeader blog={blog} editable={isMe} onDelete={confirmDelete} />
         <Divider className={styles.divider} />
-        <CherryViewer value={blog?.content} />
+        <CherryViewer value={blog?.content} loading={loading} />
         {modalContextHolder}
       </>
   );

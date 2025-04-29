@@ -6,10 +6,10 @@ import styles from './BlogHeader.module.css';
 
 const { Title } = Typography;
 
-function BlogHeader({ blog, loading, editable, onDelete }) {
+function BlogHeader({ blog, editable, onDelete }) {
   const authorPage = blog && `/${blog.author.username}/blogs`;
 
-  return !loading && (
+  return (
     <div>
       <Title level={2}>{blog?.title}</Title>
       <Flex align="center" gap="small" className={styles.author}>

@@ -1,13 +1,14 @@
 import { uploadImage } from '@/api/external/imgur';
 import { updateCurrentUser } from '@/api/services/userService';
+import Loading from '@/components/Loading';
 import useApiErrorHandler from '@/hooks/useApiErrorHandler';
 import FormActionButtons from '@/modules/settings/components/FormActionButtons';
 import useSettingsForm from '@/modules/settings/hooks/useSettingsForm';
 import { validateFileType } from '@/utils/fileUploadUtil';
 import { EditOutlined, UserOutlined } from '@ant-design/icons';
-import { App as AntdApp, Avatar, Button, Flex, Form, Input, Upload } from 'antd';
+import { App as AntdApp, Avatar, Button, Form, Input, Upload } from 'antd';
 import ImgCrop from 'antd-img-crop';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import styles from './ProfileSettings.module.css';
 
 const allowedFileTypes = ['image/jpg', 'image/jpeg', 'image/png'];
@@ -30,6 +31,8 @@ function ProfileSettings({ user, reloadUser }) {
     handleSubmit
   } = useSettingsForm(initialValues);
 
+  const [uploadingImage, setUploadingImage] = useState(false);
+
   const handleBeforeCrop = (file) => {
     return validateFileType(file, allowedFileTypes);
   };
@@ -45,6 +48,8 @@ function ProfileSettings({ user, reloadUser }) {
   };
 
   const handleUpload = async ({ file }) => {
+    setUploadingImage(true);
+
     try {
       // Upload image to Imgur
       let response = await uploadImage(file);
@@ -61,17 +66,15 @@ function ProfileSettings({ user, reloadUser }) {
         handleApiError(err);
       }
     }
+
+    setUploadingImage(false);
   };
 
   return (
     <div className={styles.profileSettings}>
       <div className={styles.avatarContainer}>
         <Avatar src={user?.avatar?.link} size={128} icon={<UserOutlined />} />
-        <Flex
-          align="center"
-          justify="center"
-          className={`${styles.avatarMask}`}
-        >
+        <div className={`${styles.avatarMask} ${styles.editMask}`}>
           <ImgCrop
             quality={0.8}
             cropShape="round"
@@ -93,7 +96,10 @@ function ProfileSettings({ user, reloadUser }) {
               />
             </Upload>
           </ImgCrop>
-        </Flex>
+        </div>
+        <div className={`${styles.avatarMask} ${uploadingImage && styles.uploading}`}>
+          <Loading />
+        </div>
       </div>
       <Form
         form={form}

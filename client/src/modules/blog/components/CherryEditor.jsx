@@ -242,8 +242,8 @@ function CherryEditor({
         </Button>
       </Flex>
       <div id={cherryConfig.id} className={styles.cherryEditor}></div>
-      <Loading display={loading} />
-      <Loading display={uploadingImage} text={'Uploading image'} />
+      <Loading display={loading} fullscreen />
+      <Loading display={uploadingImage} fullscreen text={'Uploading image'} />
       <Modal
         open={submitModalOpen}
         forceRender
