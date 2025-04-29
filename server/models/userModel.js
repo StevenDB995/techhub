@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   username: { // case-insensitive collation but still preserve the case
     type: String,
     required: true,
-    index: { unique: true, collation: { locale: "en", strength: 2 } },
+    index: { unique: true, collation: { locale: 'en', strength: 2 } },
     validate: { validator: isValidUsername }
   },
   password: { type: String, required: true },
@@ -21,9 +21,16 @@ const userSchema = new mongoose.Schema({
     deletehash: { type: String, required: true }
   },
   bio: { type: String, maxLength: 280 },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-  lastLogin: { type: Date, default: null },
+  lastLogin: { type: Date, default: null }
+
+}, {
+  timestamps: true,
+  toJSON: {
+    transform(doc, ret) {
+      delete ret.password;
+      return ret;
+    }
+  }
 });
 
 const User = mongoose.model('User', userSchema);

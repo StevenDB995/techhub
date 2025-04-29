@@ -20,7 +20,7 @@ const auth = async (req, res, next) => {
   }
 
   try {
-    const user = await User.findById(jwtClaims.userId).select('-password');
+    const user = await User.findById(jwtClaims.userId);
     if (verifyUser(req, res, user)) {
       return next();
     } else {
@@ -49,7 +49,7 @@ const optionalAuth = async (req, res, next) => {
   }
 
   try {
-    const user = await User.findById(jwtClaims.userId).select('-password');
+    const user = await User.findById(jwtClaims.userId);
     verifyUser(req, res, user);
   } catch (err) {
     console.error(err);

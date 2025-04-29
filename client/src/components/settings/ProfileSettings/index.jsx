@@ -2,20 +2,18 @@ import { uploadImage } from '@/api/external/imgur';
 import { updateCurrentUser } from '@/api/services/userService';
 import FormActionButtons from '@/components/settings/FormActionButtons';
 import useApiErrorHandler from '@/hooks/useApiErrorHandler';
+import useSettingsForm from '@/hooks/useSettingsForm';
 import { validateFileType } from '@/utils/fileUploadUtil';
 import { EditOutlined, UserOutlined } from '@ant-design/icons';
 import { App as AntdApp, Avatar, Button, Flex, Form, Input, Upload } from 'antd';
 import ImgCrop from 'antd-img-crop';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import styles from './ProfileSettings.module.css';
 
 const allowedFileTypes = ['image/jpg', 'image/jpeg', 'image/png'];
 const allowedFileExtensions = ['.jpg', '.jpeg', '.png'];
 
 function ProfileSettings({ user, reloadUser }) {
-  const [form] = Form.useForm();
-  const [isEdited, setIsEdited] = useState(false);
-
   const { message: antdMessage } = AntdApp.useApp();
   const handleApiError = useApiErrorHandler();
 
@@ -23,14 +21,14 @@ function ProfileSettings({ user, reloadUser }) {
     bio: user?.bio
   }), [user]);
 
-  useEffect(() => {
-    form.setFieldsValue(initialValues);
-  }, [initialValues, form]);
-
-  const onFormCancel = () => {
-    form.setFieldsValue(initialValues);
-    setIsEdited(false);
-  };
+  const {
+    form,
+    isEdited,
+    isSubmitting,
+    onValuesChange,
+    resetForm,
+    handleSubmit
+  } = useSettingsForm(initialValues);
 
   const handleBeforeCrop = (file) => {
     return validateFileType(file, allowedFileTypes);
@@ -100,13 +98,14 @@ function ProfileSettings({ user, reloadUser }) {
       <Form
         form={form}
         layout="vertical"
-        onValuesChange={() => setIsEdited(true)}
+        onValuesChange={onValuesChange}
+        onFinish={() => handleSubmit()}
       >
         <Form.Item name="bio" label="Bio" wrapperCol={{ span: 24, md: 18 }}>
           <Input.TextArea maxLength={280} showCount={true} rows={4} />
         </Form.Item>
         {isEdited && <Form.Item>
-          <FormActionButtons onCancel={onFormCancel} />
+          <FormActionButtons onCancel={resetForm} loading={isSubmitting} />
         </Form.Item>}
       </Form>
     </div>

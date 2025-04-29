@@ -1,6 +1,7 @@
 import FormActionButtons from '@/components/settings/FormActionButtons';
+import useSettingsForm from '@/hooks/useSettingsForm';
 import { Form, Input, Typography } from 'antd';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 const { Title } = Typography;
 
@@ -11,35 +12,37 @@ const formProps = {
 };
 
 function PersonalDetailsForm({ user }) {
-  const [form] = Form.useForm();
-  const [isEdited, setIsEdited] = useState(false);
-
   const initialValues = useMemo(() => ({
     email: user?.email
-  }), [user]);
+  }), [user?.email]);
 
-  useEffect(() => {
-    form.setFieldsValue(initialValues);
-  }, [initialValues, form]);
-
-  const onCancel = () => {
-    form.setFieldsValue(initialValues);
-    setIsEdited(false);
-  };
+  const {
+    form,
+    isEdited,
+    isSubmitting,
+    onValuesChange,
+    resetForm,
+    handleSubmit
+  } = useSettingsForm(initialValues);
 
   return (
     <>
       <Title level={5}>Personal Details</Title>
       <Form
         form={form}
-        onValuesChange={() => setIsEdited(true)}
+        onValuesChange={onValuesChange}
+        onFinish={() => handleSubmit()}
         {...formProps}
       >
-        <Form.Item name="email" label="Email">
+        <Form.Item
+          name="email"
+          label="Email"
+          rules={[{ required: true }]}
+        >
           <Input />
         </Form.Item>
         {isEdited && <Form.Item>
-          <FormActionButtons onCancel={onCancel} />
+          <FormActionButtons onCancel={resetForm} loading={isSubmitting} />
         </Form.Item>}
       </Form>
     </>
@@ -47,30 +50,61 @@ function PersonalDetailsForm({ user }) {
 }
 
 function ResetPasswordForm() {
-  const [form] = Form.useForm();
-  const [isEdited, setIsEdited] = useState(false);
-
-  const onCancel = () => {
-    form.resetFields();
-    setIsEdited(false);
-  };
+  const {
+    form,
+    isEdited,
+    isSubmitting,
+    onValuesChange,
+    resetForm,
+    handleSubmit
+  } = useSettingsForm();
 
   return (
     <>
       <Title level={5}>Reset Password</Title>
       <Form
         form={form}
-        onValuesChange={() => setIsEdited(true)}
+        onValuesChange={onValuesChange}
+        onFinish={() => handleSubmit('New password set successfully!')}
         {...formProps}
       >
-        <Form.Item name="password" label="New password">
+        <Form.Item
+          name="password"
+          label="New password"
+          required={false}
+          rules={[
+            {
+              required: true,
+              message: 'Input new password'
+            }
+          ]}
+        >
           <Input.Password />
         </Form.Item>
-        <Form.Item name="passwordConfirm" label="Confirm password">
+        <Form.Item
+          name="passwordConfirm"
+          label="Confirm password"
+          required={false}
+          rules={[
+            {
+              required: true,
+              message: 'Please confirm password!'
+            },
+            ({ getFieldValue }) => ({
+              validator(_, passwordConfirm) {
+                const password = getFieldValue('password');
+                if (password && passwordConfirm && password !== passwordConfirm) {
+                  return Promise.reject(new Error('Passwords do not match!'));
+                }
+                return Promise.resolve();
+              }
+            })
+          ]}
+        >
           <Input.Password />
         </Form.Item>
         {isEdited && <Form.Item>
-          <FormActionButtons onCancel={onCancel} />
+          <FormActionButtons onCancel={resetForm} loading={isSubmitting} />
         </Form.Item>}
       </Form>
     </>

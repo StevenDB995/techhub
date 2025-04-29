@@ -48,27 +48,48 @@ exports.getBlogsByUsername = async (req, res) => {
 };
 
 exports.updateCurrentUser = async (req, res) => {
-  // TODO: validate username and email
-
-  const user = req.body;
-  if (!isValidPassword(user.password)) {
+  // Validate password
+  if (req.body.password && !isValidPassword(req.body.password)) {
     return messageResponse(res, 400, 'Invalid password');
   }
 
-  // TODO: check whether the username and email exists
+  // Validate username
+  if (req.body.username) {
+    const existingUsername = await User.findOne({
+      username: req.body.username,
+      _id: { $ne: req.user._id }
+    });
+    if (existingUsername) {
+      return messageResponse(res, 400, 'Username already taken');
+    }
+  }
+
+  // Validate email
+  if (req.body.email) {
+    const existingEmail = await User.findOne({
+      email: req.body.email,
+      _id: { $ne: req.user._id }
+    });
+    if (existingEmail) {
+      return messageResponse(res, 400, 'Email already registered');
+    }
+  }
+
+  const user = await User.findById(req.user._id);
+  const deletePrevAvatar = req.body.avatar?.deletehash && user.avatar?.deletehash;
+
+  for (const key in req.body) {
+    user[key] = req.body[key];
+  }
 
   try {
-    if (user.password) {
-      user.password = await hashPassword(user.password);
+    if (req.body.password) {
+      user.password = await hashPassword(req.body.password);
     }
-    user.updatedAt = Date.now();
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user._id,
-      user,
-      { new: true }
-    ).select('-password');
 
-    if (user.avatar && req.user.avatar) {
+    const updatedUser = await user.save();
+
+    if (deletePrevAvatar) {
       deleteImage(req.user.avatar.deletehash)
         .catch(err => console.error(err));
     }
@@ -76,6 +97,10 @@ exports.updateCurrentUser = async (req, res) => {
     return dataResponse(res, 200, updatedUser);
 
   } catch (err) {
+    if (err.name === 'ValidationError') {
+      console.log(err.message);
+      return messageResponse(res, 400, 'Bad request');
+    }
     console.error(err);
     return messageResponse(res, 500, 'Error updating user');
   }

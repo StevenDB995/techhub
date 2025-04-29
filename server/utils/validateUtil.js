@@ -1,6 +1,8 @@
 const validator = require('validator');
 const { reservedUsernames } = require('../config/constants');
 
+const isString = (input) => typeof input === 'string';
+
 /**
  * The provided username must:
  * * Be of length between 4-30 characters;
@@ -10,6 +12,7 @@ const { reservedUsernames } = require('../config/constants');
  * @returns {boolean}
  */
 exports.isValidUsername = (username) => {
+  if (!isString(username)) return false;
   const regex = /^(?=.*[a-zA-Z])[a-zA-Z0-9_.]{4,30}$/;
   return !reservedUsernames.has(username.toLowerCase()) && regex.test(username);
 };
@@ -23,6 +26,7 @@ exports.isValidUsername = (username) => {
  * @param password
  */
 exports.isValidPassword = (password) => {
+  if (!isString(password)) return false;
   const regex = /^[a-zA-Z0-9._!@#$%^&*()\[\]\-+=]{8,30}$/;
   return regex.test(password);
 };
