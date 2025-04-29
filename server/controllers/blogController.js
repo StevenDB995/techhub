@@ -97,28 +97,28 @@ exports.updateBlogById = async (req, res) => {
       return messageResponse(res, 404, 'Blog not found');
     }
 
-    // authorize
+    // Authorize
     if (!blog.author.equals(req.user._id)) {
       return messageResponse(res, 403, 'Permission denied');
     }
 
-    const updatedBlog = {
-      ...req.body,
-      updatedAt: Date.now()
-    };
+    // Compare the difference of image links
+    const newSet = new Set(req.body.imageLinks);
+    const imageLinksToRemove = blog.imageLinks.filter(x => !newSet.has(x));
+    const imageLinksToAdd = req.body.imageLinks;
 
-    // update the createdAt field if the status of the blog changes from 'draft' to 'public'
+    // Update the createdAt field if the status of the blog changes from 'draft' to 'public'
     if (blog.status === 'draft' && req.body.status === 'public') {
-      updatedBlog.createdAt = Date.now();
+      blog.createdAt = Date.now();
     }
 
-    await Blog.findByIdAndUpdate(id, updatedBlog, { new: true }).session(session);
+    for (const key in req.body) {
+      blog[key] = req.body[key];
+    }
 
-    // update isAttached for blogImages
-    const newSet = new Set(updatedBlog.imageLinks);
-    const imageLinksToRemove = blog.imageLinks.filter(x => !newSet.has(x));
-    const imageLinksToAdd = updatedBlog.imageLinks;
+    const updatedBlog = await blog.save({ session });
 
+    // Update isAttached for blogImages
     if (imageLinksToRemove.length > 0) {
       await BlogImage.updateMany(
         { link: { $in: imageLinksToRemove } },
@@ -126,6 +126,7 @@ exports.updateBlogById = async (req, res) => {
         { session }
       );
     }
+
     if (imageLinksToAdd.length > 0) {
       await BlogImage.updateMany(
         { link: { $in: imageLinksToAdd } },
@@ -135,7 +136,7 @@ exports.updateBlogById = async (req, res) => {
     }
 
     await session.commitTransaction();
-    return messageResponse(res, 200, 'Blog updated successfully!');
+    return dataResponse(res, 200, updatedBlog);
 
   } catch (err) {
     await session.abortTransaction();
@@ -161,12 +162,12 @@ exports.deleteBlogById = async (req, res) => {
       return messageResponse(res, 403, 'Permission denied');
     }
 
-    await Blog.findByIdAndUpdate(id, {
-      status: 'deleted',
-      deletedAt: Date.now()
-    }, { new: true });
+    blog.status = 'deleted';
+    blog.deletedAt = Date.now();
 
-    return messageResponse(res, 200, 'Blog deleted successfully!');
+    const deletedBlog = await blog.save({ timestamps: false });
+
+    return dataResponse(res, 200, deletedBlog);
 
   } catch (err) {
     console.error(err);

@@ -84,8 +84,7 @@ exports.login = async (req, res) => {
     }
 
     user.lastLogin = Date.now();
-    const savedUser = await user.save();
-    savedUser.password = undefined;
+    const savedUser = await user.save({ timestamps: false });
 
     const accessToken = signAccessToken(user._id);
     const refreshToken = signRefreshToken(user._id);

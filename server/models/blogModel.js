@@ -5,9 +5,7 @@ const blogSchema = new mongoose.Schema({
   abstract: { type: String, maxLength: 280 },
   previewText: { type: String, maxLength: 280 },
   content: { type: String, required: true, maxLength: 50_000 },  // max ~8000 words
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
-  deletedAt: { type: Date  },
+  deletedAt: { type: Date },
   status: {
     type: String,
     enum: ['public', 'draft', 'private', 'deleted'],
@@ -19,6 +17,9 @@ const blogSchema = new mongoose.Schema({
     required: true
   },
   imageLinks: [{ type: String }]
+
+}, {
+  timestamps: true
 });
 
 // Create a model based on the schema
