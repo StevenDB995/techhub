@@ -53,28 +53,6 @@ exports.updateCurrentUser = async (req, res) => {
     return messageResponse(res, 400, 'Invalid password');
   }
 
-  // Validate username
-  if (req.body.username) {
-    const existingUsername = await User.findOne({
-      username: req.body.username,
-      _id: { $ne: req.user._id }
-    });
-    if (existingUsername) {
-      return messageResponse(res, 400, 'Username already taken');
-    }
-  }
-
-  // Validate email
-  if (req.body.email) {
-    const existingEmail = await User.findOne({
-      email: req.body.email,
-      _id: { $ne: req.user._id }
-    });
-    if (existingEmail) {
-      return messageResponse(res, 400, 'Email already registered');
-    }
-  }
-
   const user = await User.findById(req.user._id);
   const deletePrevAvatar = req.body.avatar?.deletehash && user.avatar?.deletehash;
 
@@ -97,6 +75,15 @@ exports.updateCurrentUser = async (req, res) => {
     return dataResponse(res, 200, updatedUser);
 
   } catch (err) {
+    if (err.code === 11000) {
+      // Handle duplicated key error
+      if (err.keyPattern.username) {
+        return messageResponse(res, 409, 'Username already taken');
+      } else if (err.keyPattern.email) {
+        return messageResponse(res, 409, 'Email already registered');
+      }
+    }
+
     if (err.name === 'ValidationError') {
       console.log(err.message);
       return messageResponse(res, 400, 'Bad request');

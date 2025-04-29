@@ -9,7 +9,7 @@ const useApiErrorHandler = () => {
   const location = useLocation();
   const { message: antdMessage } = AntdApp.useApp();
 
-  return useCallback((error, customHandler = undefined) => {
+  return useCallback((error) => {
     const statusCode = error.response?.status;
 
     if (statusCode === 401) {
@@ -29,14 +29,7 @@ const useApiErrorHandler = () => {
       navigate('/');
 
     } else {
-      // Handle unexpected errors such as 400 and 500.
-      // 400 Bad Request is considered unexpected since the input validation should have been conducted from the
-      // frontend, and it is handled here for the debugging purpose.
-      if (customHandler) {
-        customHandler();
-      } else {
-        void antdMessage.error('Unexpected error. Please try again later.');
-      }
+      void antdMessage.error('Unexpected error. Please try again later.');
       console.error(error);
     }
     // location is the only dependency that may change

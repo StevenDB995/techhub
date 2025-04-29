@@ -57,10 +57,10 @@ exports.signup = async (req, res) => {
     // Check if the error is a duplicate key error
     if (err.code === 11000) {
       if (err.keyPattern.username) {
-        return messageResponse(res, 400, 'User already exists');
+        return messageResponse(res, 409, 'User already exists');
       }
       if (err.keyPattern.email) {
-        return messageResponse(res, 400, 'Email already registered');
+        return messageResponse(res, 409, 'Email already registered');
       }
     }
 

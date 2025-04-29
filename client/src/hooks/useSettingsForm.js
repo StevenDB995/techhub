@@ -34,7 +34,11 @@ const useSettingsForm = (initialValues = undefined) => {
       setIsEdited(false);
       antdMessage.success(successMessage);
     } catch (err) {
-      handleApiError(err);
+      if (err.response?.status === 409) {
+        antdMessage.error(err.message, 5);
+      } else {
+        handleApiError(err);
+      }
     }
     setIsSubmitting(false);
   }, [antdMessage, form, handleApiError, reloadUser]);

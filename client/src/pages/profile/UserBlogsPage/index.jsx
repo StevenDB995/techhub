@@ -64,9 +64,8 @@ function UserBlogsPage() {
       setBlogs(blogs.filter(blog => blog._id !== blogId));
       localStorage.removeItem(`edit-${blogId}`);
     } catch (err) {
-      handleApiError(err, () => {
-        feedbackDelete(false);
-      });
+      feedbackDelete(false);
+      handleApiError(err);
     }
   }, [handleApiError, blogs, feedbackDelete]);
 
