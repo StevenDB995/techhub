@@ -1,0 +1,8 @@
+.passwordTooltip ul {
+  margin: 4px 0;
+  padding-left: 24px;
+}
+
+.passwordTooltip code {
+  background-color: dimgrey;
+}
