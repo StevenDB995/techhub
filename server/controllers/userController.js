@@ -53,7 +53,7 @@ exports.updateCurrentUser = async (req, res) => {
     return messageResponse(res, 400, 'Invalid password');
   }
 
-  const user = await User.findById(req.user._id);
+  const user = req.user;
   const deletePrevAvatar = req.body.avatar?.deletehash && user.avatar?.deletehash;
 
   for (const key in req.body) {
@@ -61,6 +61,7 @@ exports.updateCurrentUser = async (req, res) => {
   }
 
   try {
+    // Hash password if password is provided
     if (req.body.password) {
       user.password = await hashPassword(req.body.password);
     }
@@ -68,7 +69,7 @@ exports.updateCurrentUser = async (req, res) => {
     const updatedUser = await user.save();
 
     if (deletePrevAvatar) {
-      deleteImage(req.user.avatar.deletehash)
+      deleteImage(user.avatar.deletehash)
         .catch(err => console.error(err));
     }
 

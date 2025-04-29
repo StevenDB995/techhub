@@ -65,7 +65,7 @@ exports.createBlog = async (req, res) => {
     const blog = new Blog(req.body);
     // save the reference of the user
     blog.author = req.user._id;
-    await blog.save({ session });
+    const savedBlog = await blog.save({ session });
 
     await BlogImage.updateMany(
       { link: { $in: blog.imageLinks } },
@@ -74,7 +74,7 @@ exports.createBlog = async (req, res) => {
     );
 
     await session.commitTransaction();
-    return dataResponse(res, 201, blog);
+    return dataResponse(res, 201, savedBlog);
 
   } catch (err) {
     await session.abortTransaction();
