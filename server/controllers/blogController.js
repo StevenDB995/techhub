@@ -78,6 +78,11 @@ exports.createBlog = async (req, res) => {
 
   } catch (err) {
     await session.abortTransaction();
+
+    if (err.name === 'ValidationError') {
+      return messageResponse(res, 400, 'Bad request');
+    }
+
     console.error(err);
     return messageResponse(res, 500, 'Error creating blog');
 

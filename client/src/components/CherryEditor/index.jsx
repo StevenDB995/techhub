@@ -20,7 +20,10 @@ If you know, you know ;)`;
 
 const allowedFileTypes = ['image/jpg', 'image/jpeg', 'image/png'];
 const allowedFileExtensions = ['.jpg', '.jpeg', '.png'];
-const maxImageWidth = 600;
+
+const MAX_TITLE_LENGTH = 70;
+const MAX_ABSTRACT_LENGTH = 280;
+const MAX_IMAGE_WIDTH = 600;
 
 const cherryConfig = {
   id: 'cherry-editor',
@@ -132,12 +135,12 @@ function CherryEditor({
           const { link, width, height } = imageMetadata;
           let displayWidth;
 
-          if (width <= maxImageWidth) {
+          if (width <= MAX_IMAGE_WIDTH) {
             displayWidth = width;
           } else if (height / width < 4 / 3) {
-            displayWidth = maxImageWidth;
+            displayWidth = MAX_IMAGE_WIDTH;
           } else {
-            displayWidth = maxImageWidth / 2;
+            displayWidth = MAX_IMAGE_WIDTH / 2;
           }
 
           callback(link, { width: `${displayWidth}px` });
@@ -222,7 +225,7 @@ function CherryEditor({
         </Button>
         <Input
           placeholder="Title"
-          maxLength={70}
+          maxLength={MAX_TITLE_LENGTH}
           showCount={true}
           className={styles.titleInput}
           value={title}
@@ -278,7 +281,7 @@ function CherryEditor({
           >
             <Form.Item name="abstract" label="Abstract">
               <Input.TextArea
-                maxLength={280}
+                maxLength={MAX_ABSTRACT_LENGTH}
                 showCount={true}
                 rows={4}
                 placeholder={'Wanna engage more readers? Write something here!'}
