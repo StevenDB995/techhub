@@ -1,7 +1,8 @@
 import api from '../api';
 
-export const login = async (loginForm) => {
-  return await api.post('/auth/login', loginForm);
+export const login = async (credentials) => {
+  const response = await api.post('/auth/login', credentials);
+  return response.data.data;
 };
 
 export const logout = async () => {

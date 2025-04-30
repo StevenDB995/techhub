@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { dataResponse, messageResponse } = require('../utils/responseUtil');
+const { successResponse, errorResponse } = require('../utils/responseUtil');
 
 const {
   IMGUR_CLIENT_ID,
@@ -16,11 +16,11 @@ exports.getImgurAccessToken = async (req, res) => {
       'client_secret': IMGUR_CLIENT_SECRET,
       'grant_type': 'refresh_token'
     }));
-    return dataResponse(res, 200, response.data);
+    return successResponse(res, 200, response.data);
 
   } catch (err) {
     // catch axios error
     console.error(err);
-    return messageResponse(res, err.data.status, 'Error requesting Imgur access token');
+    return errorResponse(res, err.response?.status, 'Error requesting Imgur access token');
   }
 };

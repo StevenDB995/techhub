@@ -26,7 +26,7 @@ function AuthProvider({ children }) {
       setUser(userData);
     } else {
       getCurrentUser()
-        .then(res => setUser(res.data))
+        .then(usr => setUser(usr))
         .catch(err => {
           if (err.response?.status === 401) {
             clearAuth();

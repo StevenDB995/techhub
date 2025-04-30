@@ -127,8 +127,7 @@ function CherryEditor({
     setUploadingImage(true);
 
     try {
-      const response = await uploadImage(file);
-      const { data: imageMetadata } = response.data;
+      const imageMetadata = await uploadImage(file);
 
       createImageMetadata(imageMetadata)
         .then(() => {

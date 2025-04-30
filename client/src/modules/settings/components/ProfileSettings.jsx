@@ -20,7 +20,7 @@ function ProfileSettings({ user, reloadUser }) {
 
   const initialValues = useMemo(() => ({
     bio: user?.bio
-  }), [user]);
+  }), [user?.bio]);
 
   const {
     form,
@@ -52,11 +52,10 @@ function ProfileSettings({ user, reloadUser }) {
 
     try {
       // Upload image to Imgur
-      let response = await uploadImage(file);
-      const { data: imageMetadata } = response.data;
+      const imageMetadata = await uploadImage(file);
       // Update avatar of the user
-      response = await updateCurrentUser({ avatar: imageMetadata });
-      reloadUser(response.data);
+      const updatedUser = await updateCurrentUser({ avatar: imageMetadata });
+      reloadUser(updatedUser);
 
     } catch (err) {
       if (err.source === 'imgur') {

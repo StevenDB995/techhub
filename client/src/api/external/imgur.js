@@ -2,8 +2,8 @@ import { getImgurAccessToken } from '@/api/services/imgurService';
 import axios from 'axios';
 
 const reloadImgurAccessToken = async () => {
-  const response = await getImgurAccessToken();
-  localStorage.setItem('imgurAccessToken', response.data['access_token']);
+  const token = await getImgurAccessToken();
+  localStorage.setItem('imgurAccessToken', token);
 };
 
 /**
@@ -26,20 +26,22 @@ export const uploadImage = async (file) => {
 
   while (attempts-- > 0) {
     try {
-      return await axios.post('https://api.imgur.com/3/image', formData, {
+      const response = await axios.post('https://api.imgur.com/3/image', formData, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('imgurAccessToken')}`
         }
       });
 
+      const { data: imageMetadata } = response.data;
+      return imageMetadata;
+
     } catch (err) {
       // Handle imgur API error
-      if (err.response?.status === 401 && attempts > 0) {
-        // Retry if the imgur access token expired
+      if (attempts > 0) {
+        // Retry
         await reloadImgurAccessToken();
       } else {
         err.source = 'imgur';
-        err.message = err.response?.data.data.error || err.message;
         throw err;
       }
     }

@@ -9,19 +9,28 @@ const useApiErrorHandler = () => {
   const location = useLocation();
   const { message: antdMessage } = AntdApp.useApp();
 
-  return useCallback((error) => {
-    const statusCode = error.response?.status;
+  return useCallback(error => {
+    if (!error.response) {
+      void antdMessage.error('Network error. Please try again later.');
+      console.error(error);
+      return;
+    }
+
+    const statusCode = error.response.status;
+    const errorType = error.response.data.type;
 
     if (statusCode === 401) {
-      if (error.config.url === '/auth/login') {
+      if (errorType === 'INVALID_CREDENTIALS') {
+        // Failed login
         void antdMessage.error('Wrong username or password');
       } else {
+        // Failed refresh token
         clearAuth();
         navigate('/login', { state: { from: location } });
         void antdMessage.info('Session expired. Please log in');
       }
 
-    } else if (statusCode === 403 && error.response.data.type === 'ILLEGAL_USER') {
+    } else if (statusCode === 403 && errorType === 'ILLEGAL_USER') {
       // sign out the user if it's marked as inactive or removed
       // when its session has not expired
       clearAuth();

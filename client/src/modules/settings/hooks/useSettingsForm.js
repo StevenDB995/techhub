@@ -29,8 +29,8 @@ const useSettingsForm = (initialValues = undefined) => {
   const handleSubmit = useCallback(async (successMessage = 'Updated saved!') => {
     setIsSubmitting(true);
     try {
-      const response = await updateCurrentUser(form.getFieldsValue());
-      reloadUser(response.data);
+      const updatedUser = await updateCurrentUser(form.getFieldsValue());
+      reloadUser(updatedUser);
       setIsEdited(false);
       antdMessage.success(successMessage);
     } catch (err) {

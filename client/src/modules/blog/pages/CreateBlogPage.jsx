@@ -16,14 +16,14 @@ function CreateBlogPage() {
 
   const submit = useCallback(async (blogData) => {
     try {
-      const response = await createBlog(blogData);
+      const savedBlog = await createBlog(blogData);
       localStorage.removeItem(localStorageKey);
       if (blogData.status === 'draft') {
         antdMessage.success('Draft saved!');
       } else {
         antdMessage.success('Blog posted successfully!');
       }
-      navigate(`/blogs/${response.data._id}`);
+      navigate(`/blogs/${savedBlog._id}`);
 
     } catch (err) {
       handleApiError(err);
