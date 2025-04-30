@@ -89,6 +89,7 @@ exports.updateCurrentUser = async (req, res) => {
     }
 
     if (err.name === 'ValidationError') {
+      console.error(err);
       return errorResponse(res, 400, 'Bad request');
     }
 
