@@ -1,15 +1,8 @@
 const Blog = require('../models/blogModel');
 const BlogImage = require('../models/blogImageModel');
-const { messageResponse, dataResponse } = require('../utils/responseUtil');
-const axios = require('axios');
+const { successResponse, errorResponse } = require('../utils/responseUtil');
 const mongoose = require('mongoose');
-
-const {
-  IMGUR_CLIENT_ID,
-  IMGUR_CLIENT_SECRET,
-  IMGUR_REFRESH_TOKEN,
-  IMGUR_OAUTH_URL
-} = process.env;
+const { INVALID_TOKEN } = require('../config/errorTypes');
 
 // get all public blogs
 exports.getAllBlogs = async (req, res) => {
@@ -19,10 +12,10 @@ exports.getAllBlogs = async (req, res) => {
       .select('-content')
       .populate('author', 'username')
       .sort({ createdAt: -1 });
-    return dataResponse(res, 200, blogs);
+    return successResponse(res, 200, blogs);
   } catch (err) {
     console.error(err);
-    return messageResponse(res, 500, 'Error fetching blogs');
+    return errorResponse(res, 500, 'Error fetching blogs');
   }
 };
 
@@ -34,12 +27,12 @@ exports.getBlogById = async (req, res) => {
       .populate('author', 'username avatar isActive');
 
     if (!blog) {
-      return messageResponse(res, 404, 'Blog not found');
+      return errorResponse(res, 404, 'Blog not found');
     }
 
     // for public blog, no authorization required
     if (blog.status === 'public') {
-      return dataResponse(res, 200, blog);
+      return successResponse(res, 200, blog);
     }
 
     // for non-public blog
@@ -48,20 +41,20 @@ exports.getBlogById = async (req, res) => {
 
     // if not authenticated (need to refresh token)
     if (!currentUser) {
-      return messageResponse(res, 401, 'Invalid token');
+      return errorResponse(res, 401, 'Invalid token', INVALID_TOKEN);
     }
 
     // if not the author of the blog
     if (!author._id.equals(currentUser._id)) {
-      return messageResponse(res, 403, 'Permission denied');
+      return errorResponse(res, 403, 'Permission denied');
     }
 
     // on successful authorization
-    return dataResponse(res, 200, blog);
+    return successResponse(res, 200, blog);
 
   } catch (err) {
     console.error(err);
-    return messageResponse(res, 500, 'Error fetching blog');
+    return errorResponse(res, 500, 'Error fetching blog');
   }
 };
 
@@ -73,7 +66,7 @@ exports.createBlog = async (req, res) => {
     const blog = new Blog(req.body);
     // save the reference of the user
     blog.author = req.user._id;
-    await blog.save({ session });
+    const savedBlog = await blog.save({ session });
 
     await BlogImage.updateMany(
       { link: { $in: blog.imageLinks } },
@@ -82,12 +75,17 @@ exports.createBlog = async (req, res) => {
     );
 
     await session.commitTransaction();
-    return dataResponse(res, 201, blog);
+    return successResponse(res, 201, savedBlog, 'Blog created successfully!');
 
   } catch (err) {
     await session.abortTransaction();
+
+    if (err.name === 'ValidationError') {
+      return errorResponse(res, 400, 'Bad request');
+    }
+
     console.error(err);
-    return messageResponse(res, 500, 'Error creating blog');
+    return errorResponse(res, 500, 'Error creating blog');
 
   } finally {
     await session.endSession();
@@ -102,31 +100,31 @@ exports.updateBlogById = async (req, res) => {
   try {
     const blog = await Blog.findById(id).session(session);
     if (!blog) {
-      return messageResponse(res, 404, 'Blog not found');
+      return errorResponse(res, 404, 'Blog not found');
     }
 
-    // authorize
+    // Authorize
     if (!blog.author.equals(req.user._id)) {
-      return messageResponse(res, 403, 'Permission denied');
+      return errorResponse(res, 403, 'Permission denied');
     }
 
-    const updatedBlog = {
-      ...req.body,
-      updatedAt: Date.now()
-    };
-
-    // update the createdAt field if the status of the blog changes from 'draft' to 'public'
-    if (blog.status === 'draft' && req.body.status === 'public') {
-      updatedBlog.createdAt = Date.now();
-    }
-
-    await Blog.findByIdAndUpdate(id, updatedBlog, { new: true }).session(session);
-
-    // update isAttached for blogImages
-    const newSet = new Set(updatedBlog.imageLinks);
+    // Compare the difference of image links
+    const newSet = new Set(req.body.imageLinks);
     const imageLinksToRemove = blog.imageLinks.filter(x => !newSet.has(x));
-    const imageLinksToAdd = updatedBlog.imageLinks;
+    const imageLinksToAdd = req.body.imageLinks;
 
+    // Update the createdAt field if the status of the blog changes from 'draft' to 'public'
+    if (blog.status === 'draft' && req.body.status === 'public') {
+      blog.createdAt = Date.now();
+    }
+
+    for (const key in req.body) {
+      blog[key] = req.body[key];
+    }
+
+    const updatedBlog = await blog.save({ session });
+
+    // Update isAttached for blogImages
     if (imageLinksToRemove.length > 0) {
       await BlogImage.updateMany(
         { link: { $in: imageLinksToRemove } },
@@ -134,6 +132,7 @@ exports.updateBlogById = async (req, res) => {
         { session }
       );
     }
+
     if (imageLinksToAdd.length > 0) {
       await BlogImage.updateMany(
         { link: { $in: imageLinksToAdd } },
@@ -143,12 +142,12 @@ exports.updateBlogById = async (req, res) => {
     }
 
     await session.commitTransaction();
-    return messageResponse(res, 200, 'Blog updated successfully!');
+    return successResponse(res, 200, updatedBlog, 'Blog updated successfully!');
 
   } catch (err) {
     await session.abortTransaction();
     console.error(err);
-    return messageResponse(res, 500, 'Error updating blog');
+    return errorResponse(res, 500, 'Error updating blog');
 
   } finally {
     await session.endSession();
@@ -161,41 +160,23 @@ exports.deleteBlogById = async (req, res) => {
   try {
     const blog = await Blog.findById(id);
     if (!blog) {
-      return messageResponse(res, 404, 'Blog not found');
+      return errorResponse(res, 404, 'Blog not found');
     }
 
     // authorize
     if (!blog.author.equals(req.user._id)) {
-      return messageResponse(res, 403, 'Permission denied');
+      return errorResponse(res, 403, 'Permission denied');
     }
 
-    await Blog.findByIdAndUpdate(id, {
-      status: 'deleted',
-      deletedAt: Date.now()
-    }, { new: true });
+    blog.status = 'deleted';
+    blog.deletedAt = Date.now();
 
-    return messageResponse(res, 200, 'Blog deleted successfully!');
+    const deletedBlog = await blog.save({ timestamps: false });
+    return successResponse(res, 200, deletedBlog);
 
   } catch (err) {
     console.error(err);
-    return messageResponse(res, 500, 'Error deleting blog');
-  }
-};
-
-exports.getImgurAccessToken = async (req, res) => {
-  try {
-    const response = await axios.post(IMGUR_OAUTH_URL, new URLSearchParams({
-      'refresh_token': IMGUR_REFRESH_TOKEN,
-      'client_id': IMGUR_CLIENT_ID,
-      'client_secret': IMGUR_CLIENT_SECRET,
-      'grant_type': 'refresh_token'
-    }));
-    return dataResponse(res, 200, response.data);
-
-  } catch (err) {
-    // catch axios error
-    console.error(err);
-    return messageResponse(res, err.data.status, 'Error requesting Imgur access token');
+    return errorResponse(res, 500, 'Error deleting blog');
   }
 };
 
@@ -203,13 +184,11 @@ exports.createImageMetadata = async (req, res) => {
   try {
     const blogImage = new BlogImage(req.body);
     blogImage.isAttached = false;
-    await blogImage.save();
-    const message = 'Blog image metadata added successfully.';
-    console.log(message);
-    return messageResponse(res, 201, message);
+    const savedBlogImage = await blogImage.save();
+    return successResponse(res, 201,savedBlogImage, 'Blog image metadata saved successfully!');
 
   } catch (err) {
     console.error(err);
-    return messageResponse(res, 500, 'Error creating image metadata');
+    return errorResponse(res, 500, 'Error saving image metadata');
   }
 };

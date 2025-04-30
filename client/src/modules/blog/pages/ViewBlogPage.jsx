@@ -1,14 +1,12 @@
 import { deleteBlog } from '@/api/services/blogService';
-import BlogHeader from '@/components/BlogHeader';
-import CherryViewer from '@/components/CherryViewer';
 import Error from '@/components/Error';
-import Loading from '@/components/Loading';
 import useApiErrorHandler from '@/hooks/useApiErrorHandler';
 import useAuth from '@/hooks/useAuth';
 import useConfirm from '@/hooks/useConfirm';
-import useFeedback from '@/hooks/useFeedback';
 import useFetch from '@/hooks/useFetch';
-import { Divider, Modal } from 'antd';
+import BlogHeader from '@/modules/blog/components/BlogHeader';
+import CherryViewer from '@/modules/blog/components/CherryViewer';
+import { App as AntdApp, Divider, Modal } from 'antd';
 import { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from './ViewBlogPage.module.css';
@@ -20,27 +18,21 @@ function ViewBlogPage() {
   const isMe = (blog && blog.author._id === user?._id);
 
   const [modal, modalContextHolder] = Modal.useModal();
-  const { feedback } = useFeedback();
+  const { message: antdMessage } = AntdApp.useApp();
   const { confirmDanger } = useConfirm();
   const handleApiError = useApiErrorHandler();
   const navigate = useNavigate();
 
-  const feedbackDelete = useCallback((success) => {
-    feedback(success, success && 'Blog post deleted.');
-  }, [feedback]);
-
   const handleDelete = useCallback(async () => {
     try {
       await deleteBlog(blogId);
-      feedbackDelete(true);
+      antdMessage.success('Blog post deleted.');
       localStorage.removeItem(`edit-${blogId}`);
       navigate(`/${user.username}/blogs?status=${blog.status}`);
     } catch (err) {
-      handleApiError(err, () => {
-        feedbackDelete(false);
-      });
+      handleApiError(err);
     }
-  }, [blogId, feedbackDelete, handleApiError, navigate, user, blog]);
+  }, [blogId, antdMessage, handleApiError, navigate, user, blog]);
 
   const confirmDelete = useCallback(() => {
     confirmDanger(modal, {
@@ -51,15 +43,13 @@ function ViewBlogPage() {
     });
   }, [confirmDanger, handleDelete, modal]);
 
-  if (loading) return <Loading />;
-
   return (
     error ?
-      <Error status={error.status} message={error.message} /> :
+      <Error error={error} /> :
       <>
-        <BlogHeader blog={blog} loading={loading} editable={isMe} onDelete={confirmDelete} />
+        <BlogHeader blog={blog} editable={isMe} onDelete={confirmDelete} />
         <Divider className={styles.divider} />
-        <CherryViewer value={blog?.content} />
+        <CherryViewer value={blog?.content} loading={loading} />
         {modalContextHolder}
       </>
   );

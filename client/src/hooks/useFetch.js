@@ -17,9 +17,10 @@ const useFetch = (url, params = {}) => {
     setLoading(true);
     try {
       const response = await api.get(url, { params });
-      setData(response.data);
+      setData(response.data.data);
     } catch (err) {
-      handleApiError(err, () => setError(err));
+      setError(err);
+      handleApiError(err);
     }
     setLoading(false);
   }, [params, handleApiError, url]);

@@ -12,17 +12,16 @@ function LoginPage() {
 
   const handleLogin = async (formData) => {
     try {
-      const response = await login(formData);
-      const { accessToken } = response.data;
-      setAuth(accessToken);
+      const { accessToken, user } = await login(formData);
+      setAuth(accessToken, user);
       antdMessage.success('Successfully logged in!');
       // Navigate to the previous location before the user logged in
       navigate(location.state?.from || '/', { replace: true });
     } catch (err) {
-      if (err.status === 401) {
+      if (err.response?.status === 401) {
         antdMessage.error('Wrong username or password');
       } else {
-        antdMessage.error(err.message);
+        antdMessage.error('Unexpected error. Please try again later.');
       }
     }
   };

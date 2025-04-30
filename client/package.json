@@ -13,6 +13,7 @@
     "@ant-design/colors": "^7.1.0",
     "@ant-design/icons": "^5.4.0",
     "antd": "^5.24.3",
+    "antd-img-crop": "^4.24.0",
     "axios": "1.8.2",
     "cherry-markdown": "^0.8.47",
     "deep-equal": "^2.2.3",

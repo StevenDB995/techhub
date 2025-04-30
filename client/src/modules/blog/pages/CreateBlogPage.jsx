@@ -1,7 +1,7 @@
 import { createBlog } from '@/api/services/blogService';
-import CherryEditor from '@/components/CherryEditor';
 import useApiErrorHandler from '@/hooks/useApiErrorHandler';
 import useAuth from '@/hooks/useAuth';
+import CherryEditor from '@/modules/blog/components/CherryEditor';
 import { App as AntdApp } from 'antd';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -16,14 +16,14 @@ function CreateBlogPage() {
 
   const submit = useCallback(async (blogData) => {
     try {
-      const response = await createBlog(blogData);
+      const savedBlog = await createBlog(blogData);
       localStorage.removeItem(localStorageKey);
       if (blogData.status === 'draft') {
         antdMessage.success('Draft saved!');
       } else {
         antdMessage.success('Blog posted successfully!');
       }
-      navigate(`/blogs/${response.data._id}`);
+      navigate(`/blogs/${savedBlog._id}`);
 
     } catch (err) {
       handleApiError(err);

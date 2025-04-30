@@ -8,7 +8,7 @@ const api = axios.create({
 });
 
 // send access token along with every request
-api.interceptors.request.use((config) => {
+api.interceptors.request.use(config => {
   const accessToken = localStorage.getItem('accessToken');
   if (accessToken) {
     config.headers['Authorization'] = `Bearer ${accessToken}`;
@@ -20,20 +20,26 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   response => response,
   async error => {
-    const statusCode = error.response?.status;
+    if (!error.response) {
+      return Promise.reject(error);
+    }
+
+    const statusCode = error.response.status;
+    const { type: errorType, message: errorMessage } = error.response.data;
 
     if (statusCode === 401) {
-      if (error.config.url === '/auth/login' || error.config.url === '/auth/refresh-token') {
+      if (errorType === 'INVALID_CREDENTIALS' || errorType === 'SESSION_EXPIRED') {
         // propagate failed login and refresh token error
-        error.message = error.response.data.message;
+        error.message = errorMessage;
         return Promise.reject(error);
       }
 
       try {
         // request to refresh token
         const refreshResponse = await api.post('/auth/refresh-token');
+        const { data: { accessToken } } = refreshResponse.data;
         // store the new access token
-        localStorage.setItem('accessToken', refreshResponse.data.accessToken);
+        localStorage.setItem('accessToken', accessToken);
         // retry the previous request
         // expect no further 401 error
         return api.request(error.config);
@@ -44,13 +50,13 @@ api.interceptors.response.use(
       }
 
     } else if (statusCode === 403) {
-        error.message = 'Permission denied';
+      error.message = 'Permission denied';
     } else if (statusCode === 404) {
       error.message = 'Resource not found';
     } else if (statusCode >= 500) {
       error.message = 'Server error. Please try again later.';
     } else {
-      error.message = error.response.data.message || error.message;
+      error.message = errorMessage;
     }
 
     // still throw the error for specific cases to handle

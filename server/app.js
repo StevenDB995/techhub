@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const apiRoutes = require('./routes/apiRoutes');
-const constants = require('./config/constants');
+const { BASE_API_PATH } = require('./config/constants');
 
 const app = express();
 
@@ -11,7 +11,7 @@ app.use(express.json()); // handle json request body
 app.use(cookieParser());
 
 // Use the centralized API routes
-app.use(constants.BASE_API_PATH, apiRoutes);
+app.use(BASE_API_PATH, apiRoutes);
 
 if (process.env.NODE_ENV === 'production') {
   // Serve the static files from the React app (in /client/dist)

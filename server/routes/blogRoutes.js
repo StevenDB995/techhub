@@ -11,7 +11,6 @@ router.post('/', auth, blogController.createBlog);
 router.put('/:id', auth, blogController.updateBlogById);
 router.delete('/:id', auth, blogController.deleteBlogById);
 
-router.get('/images/token', auth, blogController.getImgurAccessToken);
 router.post('/images', auth, blogController.createImageMetadata);
 
 module.exports = router;

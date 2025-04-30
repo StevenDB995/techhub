@@ -1,3 +1,4 @@
+import Loading from '@/components/Loading';
 import Cherry from 'cherry-markdown';
 import { useEffect, useRef } from 'react';
 import styles from './CherryViewer.module.css';
@@ -20,25 +21,25 @@ const cherryConfig = {
   }
 };
 
-function CherryViewer({ value }) {
+function CherryViewer({ value, loading }) {
   const cherryInstance = useRef(null);
 
   useEffect(() => {
     if (!cherryInstance.current) {
-      cherryInstance.current = new Cherry({
-        value,
-        ...cherryConfig
-      });
+      cherryInstance.current = new Cherry(cherryConfig);
     }
   }, [value]);
 
   // fill the content on page load
   useEffect(() => {
-    cherryInstance.current.setMarkdown(value);
+    cherryInstance.current.setMarkdown(value || '');
   }, [value]);
 
   return (
-    <div id={cherryConfig.id} className={styles.cherryViewer}></div>
+    <>
+      <div id={cherryConfig.id} className={styles.cherryViewer}></div>
+      <Loading display={loading} />
+    </>
   );
 }
 

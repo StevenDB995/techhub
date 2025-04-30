@@ -1,14 +1,15 @@
 const User = require('../models/userModel');
-const { messageResponse, dataResponse } = require('../utils/responseUtil');
-const { isValidUsername, isValidPassword, isValidEmail } = require('../utils/validateUtil');
+const { successResponse, errorResponse } = require('../utils/responseUtil');
+const { isValidPassword } = require('../utils/validateUtil');
 const { hashPassword, comparePassword } = require('../utils/passwordUtil');
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../utils/tokenUtil');
 const { getRefreshToken, setRefreshToken, clearRefreshToken } = require('../helpers/authHelper');
+const { SESSION_EXPIRED, USERNAME_EXISTS, EMAIL_EXISTS, INVALID_CREDENTIALS } = require('../config/errorTypes');
 
 exports.refreshToken = async (req, res) => {
   let refreshToken = getRefreshToken(req);
   if (!refreshToken) {
-    return messageResponse(res, 401, 'No refresh token provided');
+    return errorResponse(res, 401, 'No refresh token provided', SESSION_EXPIRED);
   }
 
   try {
@@ -16,56 +17,61 @@ exports.refreshToken = async (req, res) => {
     const accessToken = signAccessToken(userId);
     refreshToken = signRefreshToken(userId);
     setRefreshToken(res, refreshToken);
-    return dataResponse(res, 200, { accessToken });
+    return successResponse(res, 200, { accessToken });
 
   } catch (err) {
     // clear the refresh token in cookies anyway on error
     clearRefreshToken(res);
     // if the refresh token expired
     if (err.name === 'TokenExpiredError') {
-      return messageResponse(res, 401, 'Session expired');
+      return errorResponse(res, 401, 'Session expired', SESSION_EXPIRED);
     }
     // most likely an invalid signature
     if (err.name === 'JsonWebTokenError') {
-      return messageResponse(res, 401, err.message);
+      return errorResponse(res, 401, 'Invalid refresh token', SESSION_EXPIRED);
     }
 
     console.error(err);
-    return messageResponse(res, 500, 'Unexpected error');
+    return errorResponse(res, 500, 'Unexpected error');
   }
 };
 
 exports.signup = async (req, res) => {
   const { username, password, email } = req.body;
-  if (!isValidUsername(username) || !isValidPassword(password) || !isValidEmail(email)) {
-    return messageResponse(res, 400, 'Bad request');
+  if (!isValidPassword(password)) {
+    return errorResponse(res, 400, 'Bad request');
   }
 
   try {
     // For now the system can have only two users
     // Will remove this constraint in future for system functionalities
     if (await User.countDocuments() >= 2) {
-      return messageResponse(res, 403, 'Forbidden');
+      return errorResponse(res, 403, 'Forbidden');
     }
 
     const hashedPassword = await hashPassword(password);
     const user = new User({ username, password: hashedPassword, email });
-    await user.save();
-    return messageResponse(res, 201, 'Signed up successfully!');
+    const savedUser = await user.save();
+    return successResponse(res, 201, savedUser, 'Signed up successfully!');
 
   } catch (err) {
     // Check if the error is a duplicate key error
     if (err.code === 11000) {
       if (err.keyPattern.username) {
-        return messageResponse(res, 400, 'User already exists');
+        return errorResponse(res, 409, 'User already exists', USERNAME_EXISTS);
       }
       if (err.keyPattern.email) {
-        return messageResponse(res, 400, 'Email already registered');
+        return errorResponse(res, 409, 'Email already registered', EMAIL_EXISTS);
       }
     }
 
+    // Invalid username or email format
+    if (err.name === 'ValidationError') {
+      return errorResponse(res, 400, 'Bad request');
+    }
+
     console.error(err);
-    return messageResponse(res, 500, 'Error signing up');
+    return errorResponse(res, 500, 'Error signing up');
   }
 };
 
@@ -75,30 +81,30 @@ exports.login = async (req, res) => {
   try {
     const user = await User.findOne({ username });
     if (!user || !user.isActive) {
-      return messageResponse(res, 401, 'Invalid credentials');
+      return errorResponse(res, 401, 'Invalid credentials', INVALID_CREDENTIALS);
     }
 
     const match = await comparePassword(password, user.password);
     if (!match) {
-      return messageResponse(res, 401, 'Invalid credentials');
+      return errorResponse(res, 401, 'Invalid credentials', INVALID_CREDENTIALS);
     }
 
     user.lastLogin = Date.now();
-    await user.save();
+    const savedUser = await user.save({ timestamps: false });
 
     const accessToken = signAccessToken(user._id);
     const refreshToken = signRefreshToken(user._id);
     setRefreshToken(res, refreshToken);
 
-    return dataResponse(res, 200, { accessToken });
+    return successResponse(res, 200, { accessToken, user: savedUser });
 
   } catch (err) {
     console.error(err);
-    return messageResponse(res, 500, 'Unexpected error');
+    return errorResponse(res, 500, 'Unexpected error');
   }
 };
 
 exports.logout = async (req, res) => {
   clearRefreshToken(res);
-  return messageResponse(res, 200, 'Logged out');
+  return successResponse(res, 200, null, 'Logged out');
 };

@@ -5,8 +5,8 @@ const { auth, optionalAuth } = require('../middlewares/authMiddleware');
 const router = express.Router();
 
 router.get('/me', auth, userController.getCurrentUser);
-router.get('/:username/blogs', optionalAuth, userController.getBlogsByUsername);
+router.patch('/me', auth, userController.updateCurrentUser);
 
-// router.put('/:userId', userController.updateUser);
+router.get('/:username/blogs', optionalAuth, userController.getBlogsByUsername);
 
 module.exports = router;

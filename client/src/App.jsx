@@ -13,6 +13,7 @@ function App() {
   const [footerData, setFooterData] = useState(null);
   const matchCreate = useMatch('/blogs/create');
   const matchEdit = useMatch('/blogs/:blogId/edit');
+  const matchSettings = useMatch('/settings');
   const shouldDisplayHeader = !(matchCreate || matchEdit);
 
   useEffect(() => {
@@ -24,17 +25,15 @@ function App() {
   return (
     <Layout className="app">
       {shouldDisplayHeader && <AppNavbar />}
-      {shouldDisplayHeader ?
-        <Content className="app-content">
+      <Content className="app-content">
+        {shouldDisplayHeader ?
           <Row justify="center">
-            <Col span={24} lg={16} className="display">
+            <Col span={24} lg={matchSettings ? 20 : 16} className="display">
               <Outlet />
             </Col>
-          </Row>
-        </Content> :
-        <Content className="app-content">
-          <Outlet />
-        </Content>}
+          </Row> :
+          <Outlet />}
+      </Content>
       <Footer className="app-footer">
         <div>Powered by StevenDB</div>
         <Flex gap="large" justify="center" className="social-media">

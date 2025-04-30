@@ -1,10 +1,12 @@
-import { createImageMetadata, getImgurAccessToken } from '@/api/services/blogService';
+import { createImageMetadata } from '@/api/services/blogService';
 import Loading from '@/components/Loading';
+import { uploadImage } from '@/external/services/imgurService';
+import useApiErrorHandler from '@/hooks/useApiErrorHandler';
+import { validateFileType } from '@/utils/fileUploadUtil';
 import { parseJSON } from '@/utils/jsonUtil';
 import { extractMetadata } from '@/utils/mdUtil';
 import { DoubleLeftOutlined } from '@ant-design/icons';
 import { App as AntdApp, Button, ConfigProvider, Flex, Form, Input, Modal, Radio, Switch } from 'antd';
-import axios from 'axios';
 import Cherry from 'cherry-markdown';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import 'cherry-markdown/dist/cherry-markdown.css';
@@ -15,6 +17,13 @@ const markdownTemplate = `# Heading 1
 Paragraph here
 ### Heading 3
 If you know, you know ;)`;
+
+const allowedFileTypes = ['image/jpg', 'image/jpeg', 'image/png'];
+const allowedFileExtensions = ['.jpg', '.jpeg', '.png'];
+
+const MAX_TITLE_LENGTH = 70;
+const MAX_ABSTRACT_LENGTH = 280;
+const MAX_IMAGE_WIDTH = 600;
 
 const cherryConfig = {
   id: 'cherry-editor',
@@ -47,11 +56,11 @@ const cherryConfig = {
       'graph'
     ],
     toc: true
+  },
+  fileTypeLimitMap: {
+    image: allowedFileExtensions.join(',')
   }
 };
-
-// Supported image type: https://apidocs.imgur.com/#c85c9dfc-7487-4de2-9ecd-66f727cf3139
-const supportedImageFormats = ['jpeg', 'jpg', 'png', 'apng', 'gif', 'tiff'];
 
 function CherryEditor({
   page,
@@ -75,6 +84,7 @@ function CherryEditor({
 
   const [uploadingImage, setUploadingImage] = useState(false);
   const { message: antdMessage } = AntdApp.useApp();
+  const handleApiError = useApiErrorHandler();
 
   const [submitModalOpen, setSubmitModalOpen] = useState(false);
   const [submitForm] = Form.useForm();
@@ -108,84 +118,48 @@ function CherryEditor({
   }, [title, content, html, submitForm, submitCallback]);
 
   const uploadFile = useCallback(async (file, callback) => {
-    const [fileType, fileFormat] = file.type.split('/');
-    if (fileType !== 'image') {
-      antdMessage.error('Only image upload is supported!');
+    if (!validateFileType(file, allowedFileTypes)) {
+      antdMessage.error(`Unsupported file type. 
+      Please upload an image of valid format (${allowedFileExtensions.join(', ')}).`, 5);
       return;
     }
 
-    if (!supportedImageFormats.includes(fileFormat.toLowerCase())) {
-      antdMessage.error(`Your image format (${fileFormat}) is not supported!`);
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('image', file);
-    formData.append('type', 'file');
-
-    const reloadImgurAccessToken = async () => {
-      // return true if successfully reloaded
-      try {
-        const response = getImgurAccessToken();
-        localStorage.setItem('imgurAccessToken', response.data['access_token']);
-        return true;
-      } catch (err) {
-        // cannot fetch access token from imgur
-        antdMessage.error(err.message);
-        console.error(err);
-        return false;
-      }
-    };
-
-    // fetch imgur access token if it's not in localStorage
-    if (!localStorage.getItem('imgurAccessToken')) {
-      if (!await reloadImgurAccessToken()) {
-        antdMessage.error('Cannot connect to image host, please try again later.');
-        return;
-      }
-    }
-
-    let response;
-    let retry = true;
     setUploadingImage(true);
 
-    while (retry) {
-      try {
-        response = await axios.post('https://api.imgur.com/3/image', formData, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('imgurAccessToken')}`
+    try {
+      const imageMetadata = await uploadImage(file);
+
+      createImageMetadata(imageMetadata)
+        .then(() => {
+          const { link, width, height } = imageMetadata;
+          let displayWidth;
+
+          if (width <= MAX_IMAGE_WIDTH) {
+            displayWidth = width;
+          } else if (height / width < 4 / 3) {
+            displayWidth = MAX_IMAGE_WIDTH;
+          } else {
+            displayWidth = MAX_IMAGE_WIDTH / 2;
           }
+
+          callback(link, { width: `${displayWidth}px` });
+
+        })
+        .catch(err => {
+          handleApiError(err);
         });
-        retry = false;
 
-        // consider looking into the boolean `response.data.success`?
-        const imageMetadata = response.data.data;
-        createImageMetadata(imageMetadata)
-          .then(() => callback(imageMetadata.link, {
-            width: '600px'
-          }))
-          .catch(err => {
-            antdMessage.error(err.message);
-            console.error(err);
-          });
-
-      } catch (err) {
-        if (err.response?.status > 400 && err.response?.status < 500) {
-          // retry if the imgur access token expired
-          if (!await reloadImgurAccessToken()) {
-            antdMessage.error('Cannot connect to image host, please try again later.');
-            retry = false;
-          }
-        } else {
-          antdMessage.error('Error uploading image: ' + (err.response?.data.data.error || err.message));
-          console.error(err);
-          retry = false;
-        }
+    } catch (err) {
+      if (err.source === 'imgur') {
+        antdMessage.error('Cannot connect to image host, please try again later.');
+        console.error(err);
+      } else {
+        handleApiError(err);
       }
     }
 
     setUploadingImage(false);
-  }, [antdMessage]);
+  }, [antdMessage, handleApiError]);
 
   useEffect(() => {
     if (!cherryInstance.current) {
@@ -250,7 +224,7 @@ function CherryEditor({
         </Button>
         <Input
           placeholder="Title"
-          maxLength={70}
+          maxLength={MAX_TITLE_LENGTH}
           showCount={true}
           className={styles.titleInput}
           value={title}
@@ -267,8 +241,8 @@ function CherryEditor({
         </Button>
       </Flex>
       <div id={cherryConfig.id} className={styles.cherryEditor}></div>
-      <Loading display={loading} />
-      <Loading display={uploadingImage} text={'Uploading image'} />
+      <Loading display={loading} fullscreen />
+      <Loading display={uploadingImage} fullscreen text={'Uploading image'} />
       <Modal
         open={submitModalOpen}
         forceRender
@@ -306,7 +280,7 @@ function CherryEditor({
           >
             <Form.Item name="abstract" label="Abstract">
               <Input.TextArea
-                maxLength={280}
+                maxLength={MAX_ABSTRACT_LENGTH}
                 showCount={true}
                 rows={4}
                 placeholder={'Wanna engage more readers? Write something here!'}

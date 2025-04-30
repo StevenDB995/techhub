@@ -64,9 +64,8 @@ function UserBlogsPage() {
       setBlogs(blogs.filter(blog => blog._id !== blogId));
       localStorage.removeItem(`edit-${blogId}`);
     } catch (err) {
-      handleApiError(err, () => {
-        feedbackDelete(false);
-      });
+      feedbackDelete(false);
+      handleApiError(err);
     }
   }, [handleApiError, blogs, feedbackDelete]);
 
@@ -81,7 +80,7 @@ function UserBlogsPage() {
 
   return (
     error ?
-      <Error status={error.status} message={error.message} /> :
+      <Error error={error} /> :
       <>
         {isMe && <div className={styles.selectContainer}>
           <Select

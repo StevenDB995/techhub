@@ -2,14 +2,14 @@ import { geekblue } from '@ant-design/colors';
 import { Flex, Spin } from 'antd';
 import styles from './Loading.module.css';
 
-function Loading({ display = true, text = '' }) {
+function Loading({ fullscreen = false, display = true, text = '' }) {
   return display && (
     <Flex
       justify="center"
       align="center"
       vertical={true}
       gap="middle"
-      className={styles.loading}
+      className={`${styles.loading} ${fullscreen && styles.fullscreen}`}
       style={{
         color: geekblue.primary,
         fontSize: '1.5em'

@@ -1,9 +1,7 @@
-import { App as AntdApp } from 'antd';
 import { useCallback } from 'react';
 
 // Custom hook for feedbacks in different forms, e.g. modal, message
 const useFeedback = () => {
-  const { message: antdMessage } = AntdApp.useApp();
 
   const feedbackByModal = useCallback((modal, success, content = undefined) => {
     if (success) {
@@ -21,18 +19,7 @@ const useFeedback = () => {
     }
   }, []);
 
-  const feedback = useCallback((success, content = undefined) => {
-    if (success) {
-      void antdMessage.success(content || 'Operation success');
-    } else {
-      void antdMessage.error(content || 'An unexpected error occurred. Please try again later.');
-    }
-  }, [antdMessage]);
-
-  return {
-    feedbackByModal,
-    feedback
-  };
+  return { feedbackByModal };
 };
 
 export default useFeedback;
