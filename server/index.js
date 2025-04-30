@@ -1,12 +1,15 @@
+// Load environment variables
+const path = require('path');
 const NODE_ENV = process.env.NODE_ENV;
 
 if (NODE_ENV === 'development') {
   const dotenv = require('dotenv');
-  dotenv.config({ path: '../.env.development' });
+  dotenv.config({ path: path.resolve(__dirname, '../.env.development') });
 }
 
+// Start app
 const app = require('./app');
-const connectDB = require('./config/db');
+const connectDB = require('./bootstrap/db');
 
 void connectDB();
 
