@@ -49,6 +49,11 @@ exports.getBlogsByUsername = async (req, res) => {
 };
 
 exports.updateCurrentUser = async (req, res) => {
+  // Temporarily disable Visitor from changing password
+  if (req.body.password && req.user.username === 'Visitor') {
+    return errorResponse(res, 403, 'Forbidden');
+  }
+
   // Validate password
   if (req.body.password && !isValidPassword(req.body.password)) {
     return errorResponse(res, 400, 'Invalid password');

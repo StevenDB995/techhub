@@ -1,4 +1,4 @@
-const { BAD_REQUEST, SERVER_ERROR } = require('../config/errorTypes');
+const { BAD_REQUEST, FORBIDDEN, SERVER_ERROR } = require('../config/errorTypes');
 
 exports.successResponse = (res, statusCode, data, message = undefined) => {
   return res.status(statusCode).json({
@@ -12,6 +12,8 @@ exports.errorResponse = (res, statusCode = 500, message = 'Unexpected server err
   if (!type) {
     if (statusCode === 400) {
       type = BAD_REQUEST;
+    } else if (statusCode === 403) {
+      type = FORBIDDEN;
     } else if (statusCode === 500) {
       type = SERVER_ERROR;
     }

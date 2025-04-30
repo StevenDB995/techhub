@@ -28,18 +28,26 @@ const useSettingsForm = (initialValues = undefined) => {
 
   const handleSubmit = useCallback(async (successMessage = 'Updated saved!') => {
     setIsSubmitting(true);
+
     try {
       const updatedUser = await updateCurrentUser(form.getFieldsValue());
       reloadUser(updatedUser);
       setIsEdited(false);
       antdMessage.success(successMessage);
+
     } catch (err) {
-      if (err.response?.status === 409) {
-        antdMessage.error(err.message, 5);
+      const statusCode = err.response?.status;
+      const errorType = err.response?.data.type;
+
+      if (statusCode === 409) {
+        if (errorType === 'EMAIL_EXISTS') {
+          antdMessage.error('Email already registered', 5);
+        }
       } else {
         handleApiError(err);
       }
     }
+
     setIsSubmitting(false);
   }, [antdMessage, form, handleApiError, reloadUser]);
 

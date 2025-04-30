@@ -89,7 +89,7 @@ function ResetPasswordForm() {
       <Form
         form={form}
         onValuesChange={onValuesChange}
-        onFinish={() => handleSubmit('New password set successfully!')}
+        onFinish={() => handleSubmit('Password changed successfully!')}
         {...formProps}
       >
         <Form.Item
@@ -152,7 +152,8 @@ function AccountSettings({ user }) {
   return (
     <>
       <PersonalDetailsForm user={user} />
-      <ResetPasswordForm />
+      {/* Temporarily disable Visitor from changing password */}
+      {user?.username !== 'Visitor' && <ResetPasswordForm />}
     </>
   );
 }
