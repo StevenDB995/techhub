@@ -16,10 +16,10 @@ const userSchema = new mongoose.Schema({
     validate: { validator: isValidEmail }
   },
   isActive: { type: Boolean, default: true },
-  avatar: {
+  avatar: new mongoose.Schema({
     link: { type: String, required: true },
     deletehash: { type: String, required: true }
-  },
+  }, { _id: false }),
   bio: { type: String, maxLength: 280 },
   lastLogin: { type: Date, default: null }
 
