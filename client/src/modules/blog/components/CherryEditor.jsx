@@ -1,6 +1,6 @@
-import { uploadImage } from '@/api/external/imgur';
 import { createImageMetadata } from '@/api/services/blogService';
 import Loading from '@/components/Loading';
+import { uploadImage } from '@/external/services/imgurService';
 import useApiErrorHandler from '@/hooks/useApiErrorHandler';
 import { validateFileType } from '@/utils/fileUploadUtil';
 import { parseJSON } from '@/utils/jsonUtil';

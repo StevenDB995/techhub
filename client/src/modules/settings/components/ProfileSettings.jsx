@@ -1,6 +1,6 @@
-import { uploadImage } from '@/api/external/imgur';
 import { updateCurrentUser } from '@/api/services/userService';
 import Loading from '@/components/Loading';
+import { uploadImage } from '@/external/services/imgurService';
 import useApiErrorHandler from '@/hooks/useApiErrorHandler';
 import FormActionButtons from '@/modules/settings/components/FormActionButtons';
 import useSettingsForm from '@/modules/settings/hooks/useSettingsForm';
