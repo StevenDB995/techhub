@@ -2,6 +2,7 @@ import Loading from '@/components/Loading';
 import Cherry from 'cherry-markdown';
 import { useEffect, useRef } from 'react';
 import styles from './CherryViewer.module.css';
+import './cherry-markdown.css';
 
 const cherryConfig = {
   id: 'cherry-viewer',

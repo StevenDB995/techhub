@@ -9,9 +9,9 @@ import { DoubleLeftOutlined } from '@ant-design/icons';
 import { App as AntdApp, Button, ConfigProvider, Flex, Form, Input, Modal, Radio, Switch } from 'antd';
 import Cherry from 'cherry-markdown';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import 'cherry-markdown/dist/cherry-markdown.css';
 import styles from './CherryEditor.module.css';
-import './CherryEditor.css';
+import 'cherry-markdown/dist/cherry-markdown.css';
+import './cherry-markdown.css';
 
 const markdownTemplate = `# Heading 1
 ## Heading 2

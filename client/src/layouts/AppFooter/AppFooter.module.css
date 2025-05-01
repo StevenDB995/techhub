@@ -1,0 +1,15 @@
+.footer {
+  text-align: center;
+}
+
+.footer .socialMedia {
+  margin-top: 12px;
+}
+
+.footer .footerLink {
+  color: black !important;
+}
+
+.footer .footerIcon {
+  font-size: 24px;
+}
