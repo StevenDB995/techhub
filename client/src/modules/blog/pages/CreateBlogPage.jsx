@@ -1,10 +1,15 @@
 import { createBlog } from '@/api/services/blogService';
+import Loading from '@/components/Loading';
 import useApiErrorHandler from '@/hooks/useApiErrorHandler';
 import useAuth from '@/hooks/useAuth';
-import CherryEditor from '@/modules/blog/components/CherryEditor';
+import loadable from '@loadable/component';
 import { App as AntdApp } from 'antd';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+const CherryEditor = loadable(() => import('@/modules/blog/components/CherryEditor'), {
+  fallback: <Loading fullscreen />
+});
 
 const localStorageKey = 'create';
 

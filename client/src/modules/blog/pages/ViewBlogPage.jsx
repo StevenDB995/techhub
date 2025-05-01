@@ -1,15 +1,20 @@
 import { deleteBlog } from '@/api/services/blogService';
 import Error from '@/components/Error';
+import Loading from '@/components/Loading';
 import useApiErrorHandler from '@/hooks/useApiErrorHandler';
 import useAuth from '@/hooks/useAuth';
 import useConfirm from '@/hooks/useConfirm';
 import useFetch from '@/hooks/useFetch';
 import BlogHeader from '@/modules/blog/components/BlogHeader';
-import CherryViewer from '@/modules/blog/components/CherryViewer';
+import loadable from '@loadable/component';
 import { App as AntdApp, Divider, Modal } from 'antd';
 import { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from './ViewBlogPage.module.css';
+
+const CherryViewer = loadable(() => import('@/modules/blog/components/CherryViewer'), {
+  fallback: <Loading fullscreen />
+});
 
 function ViewBlogPage() {
   const { user } = useAuth();
