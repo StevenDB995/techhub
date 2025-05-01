@@ -25,7 +25,7 @@ function AppNavbar() {
 
   const [isDrawerExpanded, setIsDrawerExpanded] = useState(false);
 
-  const getSelectedKey = (isMobile) => {
+  const getSelectedKey = (isMobile = false) => {
     if (!isMobile && matchUserBlogs) {
       return '/';
     }
@@ -90,7 +90,7 @@ function AppNavbar() {
 
   const userDropdownItems = [
     {
-      key: 'settings',
+      key: '/settings',
       label: (
         <Link to={'/settings'}>
           <Space>
@@ -165,7 +165,7 @@ function AppNavbar() {
               className={styles.left}
               theme="dark"
               mode="horizontal"
-              selectedKeys={[getSelectedKey(false)]}
+              selectedKeys={[getSelectedKey()]}
               items={leftNavItems}
             />
             {
