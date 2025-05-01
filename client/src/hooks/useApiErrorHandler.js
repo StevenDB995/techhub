@@ -1,10 +1,10 @@
-import { AuthContext } from '@/contexts/AuthProvider';
+import useAuth from '@/hooks/useAuth';
 import { App as AntdApp } from 'antd';
-import { useCallback, useContext } from 'react';
+import { useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const useApiErrorHandler = () => {
-  const { clearAuth } = useContext(AuthContext);
+  const { clearAuth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { message: antdMessage } = AntdApp.useApp();

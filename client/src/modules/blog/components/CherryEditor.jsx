@@ -11,6 +11,7 @@ import Cherry from 'cherry-markdown';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import 'cherry-markdown/dist/cherry-markdown.css';
 import styles from './CherryEditor.module.css';
+import './CherryEditor.css';
 
 const markdownTemplate = `# Heading 1
 ## Heading 2

@@ -1,54 +1,86 @@
-import { GithubFilled, InstagramFilled, LinkedinFilled } from '@ant-design/icons';
-import { Col, Flex, Layout, Row } from 'antd';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { Outlet, useMatch } from 'react-router-dom';
-import AppNavbar from './components/AppNavbar';
-import NewTabLink from './components/NewTabLink';
-import './App.css';
-
-const { Content, Footer } = Layout;
+import AuthProvider from '@/contexts/AuthProvider';
+import AppLayout from '@/layouts/AppLayout';
+import LoginPage from '@/modules/auth/LoginPage';
+import CreateBlogPage from '@/modules/blog/pages/CreateBlogPage';
+import EditBlogPage from '@/modules/blog/pages/EditBlogPage';
+import ViewBlogPage from '@/modules/blog/pages/ViewBlogPage';
+import HomePage from '@/modules/home/HomePage';
+import SettingsPage from '@/modules/settings/SettingsPage';
+import UserBlogsPage from '@/modules/user/UserBlogsPage';
+import AboutPage from '@/pages/AboutPage';
+import { geekblue } from '@ant-design/colors';
+import { App as AntdApp, ConfigProvider } from 'antd';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 function App() {
-  const [footerData, setFooterData] = useState(null);
-  const matchCreate = useMatch('/blogs/create');
-  const matchEdit = useMatch('/blogs/:blogId/edit');
-  const matchSettings = useMatch('/settings');
-  const shouldDisplayHeader = !(matchCreate || matchEdit);
-
-  useEffect(() => {
-    axios.get('/footer.json').then(res => {
-      setFooterData(res.data);
-    }).catch(err => console.error(err));
-  }, []);
+  const router = createBrowserRouter([
+    {
+      path: '/',
+      element: <AppLayout />,
+      children: [
+        {
+          path: '',
+          element: <HomePage />
+        },
+        {
+          path: 'about',
+          element: <AboutPage />
+        },
+        {
+          path: 'login',
+          element: <LoginPage />
+        },
+        {
+          path: 'settings',
+          element: <SettingsPage />
+        },
+        {
+          path: `blogs/:blogId`,
+          element: <ViewBlogPage />
+        },
+        {
+          path: ':username/blogs',
+          element: <UserBlogsPage />
+        }
+      ]
+    },
+    {
+      path: '/blogs/create',
+      element: <CreateBlogPage />
+    },
+    {
+      path: `/blogs/:blogId/edit`,
+      element: <EditBlogPage />
+    }
+  ]);
 
   return (
-    <Layout className="app">
-      {shouldDisplayHeader && <AppNavbar />}
-      <Content className="app-content">
-        {shouldDisplayHeader ?
-          <Row justify="center">
-            <Col span={24} lg={matchSettings ? 20 : 16} className="display">
-              <Outlet />
-            </Col>
-          </Row> :
-          <Outlet />}
-      </Content>
-      <Footer className="app-footer">
-        <div>Powered by StevenDB</div>
-        <Flex gap="large" justify="center" className="social-media">
-          <NewTabLink to={footerData?.links['github']} className="footer-link">
-            <GithubFilled className="footer-icon" />
-          </NewTabLink>
-          <NewTabLink to={footerData?.links['linkedin']} className="footer-link">
-            <LinkedinFilled className="footer-icon" />
-          </NewTabLink>
-          <NewTabLink to={footerData?.links['instagram']} className="footer-link">
-            <InstagramFilled className="footer-icon" />
-          </NewTabLink>
-        </Flex>
-      </Footer>
-    </Layout>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: geekblue.primary
+        },
+        components: {
+          Layout: {
+            headerBg: geekblue[8]
+          },
+          Menu: {
+            darkItemBg: 'transparent',
+            darkSubMenuItemBg: 'transparent'
+          }
+        }
+      }}
+    >
+      <AntdApp
+        message={{
+          top: 72
+        }}
+      >
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </AntdApp>
+    </ConfigProvider>
   );
 }
 

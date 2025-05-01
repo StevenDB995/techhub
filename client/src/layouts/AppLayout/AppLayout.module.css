@@ -1,0 +1,28 @@
+.layout {
+  --app-header-height: 64px;
+}
+
+.content .display {
+  min-height: calc(100vh - var(--app-header-height));
+  padding: 20px;
+}
+
+.content .display [id] {
+  scroll-margin-top: var(--app-header-height);
+}
+
+.footer {
+  text-align: center;
+}
+
+.footer .socialMedia {
+  margin-top: 12px;
+}
+
+.footer .footerLink {
+  color: black !important;
+}
+
+.footer .footerIcon {
+  font-size: 24px;
+}
