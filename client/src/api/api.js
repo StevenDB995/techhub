@@ -20,12 +20,9 @@ api.interceptors.request.use(config => {
 api.interceptors.response.use(
   response => response,
   async error => {
-    if (!error.response) {
-      return Promise.reject(error);
-    }
-
-    const statusCode = error.response.status;
-    const { type: errorType, message: errorMessage } = error.response.data;
+    const statusCode = error.response?.status;
+    const errorType = error.response?.data.type;
+    const errorMessage = error.response?.data.message;
 
     if (statusCode === 401) {
       if (errorType === 'INVALID_CREDENTIALS' || errorType === 'SESSION_EXPIRED') {

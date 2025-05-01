@@ -10,14 +10,8 @@ const useApiErrorHandler = () => {
   const { message: antdMessage } = AntdApp.useApp();
 
   return useCallback(error => {
-    if (!error.response) {
-      void antdMessage.error('Network error. Please try again later.');
-      console.error(error);
-      return;
-    }
-
-    const statusCode = error.response.status;
-    const errorType = error.response.data.type;
+    const statusCode = error.response?.status;
+    const errorType = error.response?.data.type;
 
     if (statusCode === 401) {
       if (errorType === 'INVALID_CREDENTIALS') {

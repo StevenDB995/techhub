@@ -16,19 +16,19 @@ function CreateBlogPage() {
 
   const submit = useCallback(async (blogData) => {
     try {
-      const savedBlog = await createBlog(blogData);
+      await createBlog(blogData);
       localStorage.removeItem(localStorageKey);
       if (blogData.status === 'draft') {
         antdMessage.success('Draft saved!');
       } else {
         antdMessage.success('Blog posted successfully!');
       }
-      navigate(`/blogs/${savedBlog._id}`);
+      navigate(`/${user?.username}/blogs?status=${blogData.status}`);
 
     } catch (err) {
       handleApiError(err);
     }
-  }, [handleApiError, navigate, antdMessage]);
+  }, [user, navigate, antdMessage, handleApiError]);
 
 
   return (

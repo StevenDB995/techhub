@@ -1,4 +1,5 @@
 import { logout } from '@/api/services/authService';
+import NewTabLink from '@/components/NewTabLink';
 import useAuth from '@/hooks/useAuth';
 import { geekblue } from '@ant-design/colors';
 import {
@@ -69,11 +70,11 @@ function AppNavbar() {
     {
       key: '/blogs/create',
       label: (
-        <Link to={'/blogs/create'}>
+        <NewTabLink to={'/blogs/create'}>
           <Space>
             <FormOutlined />New Blog
           </Space>
-        </Link>
+        </NewTabLink>
       )
     },
     {
@@ -118,7 +119,7 @@ function AppNavbar() {
         type="primary"
         menu={{ items: createDropdownItems }}
       >
-        <Link to={'/blogs/create'}>Create</Link>
+        <NewTabLink to={'/blogs/create'}>Create</NewTabLink>
       </Dropdown.Button>
     },
     {

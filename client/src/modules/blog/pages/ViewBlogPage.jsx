@@ -24,6 +24,7 @@ function ViewBlogPage() {
   const navigate = useNavigate();
 
   const handleDelete = useCallback(async () => {
+    if (!user || !blog) return;
     try {
       await deleteBlog(blogId);
       antdMessage.success('Blog post deleted.');
