@@ -29,6 +29,7 @@ function CherryViewer({ value, loading }) {
   useEffect(() => {
     if (cherryInstance.current) {
       // fill the content on page load
+      console.log(cherryInstance.current);
       console.log(value);
       cherryInstance.current.setMarkdown(value || '');
     } else {
