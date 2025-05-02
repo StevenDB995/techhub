@@ -6,6 +6,20 @@
   width: 180px;
 }
 
+@media (max-width: 768px) {
+  #cherry-editor .cherry-editor {
+    width: 100% !important;
+  }
+
+  #cherry-editor .cherry-previewer {
+    display: none !important;
+  }
+
+  #cherry-editor .cherry-flex-toc {
+    display: none !important;
+  }
+}
+
 #cherry-viewer .cherry {
   box-shadow: none !important;
   background: transparent !important;
