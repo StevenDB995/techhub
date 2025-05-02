@@ -194,7 +194,14 @@ function AppNavbar() {
             </Button>
           </Flex>
           <Drawer
-            title={brand}
+            title={
+              <Flex justify="space-between" align="center">
+                {brand}
+                <Button type="primary" onClick={hideDrawer}>
+                  <MenuOutlined />
+                </Button>
+              </Flex>
+            }
             placement="top"
             height="auto"
             styles={{
