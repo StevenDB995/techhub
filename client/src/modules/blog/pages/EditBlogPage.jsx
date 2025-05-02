@@ -1,12 +1,17 @@
 import { updateBlog } from '@/api/services/blogService';
 import Error from '@/components/Error';
+import Loading from '@/components/Loading';
 import useApiErrorHandler from '@/hooks/useApiErrorHandler';
 import useFetch from '@/hooks/useFetch';
-import CherryEditor from '@/modules/blog/components/CherryEditor';
 import { parseJSON } from '@/utils/jsonUtil';
+import loadable from '@loadable/component';
 import { App as AntdApp, Modal } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+
+const CherryEditor = loadable(() => import('@/modules/blog/components/CherryEditor'), {
+  fallback: <Loading fullscreen />
+});
 
 const localStorageKeyPrefix = 'edit-';
 

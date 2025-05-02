@@ -1,23 +1,17 @@
-import { AuthContext } from '@/contexts/AuthProvider';
+import useAuth from '@/hooks/useAuth';
 import { App as AntdApp } from 'antd';
-import { useCallback, useContext } from 'react';
+import { useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const useApiErrorHandler = () => {
-  const { clearAuth } = useContext(AuthContext);
+  const { clearAuth } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { message: antdMessage } = AntdApp.useApp();
 
   return useCallback(error => {
-    if (!error.response) {
-      void antdMessage.error('Network error. Please try again later.');
-      console.error(error);
-      return;
-    }
-
-    const statusCode = error.response.status;
-    const errorType = error.response.data.type;
+    const statusCode = error.response?.status;
+    const errorType = error.response?.data.type;
 
     if (statusCode === 401) {
       if (errorType === 'INVALID_CREDENTIALS') {

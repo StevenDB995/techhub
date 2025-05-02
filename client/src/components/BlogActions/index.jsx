@@ -1,8 +1,8 @@
 import { getDateString } from '@/utils/dateUtil';
+import { openInNewTab } from '@/utils/navigateUtil';
 import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { Divider, Flex, Space } from 'antd';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import styles from './BlogActions.module.css';
 
 function Action({ icon, text, size, className, onClick }) {
@@ -15,12 +15,10 @@ function Action({ icon, text, size, className, onClick }) {
 }
 
 function BlogActions({ blog, editable, onDelete }) {
-  const navigate = useNavigate();
-
-  return (
+  return blog && (
     <Flex justify="space-between" className={styles.blogActions}>
       <Space size="middle">
-        <Action text={blog && getDateString(blog.createdAt)} />
+        <Action text={getDateString(blog.createdAt)} />
       </Space>
       {editable && <Space split={<Divider type="vertical" />} size={4}>
         <Action
@@ -28,14 +26,14 @@ function BlogActions({ blog, editable, onDelete }) {
           icon={EditOutlined}
           text="Edit"
           size={6}
-          onClick={blog && (() => navigate(`/blogs/${blog._id}/edit`))}
+          onClick={() => openInNewTab(`/blogs/${blog._id}/edit`)}
         />
         <Action
           className={styles.clickable}
           icon={DeleteOutlined}
           text="Delete"
           size={6}
-          onClick={blog && (() => onDelete(blog._id))}
+          onClick={() => onDelete(blog._id)}
         />
       </Space>}
     </Flex>

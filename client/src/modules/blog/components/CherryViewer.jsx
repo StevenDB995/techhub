@@ -2,6 +2,8 @@ import Loading from '@/components/Loading';
 import Cherry from 'cherry-markdown';
 import { useEffect, useRef } from 'react';
 import styles from './CherryViewer.module.css';
+import 'cherry-markdown/dist/cherry-markdown.css';
+import './cherry-markdown.css';
 
 const cherryConfig = {
   id: 'cherry-viewer',
@@ -11,7 +13,7 @@ const cherryConfig = {
     height: 'auto'
   },
   previewer: {
-    enablePreviewerBubble: false
+    enablePreviewerBubble: false  // disable image resizing
   },
   toolbars: {
     toc: {
@@ -25,14 +27,12 @@ function CherryViewer({ value, loading }) {
   const cherryInstance = useRef(null);
 
   useEffect(() => {
-    if (!cherryInstance.current) {
+    if (cherryInstance.current) {
+      // fill the content on page load
+      cherryInstance.current.setMarkdown(value || '');
+    } else {
       cherryInstance.current = new Cherry(cherryConfig);
     }
-  }, [value]);
-
-  // fill the content on page load
-  useEffect(() => {
-    cherryInstance.current.setMarkdown(value || '');
   }, [value]);
 
   return (
