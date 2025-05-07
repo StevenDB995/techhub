@@ -241,7 +241,7 @@ function CherryEditor({
           Post
         </Button>
       </Flex>
-      <div id={cherryConfig.id} className={styles.cherryEditor}></div>
+      <div id={cherryConfig.id} className={styles.cherryEditor} />
       <Loading display={loading} fullscreen />
       <Loading display={uploadingImage} fullscreen text={'Uploading image'} />
       <Modal

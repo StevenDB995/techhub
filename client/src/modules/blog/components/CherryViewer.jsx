@@ -27,20 +27,15 @@ function CherryViewer({ value, loading }) {
   const cherryInstance = useRef(null);
 
   useEffect(() => {
-    if (!cherryInstance.current) {
+    if (!loading && !cherryInstance.current) {
+      cherryConfig.value = value;
       cherryInstance.current = new Cherry(cherryConfig);
     }
-  }, [value]);
-
-  // Fill the content on page load
-  // Define this effect after the cherryInstance is created
-  useEffect(() => {
-    cherryInstance.current.setMarkdown(value || '');
-  }, [value]);
+  }, [loading, value]);
 
   return (
     <>
-      <div id={cherryConfig.id} className={styles.cherryViewer}></div>
+      <div id={cherryConfig.id} className={styles.cherryViewer} />
       <Loading display={loading} />
     </>
   );
