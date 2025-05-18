@@ -13,7 +13,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import styles from './ViewBlogPage.module.css';
 
 const CherryViewer = loadable(() => import('@/modules/blog/components/CherryViewer'), {
-  fallback: <Loading fullscreen />
+  fallback: <Loading />
 });
 
 function ViewBlogPage() {

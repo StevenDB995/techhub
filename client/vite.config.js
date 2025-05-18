@@ -11,7 +11,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src')
     }
   },
-  // tackle cors issues in development environment
+  // Tackle CORS issues in development environment
   server: {
     proxy: {
       '/api': {
