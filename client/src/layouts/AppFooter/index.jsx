@@ -1,4 +1,5 @@
 import NewTabLink from '@/components/NewTabLink';
+import { BASE_SITE_CONTENT_URL } from '@/constants';
 import { GithubFilled, InstagramFilled, LinkedinFilled } from '@ant-design/icons';
 import { Flex, Layout } from 'antd';
 import axios from 'axios';
@@ -11,7 +12,7 @@ function AppFooter() {
   const [footerData, setFooterData] = useState(null);
 
   useEffect(() => {
-    axios.get('/footer.json').then(res => {
+    axios.get(`${BASE_SITE_CONTENT_URL}/footer.json`).then(res => {
       setFooterData(res.data);
     }).catch(err => console.error(err));
   }, []);
