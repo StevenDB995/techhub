@@ -1,12 +1,9 @@
 # Steven's techHub
 
-[Steven's techHub](https://techhub.stevendb.xyz) is a technical blogging and journaling platform. As a software engineer
-and developer exposed to extensive technical content on a daily basis, I need a place to take notes and organise my
-thoughts, and I think it would be cool if I share some tricks and insights to the community. This platform is well
-crafted for this purpose, and it will be actively maintained as long as I stay in the industry (I don't see the day I
-quit though, 'cause I love it). For now only I and a visitor account can post content onto this website, concerning the
-project scale, budget and my time. However, more users will be welcomed to contribute to building this community, and
-more interactive features are expected to be introduced to the platform, such as comments and likes.
+[Steven's techHub](https://techhub.stevendb.xyz) s a technical content blogging platform. Although this site is now
+still at its early development stage, and it serves more as my personal portfolio, it is expected to grow and scale into
+a community with more user interactions in future. For now only I and a visitor account can post content onto this
+website.
 
 This is a personal project I started mainly to expand my skill sets and enhance my technical proficiency. Therefore,
 every development aspects are relevant, including UI, app backend, persistent storage, deployment and CI/CD. It's really
@@ -15,7 +12,7 @@ an enjoyable journey, and I look forward to gaining more technical insights thro
 ## Visitor account
 
 Currently, only I can publish content to the website, but any decent users are welcomed to experience the features of
-this website through a shared visitor account. The login detail is as follows:
+this website through a publicly shared visitor account. The login credentials are as follows:
 
 - Username: `Visitor`
 - Password: `stevenIsAwesome!`
@@ -40,11 +37,3 @@ this website through a shared visitor account. The login detail is as follows:
 The application is implemented with MERN stack, containerised using Docker for deployment. It is deployed on an AWS EC2
 instance, and the service is exposed to the Internet through Cloudflare, which offers a secure and robust solution for
 hosting web services.
-
-## TODO
-
-The following features are expected in the system in the next release:
-
-- [ ] Auto save blogs;
-- [ ] Comment blog posts;
-- [ ] Like blog posts.
