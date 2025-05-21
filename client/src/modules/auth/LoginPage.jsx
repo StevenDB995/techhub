@@ -1,5 +1,6 @@
 import { login } from '@/api/services/authService';
 import useAuth from '@/hooks/useAuth';
+import { openInNewTab } from '@/utils/navigateUtil';
 import { App as AntdApp, Button, Flex, Form, Input } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './LoginPage.module.css';
@@ -15,8 +16,13 @@ function LoginPage() {
       const { accessToken, user } = await login(formData);
       setAuth(accessToken, user);
       antdMessage.success('Successfully logged in!');
+
       // Navigate to the previous location before the user logged in
       navigate(location.state?.from || '/', { replace: true });
+      if (location.state?.redirect === '/blogs/create') {
+        openInNewTab(location.state.redirect);
+      }
+
     } catch (err) {
       if (err.response?.status === 401) {
         antdMessage.error('Wrong username or password');
