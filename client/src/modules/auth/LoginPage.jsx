@@ -1,5 +1,6 @@
 import { login } from '@/api/services/authService';
 import useAuth from '@/hooks/useAuth';
+import { openInNewTab } from '@/utils/navigateUtil';
 import { App as AntdApp, Button, Flex, Form, Input } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './LoginPage.module.css';
@@ -15,8 +16,13 @@ function LoginPage() {
       const { accessToken, user } = await login(formData);
       setAuth(accessToken, user);
       antdMessage.success('Successfully logged in!');
+
       // Navigate to the previous location before the user logged in
       navigate(location.state?.from || '/', { replace: true });
+      if (location.state?.redirect === '/blogs/create') {
+        openInNewTab(location.state.redirect);
+      }
+
     } catch (err) {
       if (err.response?.status === 401) {
         antdMessage.error('Wrong username or password');
@@ -27,7 +33,7 @@ function LoginPage() {
   };
 
   return (
-    <Flex justify="center" align="center" className={styles.loginContainer}>
+    <Flex vertical justify="center" align="center" className={styles.loginContainer}>
       <Form
         className={styles.loginForm}
         layout="vertical"
@@ -65,6 +71,15 @@ function LoginPage() {
             Login
           </Button>
         </Form.Item>
+        <div className={styles.prompt}>
+          <p>
+            Log in with a publicly shared Visitor account to experience more features!
+          </p>
+          <ul>
+            <li>Username: <code>Visitor</code></li>
+            <li>Password: <code>stevenIsAwesome!</code></li>
+          </ul>
+        </div>
       </Form>
     </Flex>
   );

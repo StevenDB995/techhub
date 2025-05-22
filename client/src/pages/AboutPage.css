@@ -1,0 +1,7 @@
+.about-page ul, ol {
+  padding-inline-start: 24px;
+}
+
+.about-page li > p {
+  margin: 0;
+}
