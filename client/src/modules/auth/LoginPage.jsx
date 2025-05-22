@@ -33,7 +33,7 @@ function LoginPage() {
   };
 
   return (
-    <Flex justify="center" align="center" className={styles.loginContainer}>
+    <Flex vertical justify="center" align="center" className={styles.loginContainer}>
       <Form
         className={styles.loginForm}
         layout="vertical"
@@ -71,6 +71,15 @@ function LoginPage() {
             Login
           </Button>
         </Form.Item>
+        <div className={styles.prompt}>
+          <p>
+            Log in with a publicly shared Visitor account to experience more features!
+          </p>
+          <ul>
+            <li>Username: <code>Visitor</code></li>
+            <li>Password: <code>stevenIsAwesome!</code></li>
+          </ul>
+        </div>
       </Form>
     </Flex>
   );

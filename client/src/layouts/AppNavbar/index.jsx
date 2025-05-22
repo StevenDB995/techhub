@@ -39,7 +39,7 @@ function AppNavbar() {
       title: 'Welcome to Steven\'s techHub!',
       description: <>
         <p>
-          Log in as a visitor to experience more features including the first-class markdown editor and content
+          Log in as a visitor for early access to more features including the first-class markdown editor and content
           management!
         </p>
         <p>
@@ -54,8 +54,9 @@ function AppNavbar() {
       target: () => loginRef.current
     },
     {
-      title: 'About This Website',
-      description: 'Check out the about page for more details and the visitor\'s login credentials.',
+      title: 'About This Site',
+      description: 'Check out the about page for more information about this site and the visitor\'s login ' +
+        'credentials.',
       target: () => aboutRef.current
     },
     {
