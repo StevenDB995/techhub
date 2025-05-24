@@ -1,0 +1,11 @@
+.aboutPage ul, ol {
+  padding-inline-start: 24px;
+}
+
+.aboutPage li > p {
+  margin: 0;
+}
+
+.aboutPage img {
+  max-width: 100%;
+}

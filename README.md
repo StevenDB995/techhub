@@ -2,14 +2,13 @@
 
 [Steven's techHub](https://techhub.stevendb.xyz) s a technical content blogging platform. Although this site is now
 still at its early development stage, and it serves more as my personal portfolio, it is expected to grow and scale into
-a community with more user interactions in future. For now only I and a visitor account can post content onto this
-website.
+a community with more user interactions in future.
 
-This is a personal project I started mainly to expand my skill sets and enhance my technical proficiency. Therefore,
-every development aspects are relevant, including UI, app backend, persistent storage, deployment and CI/CD. It's really
-an enjoyable journey, and I look forward to gaining more technical insights through this project.
+I actively maintain this project as a hands-on way to sharpen my skills and explore new technologies. Every aspect of
+development is relevant — from the UI and app backend to persistent storage, deployment, and CI/CD. It’s been an
+enjoyable journey so far, and I look forward to gaining even more technical insights along the way.
 
-## Visitor account
+## Visitor Account
 
 Currently, only I can publish content to the website, but any decent users are welcomed to experience the features of
 this website through a publicly shared visitor account. The login credentials are as follows:
@@ -17,7 +16,28 @@ this website through a publicly shared visitor account. The login credentials ar
 - Username: `Visitor`
 - Password: `stevenIsAwesome!`
 
-## Built with
+## Features
+
+### Markdown-Based Content
+
+Aiming to deliver a smooth and clean reading and editing experience, every blog is stored and presented in
+light-weighted Markdown format.
+
+### First-Class Markdown Editor
+
+At the heart of this platform is a first-class Markdown editor, built on top
+of [Cherry Markdown](https://github.com/Tencent/cherry-markdown), designed for clean, intuitive writing and flexible
+styling.
+
+![demo.png#768px](https://techhub-site-content.stevendb.xyz/markdown-editor-demo.png)
+
+### Your Dream Blogging Platform
+
+Sick of paywalls, ads and geeky editors? Steven’s techHub is the blogging platform that you’ve always wished was there.
+It is designed to be clean and distraction-free, so you can focus on what really matters: creating great content for the
+world!
+
+## Built With
 
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
