@@ -15,7 +15,7 @@ services:
     depends_on:
       - mongodb
     ports:
-      - '${PORT}:${PORT}'  # host:container
+      - '${SERVER_PORT}:${SERVER_PORT}'  # host:container
     networks:
       - app_network
 
