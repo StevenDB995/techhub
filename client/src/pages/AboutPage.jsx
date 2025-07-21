@@ -4,6 +4,7 @@ import CherryEngine from 'cherry-markdown/dist/cherry-markdown.engine.core';
 import DOMPurify from 'dompurify';
 import { useEffect, useState } from 'react';
 import styles from './AboutPage.module.css';
+import 'cherry-markdown/dist/cherry-markdown.css';
 
 const cherryEngine = new CherryEngine();
 
@@ -22,7 +23,7 @@ function AboutPage() {
 
   return (
     <div
-      className={styles.aboutPage}
+      className={`${styles.aboutPage} cherry-markdown`}
       dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(aboutHtml) }}
     />
   );
