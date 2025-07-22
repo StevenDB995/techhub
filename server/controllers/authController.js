@@ -1,12 +1,12 @@
-const User = require('../models/userModel');
-const { successResponse, errorResponse } = require('../utils/responseUtil');
-const { isValidPassword } = require('../utils/validateUtil');
-const { hashPassword, comparePassword } = require('../utils/passwordUtil');
-const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../utils/tokenUtil');
-const { getRefreshToken, setRefreshToken, clearRefreshToken } = require('../helpers/authHelper');
-const { SESSION_EXPIRED, USERNAME_EXISTS, EMAIL_EXISTS, INVALID_CREDENTIALS } = require('../config/errorTypes');
+import { EMAIL_EXISTS, INVALID_CREDENTIALS, SESSION_EXPIRED, USERNAME_EXISTS } from '../config/errorTypes.js';
+import { clearRefreshToken, getRefreshToken, setRefreshToken } from '../helpers/authHelper.js';
+import User from '../models/userModel.js';
+import { comparePassword, hashPassword } from '../utils/passwordUtil.js';
+import { errorResponse, successResponse } from '../utils/responseUtil.js';
+import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../utils/tokenUtil.js';
+import { isValidPassword } from '../utils/validateUtil.js';
 
-exports.refreshToken = async (req, res) => {
+export const refreshToken = async (req, res) => {
   let refreshToken = getRefreshToken(req);
   if (!refreshToken) {
     return errorResponse(res, 401, 'No refresh token provided', SESSION_EXPIRED);
@@ -36,7 +36,7 @@ exports.refreshToken = async (req, res) => {
   }
 };
 
-exports.signup = async (req, res) => {
+export const signup = async (req, res) => {
   const { username, password, email } = req.body;
   if (!isValidPassword(password)) {
     return errorResponse(res, 400, 'Bad request');
@@ -75,7 +75,7 @@ exports.signup = async (req, res) => {
   }
 };
 
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
   const { username, password } = req.body;
 
   try {
@@ -104,7 +104,7 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.logout = async (req, res) => {
+export const logout = async (req, res) => {
   clearRefreshToken(res);
   return successResponse(res, 200, null, 'Logged out');
 };

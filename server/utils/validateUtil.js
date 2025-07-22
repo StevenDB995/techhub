@@ -1,5 +1,5 @@
-const validator = require('validator');
-const { reservedUsernames } = require('../config/constants');
+import isEmail from 'validator/lib/isEmail.js';
+import { reservedUsernames } from '../config/constants.js';
 
 const isString = (input) => typeof input === 'string';
 
@@ -11,7 +11,7 @@ const isString = (input) => typeof input === 'string';
  * @param username
  * @returns {boolean}
  */
-exports.isValidUsername = (username) => {
+export const isValidUsername = (username) => {
   if (!isString(username)) return false;
   const regex = /^(?=.*[a-zA-Z])[a-zA-Z0-9_.]{4,30}$/;
   return !reservedUsernames.has(username.toLowerCase()) && regex.test(username);
@@ -25,12 +25,12 @@ exports.isValidUsername = (username) => {
  * The required password length is 8-30.
  * @param password
  */
-exports.isValidPassword = (password) => {
+export const isValidPassword = (password) => {
   if (!isString(password)) return false;
   const regex = /^[a-zA-Z0-9._!@#$%^&*()\[\]\-+=]{8,30}$/;
   return regex.test(password);
 };
 
-exports.isValidEmail = (email) => {
-  return validator.isEmail(email);
+export const isValidEmail = (email) => {
+  return isEmail(email);
 };

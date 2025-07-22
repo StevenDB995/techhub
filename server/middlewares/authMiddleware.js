@@ -1,10 +1,10 @@
-const User = require('../models/userModel');
-const { errorResponse } = require('../utils/responseUtil');
-const { verifyAccessToken } = require('../utils/tokenUtil');
-const { getAccessToken, verifyUser } = require('../helpers/authHelper');
-const { INVALID_TOKEN, ILLEGAL_USER } = require('../config/errorTypes');
+import { ILLEGAL_USER, INVALID_TOKEN } from '../config/errorTypes.js';
+import { getAccessToken, verifyUser } from '../helpers/authHelper.js';
+import User from '../models/userModel.js';
+import { errorResponse } from '../utils/responseUtil.js';
+import { verifyAccessToken } from '../utils/tokenUtil.js';
 
-const auth = async (req, res, next) => {
+export const auth = async (req, res, next) => {
   const accessToken = getAccessToken(req);
   if (!accessToken) {
     return errorResponse(res, 401, 'No access token provided', INVALID_TOKEN);
@@ -33,7 +33,7 @@ const auth = async (req, res, next) => {
   }
 };
 
-const optionalAuth = async (req, res, next) => {
+export const optionalAuth = async (req, res, next) => {
   const accessToken = getAccessToken(req);
   if (!accessToken) {
     return next();
@@ -59,5 +59,3 @@ const optionalAuth = async (req, res, next) => {
 
   return next();
 };
-
-module.exports = { auth, optionalAuth };

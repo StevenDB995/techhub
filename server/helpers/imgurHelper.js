@@ -1,13 +1,9 @@
-const axios = require('axios');
+import axios from 'axios';
 
-const deleteImage = async (deletehash) => {
+export const deleteImage = async (deletehash) => {
   return await axios.delete(`https://api.imgur.com/3/image/${deletehash}`, {
     headers: {
       Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
     }
   });
-};
-
-module.exports = {
-  deleteImage
 };

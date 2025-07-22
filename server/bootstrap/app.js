@@ -1,8 +1,8 @@
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const apiRoutes = require('./routes/apiRoutes');
-const { BASE_API_PATH } = require('./config/constants');
+import cookieParser from 'cookie-parser';
+import express from 'express';
+import path from 'path';
+import { BASE_API_PATH } from '../config/constants.js';
+import apiRoutes from '../routes/apiRoutes.js';
 
 const app = express();
 
@@ -23,4 +23,4 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-module.exports = app;
+export default app;

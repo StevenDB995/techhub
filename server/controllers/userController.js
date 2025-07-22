@@ -1,16 +1,16 @@
-const User = require('../models/userModel');
-const Blog = require('../models/blogModel');
-const { successResponse, errorResponse } = require('../utils/responseUtil');
-const { isValidPassword } = require('../utils/validateUtil');
-const { hashPassword } = require('../utils/passwordUtil');
-const { deleteImage } = require('../helpers/imgurHelper');
-const { INVALID_TOKEN, USERNAME_EXISTS, EMAIL_EXISTS } = require('../config/errorTypes');
+import { EMAIL_EXISTS, INVALID_TOKEN, USERNAME_EXISTS } from '../config/errorTypes.js';
+import { deleteImage } from '../helpers/imgurHelper.js';
+import Blog from '../models/blogModel.js';
+import User from '../models/userModel.js';
+import { hashPassword } from '../utils/passwordUtil.js';
+import { errorResponse, successResponse } from '../utils/responseUtil.js';
+import { isValidPassword } from '../utils/validateUtil.js';
 
-exports.getCurrentUser = async (req, res) => {
+export const getCurrentUser = async (req, res) => {
   return successResponse(res, 200, req.user);
 };
 
-exports.getBlogsByUsername = async (req, res) => {
+export const getBlogsByUsername = async (req, res) => {
   const { username } = req.params;
   const currentUser = req.user;
   let status = req.query.status || 'public';
@@ -48,7 +48,7 @@ exports.getBlogsByUsername = async (req, res) => {
   }
 };
 
-exports.updateCurrentUser = async (req, res) => {
+export const updateCurrentUser = async (req, res) => {
   // Temporarily disable Visitor from changing password
   if (req.body.password && req.user.username === 'Visitor') {
     return errorResponse(res, 403, 'Forbidden');

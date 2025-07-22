@@ -1,6 +1,6 @@
-const express = require("express");
-const userController = require('../controllers/userController');
-const { auth, optionalAuth } = require('../middlewares/authMiddleware');
+import express from 'express';
+import * as userController from '../controllers/userController.js';
+import { auth, optionalAuth } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -9,4 +9,4 @@ router.patch('/me', auth, userController.updateCurrentUser);
 
 router.get('/:username/blogs', optionalAuth, userController.getBlogsByUsername);
 
-module.exports = router;
+export default router;

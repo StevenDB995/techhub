@@ -1,6 +1,6 @@
-const express = require('express');
-const blogController = require('../controllers/blogController');
-const { auth, optionalAuth } = require('../middlewares/authMiddleware');
+import express from 'express';
+import * as blogController from '../controllers/blogController.js';
+import { auth, optionalAuth } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -13,4 +13,4 @@ router.delete('/:id', auth, blogController.deleteBlogById);
 
 router.post('/images', auth, blogController.createImageMetadata);
 
-module.exports = router;
+export default router;

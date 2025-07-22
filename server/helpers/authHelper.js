@@ -1,14 +1,14 @@
-const { REFRESH_TOKEN_NAME, REFRESH_TOKEN_PATH } = require('../config/constants');
+import { REFRESH_TOKEN_NAME, REFRESH_TOKEN_PATH } from '../config/constants.js';
 
-const getAccessToken = (req) => {
+export const getAccessToken = (req) => {
   return req.header('Authorization')?.split(' ')[1];
 };
 
-const getRefreshToken = (req) => {
+export const getRefreshToken = (req) => {
   return req.cookies[REFRESH_TOKEN_NAME];
 };
 
-const setRefreshToken = (res, refreshToken) => {
+export const setRefreshToken = (res, refreshToken) => {
   res.cookie(REFRESH_TOKEN_NAME, refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -18,12 +18,12 @@ const setRefreshToken = (res, refreshToken) => {
   });
 };
 
-const clearRefreshToken = (res) => {
+export const clearRefreshToken = (res) => {
   res.clearCookie(REFRESH_TOKEN_NAME, { path: REFRESH_TOKEN_PATH });
 };
 
 // Reject authentication of inactive users
-const verifyUser = (req, res, user) => {
+export const verifyUser = (req, res, user) => {
   // unauthorize if the user is inactive or removed
   if (!user?.isActive) {
     // instruct to clear refresh token in browser
@@ -32,12 +32,4 @@ const verifyUser = (req, res, user) => {
   }
   req.user = user;
   return true;
-};
-
-module.exports = {
-  getAccessToken,
-  getRefreshToken,
-  setRefreshToken,
-  clearRefreshToken,
-  verifyUser
 };
