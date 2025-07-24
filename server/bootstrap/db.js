@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 const { NODE_ENV, DB_URI } = process.env;
-console.log('db:', process.env.DB_URI);
 
 if (NODE_ENV !== 'production') {
   mongoose.set('debug', true);
