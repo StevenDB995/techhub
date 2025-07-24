@@ -15,11 +15,11 @@ app.use(BASE_API_PATH, apiRoutes);
 
 if (process.env.NODE_ENV === 'production') {
   // Serve the static files from the React app (in /client/dist)
-  app.use(express.static(path.join(__dirname, 'dist')));
+  app.use(express.static(path.join(__dirname, '../dist')));
 
   // All other routes should serve the React app
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+    res.sendFile(path.join(__dirname, '../dist/index.html'));
   });
 }
 
