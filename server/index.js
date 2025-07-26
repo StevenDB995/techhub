@@ -1,19 +1,14 @@
 // Load environment variables
-const path = require('path');
-const NODE_ENV = process.env.NODE_ENV;
-
-if (NODE_ENV === 'development') {
-  const dotenv = require('dotenv');
-  dotenv.config({ path: path.resolve(__dirname, '../.env.development') });
-}
-
+import './bootstrap/env.js';
 // Start app
-const app = require('./app');
-const connectDB = require('./bootstrap/db');
+import app from './bootstrap/app.js';
+import connectDB from './bootstrap/db.js';
 
-void connectDB();
+const { NODE_ENV, SERVER_PORT } = process.env;
 
-const PORT = process.env.SERVER_PORT || 3000;
+await connectDB();
+
+const PORT = SERVER_PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);

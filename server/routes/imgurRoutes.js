@@ -1,9 +1,9 @@
-const express = require('express');
-const imgurController = require('../controllers/imgurController');
-const { auth } = require('../middlewares/authMiddleware');
+import express from 'express';
+import * as imgurController from '../controllers/imgurController.js';
+import { auth } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
 router.get('/token', auth, imgurController.getImgurAccessToken);
 
-module.exports = router;
+export default router;

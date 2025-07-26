@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const { NODE_ENV, DB_URI } = process.env;
 
-if (NODE_ENV === 'development') {
+if (NODE_ENV !== 'production') {
   mongoose.set('debug', true);
 }
 
@@ -16,4 +16,4 @@ const connectDB = async () => {
   }
 }
 
-module.exports = connectDB;
+export default connectDB;

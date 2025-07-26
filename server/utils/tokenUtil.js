@@ -1,23 +1,23 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = process.env;
 
-exports.signAccessToken = (userId) => {
+export const signAccessToken = (userId) => {
   return jwt.sign({ userId }, ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
 };
 
-exports.signRefreshToken = (userId) => {
+export const signRefreshToken = (userId) => {
   return jwt.sign({ userId }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
 };
 
-exports.verifyAccessToken = (token) => {
+export const verifyAccessToken = (token) => {
   return jwt.verify(token, ACCESS_TOKEN_SECRET);
 };
 
-exports.verifyRefreshToken = (token) => {
+export const verifyRefreshToken = (token) => {
   return jwt.verify(token, REFRESH_TOKEN_SECRET);
 };
 
-exports.decodeAccessToken = (token) => {
+export const decodeAccessToken = (token) => {
   return jwt.decode(token);
 };

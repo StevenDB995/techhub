@@ -12,3 +12,7 @@
 body {
   margin: 0;
 }
+
+.cherry-markdown {
+  word-break: normal !important;
+}

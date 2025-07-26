@@ -1,5 +1,5 @@
-const axios = require('axios');
-const { successResponse, errorResponse } = require('../utils/responseUtil');
+import axios from 'axios';
+import { errorResponse, successResponse } from '../utils/responseUtil.js';
 
 const {
   IMGUR_CLIENT_ID,
@@ -8,7 +8,7 @@ const {
   IMGUR_OAUTH_URL
 } = process.env;
 
-exports.getImgurAccessToken = async (req, res) => {
+export const getImgurAccessToken = async (req, res) => {
   try {
     const response = await axios.post(IMGUR_OAUTH_URL, new URLSearchParams({
       'refresh_token': IMGUR_REFRESH_TOKEN,

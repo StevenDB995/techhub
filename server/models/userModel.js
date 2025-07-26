@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const { isValidUsername, isValidEmail } = require('../utils/validateUtil');
+import mongoose from 'mongoose';
+import { isValidEmail, isValidUsername } from '../utils/validateUtil.js';
 
 const userSchema = new mongoose.Schema({
   username: { // case-insensitive collation but still preserve the case
@@ -35,4 +35,4 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-module.exports = User;
+export default User;

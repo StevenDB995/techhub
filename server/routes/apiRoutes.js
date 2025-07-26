@@ -1,8 +1,8 @@
-const express = require('express');
-const authRoutes = require('./authRoutes');
-const blogRoutes = require('./blogRoutes');
-const userRoutes = require('./userRoutes');
-const imgurRoutes = require('./imgurRoutes');
+import express from 'express';
+import authRoutes from './authRoutes.js';
+import blogRoutes from './blogRoutes.js';
+import imgurRoutes from './imgurRoutes.js';
+import userRoutes from './userRoutes.js';
 
 const router = express.Router();
 
@@ -12,4 +12,4 @@ router.use('/users', userRoutes);
 
 router.use('/imgur', imgurRoutes);
 
-module.exports = router;
+export default router;

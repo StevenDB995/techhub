@@ -1,11 +1,11 @@
-const Blog = require('../models/blogModel');
-const BlogImage = require('../models/blogImageModel');
-const { successResponse, errorResponse } = require('../utils/responseUtil');
-const mongoose = require('mongoose');
-const { INVALID_TOKEN } = require('../config/errorTypes');
+import mongoose from 'mongoose';
+import { INVALID_TOKEN } from '../config/errorTypes.js';
+import BlogImage from '../models/blogImageModel.js';
+import Blog from '../models/blogModel.js';
+import { errorResponse, successResponse } from '../utils/responseUtil.js';
 
 // get all public blogs
-exports.getAllBlogs = async (req, res) => {
+export const getAllBlogs = async (req, res) => {
   try {
     const blogs = await Blog
       .find({ status: 'public' })
@@ -19,7 +19,7 @@ exports.getAllBlogs = async (req, res) => {
   }
 };
 
-exports.getBlogById = async (req, res) => {
+export const getBlogById = async (req, res) => {
   const { id: blogId } = req.params;
 
   try {
@@ -58,7 +58,7 @@ exports.getBlogById = async (req, res) => {
   }
 };
 
-exports.createBlog = async (req, res) => {
+export const createBlog = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -92,7 +92,7 @@ exports.createBlog = async (req, res) => {
   }
 };
 
-exports.updateBlogById = async (req, res) => {
+export const updateBlogById = async (req, res) => {
   const { id } = req.params;
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -154,7 +154,7 @@ exports.updateBlogById = async (req, res) => {
   }
 };
 
-exports.deleteBlogById = async (req, res) => {
+export const deleteBlogById = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -180,12 +180,12 @@ exports.deleteBlogById = async (req, res) => {
   }
 };
 
-exports.createImageMetadata = async (req, res) => {
+export const createImageMetadata = async (req, res) => {
   try {
     const blogImage = new BlogImage(req.body);
     blogImage.isAttached = false;
     const savedBlogImage = await blogImage.save();
-    return successResponse(res, 201,savedBlogImage, 'Blog image metadata saved successfully!');
+    return successResponse(res, 201, savedBlogImage, 'Blog image metadata saved successfully!');
 
   } catch (err) {
     console.error(err);

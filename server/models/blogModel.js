@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const blogSchema = new mongoose.Schema({
   title: { type: String, maxLength: 70 },
@@ -25,4 +25,4 @@ const blogSchema = new mongoose.Schema({
 // Create a model based on the schema
 const Blog = mongoose.model('Blog', blogSchema);
 
-module.exports = Blog;
+export default Blog;
