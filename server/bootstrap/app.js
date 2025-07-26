@@ -1,9 +1,11 @@
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { BASE_API_PATH } from '../config/constants.js';
 import apiRoutes from '../routes/apiRoutes.js';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
 // Middlewares

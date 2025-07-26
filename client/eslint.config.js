@@ -35,15 +35,5 @@ export default [
       ],
       'react/prop-types': 'off'
     }
-  },
-  {
-    files: ['vite.config.js'],
-    languageOptions: {
-      sourceType: 'module',
-      ecmaVersion: 'latest',
-      globals: {
-        __dirname: 'readonly'
-      }
-    }
   }
 ];
